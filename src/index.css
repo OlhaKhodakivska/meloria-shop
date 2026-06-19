@@ -1,0 +1,38 @@
+/* src/index.css */
+:root {
+  /* Фірмові кольори VELORIA */
+  --color-bg-deep: #102346;     /* Глибокий синій */
+  --color-text-silver: #D9DDE3; /* Срібний */
+
+  /* Допоміжні кольори */
+  --color-white: #ffffff;
+  --color-dark: #0f172a;
+  --color-gray: #64748b;
+  --color-gray-light: #f1f5f9;
+
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --max-width: 1200px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--color-gray-light);
+  color: var(--color-dark);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
