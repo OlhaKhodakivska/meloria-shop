@@ -28,12 +28,13 @@ function App() {
           {/* Контентна зона, яка розтягується і штовхає футер донизу */}
           <div style={{ flexGrow: 1 }}>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/checkout" element={<Checkout onCloseCart={() => setIsCartOpen(false)} />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/delivery" element={<Delivery />} />
-              <Route path="/contacts" element={<Contacts />} />
+              {/* Використовуємо динамічний базовий URL */}
+              <Route path={`${import.meta.env.BASE_URL}`} element={<Home />} />
+              <Route path={`${import.meta.env.BASE_URL}checkout`} element={<Checkout onCloseCart={() => setIsCartOpen(false)} />} />
+              <Route path={`${import.meta.env.BASE_URL}auth`} element={<Auth />} />
+              <Route path={`${import.meta.env.BASE_URL}about`} element={<About />} />
+              <Route path={`${import.meta.env.BASE_URL}delivery`} element={<Delivery />} />
+              <Route path={`${import.meta.env.BASE_URL}contacts`} element={<Contacts />} />
             </Routes>
           </div>
 

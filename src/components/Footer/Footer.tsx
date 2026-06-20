@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
 
         {/* Клікабельний брендинг зі стилями як у хедері */}
         <div className={styles.brand}>
-          <h3 className={styles.logo} onClick={() => navigate('/')}>
+          <h3 className={styles.logo} onClick={() => navigate(`${import.meta.env.BASE_URL}`)}>
             MELORIA<span className={styles.star}>✦</span>
           </h3>
           <p>Преміальні подарунки та аксесуари</p>

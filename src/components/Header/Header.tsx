@@ -28,17 +28,17 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
         </button>
 
 
-        <div className={styles.logo} onClick={() => navigate('/')}>
+        <div className={styles.logo} onClick={() => navigate(`${import.meta.env.BASE_URL}`)}>
           MELORIA<span className={styles.star}>✦</span>
         </div>
 
         <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
 
           <ul className={styles.navList}>
-            <li><Link to="/" className={styles.navLink}>Каталог</Link></li>
-            <li><Link to="/about" className={styles.navLink}>Про нас</Link></li>
-            <li><Link to="/delivery" className={styles.navLink}>Доставка та оплата</Link></li>
-            <li><Link to="/contacts" className={styles.navLink}>Контакти</Link></li>
+            <li><Link to={`${import.meta.env.BASE_URL}`} className={styles.navLink}>Каталог</Link></li>
+            <li><Link to={`${import.meta.env.BASE_URL}about`} className={styles.navLink}>Про нас</Link></li>
+            <li><Link to={`${import.meta.env.BASE_URL}delivery`} className={styles.navLink}>Доставка та оплата</Link></li>
+            <li><Link to={`${import.meta.env.BASE_URL}contacts`} className={styles.navLink}>Контакти</Link></li>
           </ul>
         </nav>
 
