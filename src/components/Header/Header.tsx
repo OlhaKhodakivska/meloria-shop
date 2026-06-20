@@ -1,15 +1,24 @@
 // src/components/Header/Header.tsx
 import React, { useState } from 'react';
 import { ShoppingBag, User, Menu, X } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
 import styles from './Header.module.css';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // Імпортуємо Link замість звичайного тегу <a>
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  onCartOpen: () => void; // Додали пропс для відкриття кошика
+}
+
+export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
+  const navigate = useNavigate();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { totalItems } = useCart();
 
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        {/* Бургер-меню для мобільних */}
         <button
           className={styles.burger}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -18,29 +27,30 @@ export const Header: React.FC = () => {
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        {/* Наш преміальний Логотип */}
-        <div className={styles.logo}>
-          VELORIA<span className={styles.star}>✦</span>
+
+        <div className={styles.logo} onClick={() => navigate('/')}>
+          MELORIA<span className={styles.star}>✦</span>
         </div>
 
-        {/* Навігація (Адаптивна) */}
         <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
+
           <ul className={styles.navList}>
-            <li><a href="#" className={styles.navLink}>Каталог</a></li>
-            <li><a href="#" className={styles.navLink}>Про нас</a></li>
-            <li><a href="#" className={styles.navLink}>Доставка та оплата</a></li>
-            <li><a href="#" className={styles.navLink}>Контакти</a></li>
+            <li><Link to="/" className={styles.navLink}>Каталог</Link></li>
+            <li><Link to="/about" className={styles.navLink}>Про нас</Link></li>
+            <li><Link to="/delivery" className={styles.navLink}>Доставка та оплата</Link></li>
+            <li><Link to="/contacts" className={styles.navLink}>Контакти</Link></li>
           </ul>
         </nav>
 
-        {/* Іконки користувача та кошика */}
         <div className={styles.actions}>
-          <button className={styles.actionBtn} aria-label="Profile">
+          <button className={styles.actionBtn} onClick={() => navigate('/auth')} aria-label="Profile">
             <User size={22} />
           </button>
-          <button className={styles.actionBtn} aria-label="Cart">
+
+          {/* Додали onClick={onCartOpen} на кнопку кошика */}
+          <button className={styles.actionBtn} onClick={onCartOpen} aria-label="Cart">
             <ShoppingBag size={22} />
-            <span className={styles.cartBadge}>0</span>
+            <span className={styles.cartBadge}>{totalItems}</span>
           </button>
         </div>
       </div>

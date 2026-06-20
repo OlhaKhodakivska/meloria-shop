@@ -1,8 +1,8 @@
 // src/components/ProductCard/ProductCard.tsx
-// src/components/ProductCard/ProductCard.tsx
 import React from 'react';
 import { ShoppingCart } from 'lucide-react';
-import type { Product } from '../../types/product'; // Додали слово type перед Product
+import type { Product } from '../../types/product';
+import { useCart } from '../../context/CartContext'; // Імпортуємо хук кошика
 import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
@@ -10,6 +10,8 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { addToCart } = useCart(); // Беремо функцію додавання
+
   return (
     <div className={styles.card}>
       <div className={styles.imageWrapper}>
@@ -23,7 +25,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         <div className={styles.footer}>
           <span className={styles.price}>{product.price} ₴</span>
-          <button className={styles.buyButton} aria-label="Add to cart">
+          {/* Додаємо подію onClick */}
+          <button
+            className={styles.buyButton}
+            onClick={() => addToCart(product)}
+            aria-label="Add to cart"
+          >
             <ShoppingCart size={18} />
             <span>До кошика</span>
           </button>

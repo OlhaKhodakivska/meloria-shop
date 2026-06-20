@@ -1,0 +1,85 @@
+/* src/components/Footer/Footer.module.css */
+.footer {
+  background-color: var(--color-bg-deep);
+  color: var(--color-text-silver);
+  padding: 40px 20px;
+  margin-top: auto; /* Допомагає притискати футер до низу на коротких сторінках */
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Стилі для логотипу у футері */
+.logo {
+  font-size: 24px;              /* Трохи крупніший шрифт для акценту */
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-white);    /* Білий колір, щоб світився на темному тлі */
+  cursor: pointer;
+  display: inline-block;        /* Щоб ефект hover працював чітко по тексту */
+  transition: opacity 0.2s ease;
+  margin-bottom: 5px;           /* Відступ до підпису знизу */
+}
+
+.logo:hover {
+  opacity: 0.8;                 /* Ефект при наведенні курсору */
+}
+
+/* Зірочка в логотипі */
+.star {
+  color: #e2b857;               /* Наш фірмовий золотавий колір */
+  font-size: 18px;
+  margin-left: 2px;
+  vertical-align: super;        /* Трішки піднята догори */
+}
+
+.brand h3 {
+  font-size: 18px;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.brand p {
+  font-size: 13px;
+  color: var(--color-gray);
+}
+
+.brandLegal {
+  font-weight: 500;
+  color: var(--color-text-silver);
+}
+
+.fopName {
+  font-size: 13px;
+  color: var(--color-gray);
+  margin-top: 2px;
+}
+
+.info {
+  text-align: right;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.copy {
+  font-size: 12px;
+  color: var(--color-gray);
+  margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+    text-align: center;
+  }
+  .info {
+    text-align: center;
+  }
+}

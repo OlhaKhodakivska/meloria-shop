@@ -1,45 +1,48 @@
 // src/App.tsx
-import React from 'react';
+import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header/Header';
-import { ProductCard } from './components/ProductCard/ProductCard';
-import { MOCK_PRODUCTS } from './data/products';
+import { CartDrawer } from './components/CartDrawer/CartDrawer';
+import { Home } from './pages/Home';
+import { Checkout } from './pages/Checkout/Checkout';
+import { CartProvider } from './context/CartContext';
+import { Auth } from './pages/Auth/Auth';
+import { About } from './pages/About';
+import { Delivery } from './pages/Delivery';
+import { Contacts } from './pages/Contacts';
+import { Footer } from './components/Footer/Footer';
 
 function App() {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
   return (
-    <>
-      <Header />
+    <BrowserRouter>
+      <CartProvider>
+        {/* Головна обгортка для притискання футера */}
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
 
-      {/* Головний контейнер сайту */}
-      <main style={{
-        marginTop: '100px',
-        padding: '0 20px 40px 20px',
-        maxWidth: '1200px',
-        margin: '100px auto 40px auto'
-      }}>
+          {/* Глобальні компоненти інтерфейсу (шапка та кошик) */}
+          <Header onCartOpen={() => setIsCartOpen(true)} />
+          <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
-        {/* Секція заголовку каталогу */}
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h2 style={{ color: '#102346', fontSize: '28px', fontWeight: 700, letterSpacing: '0.5px' }}>
-            Наші Бестселери
-          </h2>
-          <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>
-            Преміальні подарунки та аксесуари для вашого затишку
-          </p>
+          {/* Контентна зона, яка розтягується і штовхає футер донизу */}
+          <div style={{ flexGrow: 1 }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/checkout" element={<Checkout onCloseCart={() => setIsCartOpen(false)} />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/delivery" element={<Delivery />} />
+              <Route path="/contacts" element={<Contacts />} />
+            </Routes>
+          </div>
+
+          {/* Наш новий стильний футер */}
+          <Footer />
+
         </div>
-
-        {/* Адаптивна CSS Grid-сітка товарів */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '30px'
-        }}>
-          {MOCK_PRODUCTS.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-
-      </main>
-    </>
+      </CartProvider>
+    </BrowserRouter>
   );
 }
 

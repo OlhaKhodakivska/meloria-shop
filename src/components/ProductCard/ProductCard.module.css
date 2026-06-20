@@ -3,7 +3,8 @@
   background-color: var(--color-white);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(16, 35, 70, 0.05); /* Легка синява в тінях */
+  box-shadow: 0 4px 20px rgba(16, 35, 70, 0.05);
+  /* Легка синява в тінях */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -17,7 +18,8 @@
 
 .imageWrapper {
   width: 100%;
-  padding-top: 100%; /* Робить блок ідеально квадратним (1:1) */
+  padding-top: 100%;
+  /* Робить блок ідеально квадратним (1:1) */
   position: relative;
   background-color: var(--color-gray-light);
   overflow: hidden;
@@ -34,7 +36,8 @@
 }
 
 .card:hover .image {
-  transform: scale(1.05); /* Легкий зум фото при наведенні */
+  transform: scale(1.05);
+  /* Легкий зум фото при наведенні */
 }
 
 .info {
@@ -56,7 +59,8 @@
 .title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--color-bg-deep); /* Глибокий синій для назви */
+  color: var(--color-bg-deep);
+  /* Глибокий синій для назви */
   margin-bottom: 10px;
   line-height: 1.4;
 }
@@ -67,13 +71,15 @@
   line-height: 1.5;
   margin-bottom: 20px;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Обрізає опис до 2 рядків, якщо він задовгий */
+  -webkit-line-clamp: 2;
+  /* Обрізає опис до 2 рядків, якщо він задовгий */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .footer {
-  margin-top: auto; /* Притискає ціну та кнопку до низу картки */
+  margin-top: auto;
+  /* Притискає ціну та кнопку до низу картки */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -87,8 +93,10 @@
 }
 
 .buyButton {
-  background-color: var(--color-bg-deep); /* Глибокий синій */
-  color: var(--color-text-silver);       /* Срібний текст */
+  background-color: var(--color-bg-deep);
+  /* Глибокий синій */
+  color: var(--color-text-silver);
+  /* Срібний текст */
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
@@ -102,7 +110,8 @@
 }
 
 .buyButton:hover {
-  background-color: #1a3563; /* Трохи світліший синій на ховері */
+  background-color: #1a3563;
+  /* Трохи світліший синій на ховері */
   color: var(--color-white);
 }
 
@@ -112,8 +121,28 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
   .buyButton {
     width: 100%;
     justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .info {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 14px;
+  }
+
+  .price {
+    font-size: 16px;
+  }
+
+  .buyButton {
+    padding: 8px 10px;
+    font-size: 12px;
   }
 }
