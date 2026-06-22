@@ -4,7 +4,7 @@
   margin: 120px auto 60px auto;
   padding: 40px;
   background-color: var(--color-white);
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 4px 20px rgba(16, 35, 70, 0.04);
 }
 
@@ -41,7 +41,7 @@
   font-size: 15px;
   line-height: 1.7;
   margin-bottom: 8px;
-  list-style-type: cubic-bezier; /* або просто маркер */
+  list-style-type: disc;
 }
 
 /* Стилі для клікабельних контактів */
@@ -57,4 +57,25 @@
 .link:hover {
   color: #1a3563; /* Трохи інший відтінок при наведенні */
   border-bottom-color: #1a3563; /* Лінія стає видимою */
+}
+
+@media (max-width: 640px) {
+  .container {
+    margin: 88px 14px 40px;
+    padding: 22px 18px;
+  }
+
+  .title {
+    font-size: 23px;
+    margin-bottom: 20px;
+  }
+
+  .content h3 {
+    font-size: 16px;
+  }
+
+  .content p,
+  .content li {
+    font-size: 14.5px;
+  }
 }

@@ -1,7 +1,7 @@
 /* src/pages/Checkout/Checkout.module.css */
 .pageWrapper {
   max-width: var(--max-width);
-  margin: 110px auto 60px auto;
+  margin: 108px auto 60px;
   padding: 0 20px;
 }
 
@@ -21,7 +21,7 @@
 
 .formCard, .summaryCard {
   background-color: var(--color-white);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 30px;
   box-shadow: 0 4px 20px rgba(16, 35, 70, 0.04);
 }
@@ -57,9 +57,10 @@
   padding: 12px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 16px;
   outline: none;
   transition: border-color 0.2s;
+  min-height: 46px;
 }
 
 .inputGroup input:focus {
@@ -79,6 +80,7 @@
   gap: 10px;
   font-size: 15px;
   cursor: pointer;
+  line-height: 1.45;
 }
 
 .radioLabel input {
@@ -99,6 +101,7 @@
   cursor: pointer;
   margin-top: 20px;
   transition: background-color 0.2s;
+  min-height: 50px;
 }
 
 .submitOrderBtn:hover:not(:disabled) {
@@ -139,6 +142,7 @@
 
 .summaryItemInfo {
   flex-grow: 1;
+  min-width: 0;
 }
 
 .summaryItemInfo h4 {
@@ -188,7 +192,7 @@
 .successCard {
   background-color: var(--color-white);
   padding: 40px;
-  border-radius: 12px;
+  border-radius: 8px;
   text-align: center;
   max-width: 500px;
   box-shadow: 0 4px 20px rgba(16, 35, 70, 0.06);
@@ -219,14 +223,78 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+  min-height: 46px;
 }
 
 /* АДАПТИВНІСТЬ ДЛЯ ПЛАНШЕТІВ ТА ТЕЛЕФОНІВ */
 @media (max-width: 900px) {
   .checkoutLayout {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
   .summaryCard {
     order: -1; /* Відображає замовлення зверху на мобільних, щоб клієнт бачив суму */
+  }
+}
+
+@media (max-width: 640px) {
+  .pageWrapper {
+    margin: 88px auto 40px;
+    padding: 0 14px;
+  }
+
+  .pageTitle {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .formCard, .summaryCard {
+    padding: 18px;
+  }
+
+  .sectionTitle,
+  .summaryTitle {
+    font-size: 16px;
+  }
+
+  .radioLabel {
+    align-items: flex-start;
+    padding: 8px 0;
+    font-size: 14.5px;
+  }
+
+  .summaryItem {
+    align-items: flex-start;
+  }
+
+  .summaryItem img {
+    width: 46px;
+    height: 46px;
+  }
+
+  .summaryItemInfo h4 {
+    font-size: 13.5px;
+  }
+
+  .itemSum {
+    font-size: 13.5px;
+    white-space: nowrap;
+  }
+
+  .totalRow {
+    font-size: 15px;
+  }
+
+  .totalPrice {
+    font-size: 20px;
+  }
+
+  .successContainer {
+    min-height: calc(100dvh - 64px);
+    padding: 88px 14px 40px;
+  }
+
+  .successCard {
+    padding: 28px 20px;
   }
 }

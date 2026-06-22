@@ -1,7 +1,7 @@
 /* src/components/ProductCard/ProductCard.module.css */
 .card {
   background-color: var(--color-white);
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(16, 35, 70, 0.05);
   /* Легка синява в тінях */
@@ -107,6 +107,8 @@
   align-items: center;
   gap: 8px;
   transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .buyButton:hover {
@@ -115,34 +117,66 @@
   color: var(--color-white);
 }
 
+.buyButtonActive {
+  background-color: #2d538c;
+  color: var(--color-white);
+}
+
+.buyButtonActive:hover {
+  background-color: #3a629e;
+}
+
+.quantityBadge {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.18);
+  color: var(--color-white);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
 /* Адаптивність для кнопок на дуже маленьких екранах */
-@media (max-width: 375px) {
+@media (max-width: 640px) {
   .footer {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
   }
 
   .buyButton {
     width: 100%;
     justify-content: center;
+    min-height: 42px;
   }
 }
 
 @media (max-width: 480px) {
   .info {
-    padding: 12px;
+    padding: 13px;
   }
 
   .title {
-    font-size: 14px;
+    font-size: 14.5px;
+    line-height: 1.35;
   }
 
   .price {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .buyButton {
-    padding: 8px 10px;
-    font-size: 12px;
+    padding: 9px 10px;
+    font-size: 13px;
+  }
+
+  .description {
+    font-size: 13px;
+    margin-bottom: 16px;
   }
 }

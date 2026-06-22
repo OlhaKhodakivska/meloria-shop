@@ -1,6 +1,7 @@
 /* src/pages/Auth/Auth.module.css */
 .authContainer {
-  min-height: 85vh;
+  min-height: calc(100vh - 70px);
+  min-height: calc(100dvh - 70px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,7 +14,7 @@
   width: 100%;
   max-width: 420px;
   padding: 40px 35px;
-  border-radius: 16px;
+  border-radius: 8px;
   box-shadow: 0 10px 30px rgba(16, 35, 70, 0.05);
 }
 
@@ -103,9 +104,10 @@
   padding: 12px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 16px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 46px;
 }
 
 .inputGroup input:focus {
@@ -139,9 +141,43 @@
   cursor: pointer;
   margin-top: 10px;
   transition: background-color 0.2s;
+  min-height: 48px;
 }
 
 .submitBtn:hover {
   background-color: #1a3563;
   color: var(--color-white);
+}
+
+@media (max-width: 480px) {
+  .authContainer {
+    align-items: flex-start;
+    padding: 88px 14px 36px;
+    margin-top: 0;
+  }
+
+  .authCard {
+    padding: 28px 18px;
+  }
+
+  .brandHeader {
+    margin-bottom: 24px;
+  }
+
+  .brandHeader h2 {
+    font-size: 24px;
+  }
+
+  .tabs {
+    margin-bottom: 20px;
+  }
+
+  .tabBtn {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .form {
+    gap: 15px;
+  }
 }

@@ -1,31 +1,34 @@
 // src/context/CartContext.tsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Product } from '../types/product';
 import type { CartItem } from '../types/cart';
+import { CartContext } from './cartContextValue';
 
-interface CartContextType {
-  cartItems: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  totalItems: number;
-  totalPrice: number;
-}
-
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CART_STORAGE_KEY = 'meloria_cart';
+const LEGACY_CART_STORAGE_KEY = 'veloria_cart';
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // ЛОГІКА ЗЧИТУВАННЯ: При запуск додатка перевіряємо, чи є щось у localStorage
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    const savedCart = localStorage.getItem('veloria_cart');
-    // Якщо знайшли збережений кошик — парсимо його з рядка в масив, якщо ні — повертаємо порожній масив []
-    return savedCart ? JSON.parse(savedCart) : [];
+    try {
+      const savedCart =
+        localStorage.getItem(CART_STORAGE_KEY) ||
+        localStorage.getItem(LEGACY_CART_STORAGE_KEY);
+
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch {
+      return [];
+    }
   });
 
   // ЛОГІКА ЗБЕРЕЖЕННЯ: Щоразу, коли масив cartItems змінюється, записуємо його в localStorage
   useEffect(() => {
-    localStorage.setItem('veloria_cart', JSON.stringify(cartItems));
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+      localStorage.removeItem(LEGACY_CART_STORAGE_KEY);
+    } catch {
+      // Кошик все одно працює в пам'яті, навіть якщо браузер заборонив localStorage.
+    }
   }, [cartItems]);
 
   // Рахуємо загальну кількість товарів у кошику
@@ -77,12 +80,4 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </CartContext.Provider>
   );
-};
-
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
 };

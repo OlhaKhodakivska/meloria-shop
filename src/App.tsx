@@ -30,7 +30,7 @@ function App() {
             <Routes>
               {/* Використовуємо динамічний базовий URL */}
               <Route path={`${import.meta.env.BASE_URL}`} element={<Home />} />
-              <Route path={`${import.meta.env.BASE_URL}checkout`} element={<Checkout onCloseCart={() => setIsCartOpen(false)} />} />
+              <Route path={`${import.meta.env.BASE_URL}checkout`} element={<Checkout />} />
               <Route path={`${import.meta.env.BASE_URL}auth`} element={<Auth />} />
               <Route path={`${import.meta.env.BASE_URL}about`} element={<About />} />
               <Route path={`${import.meta.env.BASE_URL}delivery`} element={<Delivery />} />

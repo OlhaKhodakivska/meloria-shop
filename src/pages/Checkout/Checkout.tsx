@@ -1,16 +1,13 @@
 // src/pages/Checkout/Checkout.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../context/cartContextValue';
 import styles from './Checkout.module.css';
 
-interface CheckoutProps {
-  onCloseCart: () => void;
-}
-
-export const Checkout: React.FC<CheckoutProps> = ({ onCloseCart }) => {
+export const Checkout: React.FC = () => {
   const { cartItems, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
+  const baseUrl = import.meta.env.BASE_URL;
 
   // Стани для полів форми
   const [formData, setFormData] = useState({
@@ -43,8 +40,8 @@ export const Checkout: React.FC<CheckoutProps> = ({ onCloseCart }) => {
         <div className={styles.successCard}>
           <div className={styles.successIcon}>✦</div>
           <h2>Дякуємо за замовлення!</h2>
-          <p>Менеджер бренду <strong>VELORIA</strong> зв'яжеться з вами найближчим часом для підтвердження.</p>
-          <button onClick={() => navigate('/')} className={styles.homeBtn}>Повернутись до магазину</button>
+          <p>Менеджер бренду <strong>MELORIA</strong> зв'яжеться з вами найближчим часом для підтвердження.</p>
+          <button onClick={() => navigate(baseUrl)} className={styles.homeBtn} type="button">Повернутись до магазину</button>
         </div>
       </div>
     );
@@ -164,7 +161,7 @@ export const Checkout: React.FC<CheckoutProps> = ({ onCloseCart }) => {
                 ))}
               </div>
 
-              <div className={styles.divider}></div>
+              <div className={styles.divider} />
               <div className={styles.totalRow}>
                 <span>Всього до сплати:</span>
                 <span className={styles.totalPrice}>{totalPrice} ₴</span>

@@ -23,11 +23,12 @@
 .logo {
   font-size: 24px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1.4px;
   user-select: none;
   cursor: pointer;
   display: flex;
   align-items: center;
+  color: var(--color-white);
 }
 
 .star {
@@ -46,7 +47,7 @@
   font-size: 15px;
   font-weight: 400;
   transition: color 0.3s ease;
-  letter-spacing: 0.5px;
+  letter-spacing: 0;
 }
 
 .navLink:hover {
@@ -64,9 +65,14 @@
   border: none;
   color: var(--color-text-silver);
   cursor: pointer;
-  padding: 5px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
   position: relative;
   transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .actionBtn:hover {
@@ -95,22 +101,41 @@
   border: none;
   color: var(--color-text-silver);
   cursor: pointer;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Мобільна адаптивність (Планшети та Телефони) */
 @media (max-width: 768px) {
+  .container {
+    height: 64px;
+    padding: 0 14px;
+  }
+
   .burger {
-    display: block;
+    display: inline-flex;
+  }
+
+  .logo {
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+
+  .actions {
+    gap: 4px;
   }
 
   .nav {
     position: fixed;
-    top: 70px;
+    top: 64px;
     left: -100%;
     width: 100%;
-    height: calc(100vh - 70px);
+    height: calc(100dvh - 64px);
     background-color: var(--color-bg-deep);
     transition: left 0.3s ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   .navOpen {
@@ -119,12 +144,18 @@
 
   .navList {
     flex-direction: column;
-    align-items: center;
-    padding-top: 5px;
-    gap: 40px;
+    align-items: stretch;
+    padding: 18px 16px;
+    gap: 6px;
   }
 
   .navLink {
-    font-size: 20px;
+    display: block;
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    background-color: rgba(255, 255, 255, 0.04);
   }
 }

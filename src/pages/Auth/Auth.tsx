@@ -8,6 +8,7 @@ type AuthMode = 'login' | 'register';
 export const Auth: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
   const navigate = useNavigate();
+  const baseUrl = import.meta.env.BASE_URL;
 
   // Спільні стани для полів
   const [email, setEmail] = useState('');
@@ -21,7 +22,7 @@ export const Auth: React.FC = () => {
     if (mode === 'login') {
       console.log('Вхід користувача:', { email, password });
       // Тут у майбутньому буде фетч до вашого бекенду / API авторизації
-      alert('Успішний вхід у профіль VELORIA!');
+      alert('Успішний вхід у профіль MELORIA!');
     } else {
       if (password !== confirmPassword) {
         alert('Паролі не збігаються!');
@@ -32,7 +33,7 @@ export const Auth: React.FC = () => {
     }
 
     // Після успішної дії повертаємо клієнта на головну сторінку
-    navigate('/');
+    navigate(baseUrl);
   };
 
   return (
@@ -40,7 +41,7 @@ export const Auth: React.FC = () => {
       <div className={styles.authCard}>
         {/* Заголовок бренду */}
         <div className={styles.brandHeader}>
-          <h2>VELORIA<span className={styles.star}>✦</span></h2>
+          <h2>MELORIA<span className={styles.star}>✦</span></h2>
           <p>Ваш персональний простір естетики</p>
         </div>
 

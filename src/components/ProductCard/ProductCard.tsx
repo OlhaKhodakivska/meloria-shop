@@ -2,7 +2,7 @@
 import React from 'react';
 import { ShoppingCart } from 'lucide-react';
 import type { Product } from '../../types/product';
-import { useCart } from '../../context/CartContext'; // Імпортуємо хук кошика
+import { useCart } from '../../context/cartContextValue'; // Імпортуємо хук кошика
 import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
@@ -10,7 +10,9 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { addToCart } = useCart(); // Беремо функцію додавання
+  const { addToCart, cartItems } = useCart(); // Беремо функцію додавання
+  const productQuantity = cartItems.find((item) => item.product.id === product.id)?.quantity ?? 0;
+  const isInCart = productQuantity > 0;
 
   return (
     <div className={styles.card}>
@@ -27,12 +29,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <span className={styles.price}>{product.price} ₴</span>
           {/* Додаємо подію onClick */}
           <button
-            className={styles.buyButton}
+            className={`${styles.buyButton} ${isInCart ? styles.buyButtonActive : ''}`}
             onClick={() => addToCart(product)}
-            aria-label="Add to cart"
+            aria-label={isInCart ? `У кошику ${productQuantity} шт.` : 'Додати до кошика'}
+            type="button"
           >
             <ShoppingCart size={18} />
-            <span>До кошика</span>
+            <span>{isInCart ? 'У кошику' : 'До кошика'}</span>
+            {isInCart && <span className={styles.quantityBadge}>{productQuantity}</span>}
           </button>
         </div>
       </div>

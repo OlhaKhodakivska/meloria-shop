@@ -7,6 +7,7 @@ export const Footer: React.FC = () => {
   const navigate = useNavigate(); // Ініціалізуємо навігацію
   const currentYear = new Date().getFullYear();
   const displayYear = currentYear > 2026 ? `2026-${currentYear}` : '2026';
+  const baseUrl = import.meta.env.BASE_URL;
 
   return (
     <footer className={styles.footer}>
@@ -14,7 +15,7 @@ export const Footer: React.FC = () => {
 
         {/* Клікабельний брендинг зі стилями як у хедері */}
         <div className={styles.brand}>
-          <h3 className={styles.logo} onClick={() => navigate(`${import.meta.env.BASE_URL}`)}>
+          <h3 className={styles.logo} onClick={() => navigate(baseUrl)}>
             MELORIA<span className={styles.star}>✦</span>
           </h3>
           <p>Преміальні подарунки та аксесуари</p>

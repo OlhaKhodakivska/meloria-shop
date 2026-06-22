@@ -1,6 +1,6 @@
 /* src/index.css */
 :root {
-  /* Фірмові кольори VELORIA */
+  /* Фірмові кольори MELORIA */
   --color-bg-deep: #102346;     /* Глибокий синій */
   --color-text-silver: #D9DDE3; /* Срібний */
 
@@ -20,12 +20,18 @@
   padding: 0;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font-main);
   background-color: var(--color-gray-light);
   color: var(--color-dark);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 a {
@@ -35,4 +41,13 @@ a {
 
 ul {
   list-style: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
 }
