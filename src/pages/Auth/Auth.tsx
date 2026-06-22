@@ -69,7 +69,7 @@ export const Auth: React.FC = () => {
               <input
                 type="text" id="auth-name" required
                 value={name} onChange={(e) => setName(e.target.value)}
-                placeholder="Ольга"
+                placeholder="Ім'я Прізвище"
               />
             </div>
           )}

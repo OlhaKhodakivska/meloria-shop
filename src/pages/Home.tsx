@@ -9,7 +9,7 @@ export const Home: React.FC = () => {
     <main className={styles.main}>
       <div className={styles.heading}>
         <h2 className={styles.title}>Наші Бестселери</h2>
-        <p className={styles.subtitle}>Преміальні подарунки та аксесуари для вашого затишку</p>
+        <p className={styles.subtitle}>Подарунки та аксесуари для вашого затишку</p>
       </div>
 
       <div className={styles.productGrid}>

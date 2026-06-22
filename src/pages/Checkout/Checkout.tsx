@@ -40,7 +40,7 @@ export const Checkout: React.FC = () => {
         <div className={styles.successCard}>
           <div className={styles.successIcon}>✦</div>
           <h2>Дякуємо за замовлення!</h2>
-          <p>Менеджер бренду <strong>MELORIA</strong> зв'яжеться з вами найближчим часом для підтвердження.</p>
+          <p>Менеджер <strong>MELORIA</strong> зв'яжеться з вами найближчим часом для підтвердження.</p>
           <button onClick={() => navigate(baseUrl)} className={styles.homeBtn} type="button">Повернутись до магазину</button>
         </div>
       </div>

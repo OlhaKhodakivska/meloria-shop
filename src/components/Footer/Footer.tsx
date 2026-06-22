@@ -18,7 +18,7 @@ export const Footer: React.FC = () => {
           <h3 className={styles.logo} onClick={() => navigate(baseUrl)}>
             MELORIA<span className={styles.star}>✦</span>
           </h3>
-          <p>Преміальні подарунки та аксесуари</p>
+          <p>Подарунки, аксесуари та декор для дому</p>
         </div>
 
         <div className={styles.info}>
