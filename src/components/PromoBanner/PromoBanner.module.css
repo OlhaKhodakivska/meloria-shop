@@ -1,0 +1,49 @@
+/* src/components/PromoBanner/PromoBanner.module.css */
+.bannerSection {
+  padding: 40px;
+  background-color: #fff;
+}
+
+.bannerContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: url('../../images/banner.png'); /* Темно-синій градієнт поверх фото подарунка */
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  padding: 60px;
+  color: #fff;
+  margin-bottom: 60px;
+}
+
+.content {
+  max-width: 500px;
+}
+
+.title {
+  font-size: 25px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  font-family: inherit;
+}
+
+.subtitle {
+  color: #b3c1d1;
+  font-size: 17px;
+  margin: 0 0 30px 0;
+}
+
+.detailsBtn {
+  background-color: #fff;
+  color: #102346;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.detailsBtn:hover {
+  opacity: 0.9;
+}
