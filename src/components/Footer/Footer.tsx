@@ -1,32 +1,91 @@
 // src/components/Footer/Footer.tsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Імпортуємо useNavigate
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 
 export const Footer: React.FC = () => {
-  const navigate = useNavigate(); // Ініціалізуємо навігацію
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   const displayYear = currentYear > 2026 ? `2026-${currentYear}` : '2026';
-  const baseUrl = import.meta.env.BASE_URL;
+
+  const handleLogoClick = () => {
+    navigate(`${import.meta.env.BASE_URL}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <footer className={styles.footer}>
-      <div className={styles.container}>
-
-        {/* Клікабельний брендинг зі стилями як у хедері */}
-        <div className={styles.brand}>
-          <h3 className={styles.logo} onClick={() => navigate(baseUrl)}>
+      <div className={styles.topSection}>
+        {/* Стовпчик 1: Брендинг та соцмережі */}
+        <div className={styles.columnBrand}>
+          <h3 className={styles.logo} onClick={handleLogoClick}>
             MELORIA<span className={styles.star}>✦</span>
           </h3>
-          <p>Подарунки, аксесуари та декор для дому</p>
+          <p className={styles.brandDescription}>
+            Подарунки, які створюють емоції та залишають приємні спогади.
+          </p>
+          <div className={styles.socials}>
+            {/* Instagram */}
+            <a href="https://instagram.com/meloria.shop" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+            {/* Facebook */}
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            {/* TikTok */}
+            <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+            </a>
+          </div>
         </div>
 
-        <div className={styles.info}>
-          <p className={styles.brandLegal}>Інтернет-магазин MELORIA</p>
-          <p className={styles.fopName}>ФОП Ходаківська О. С.</p>
-          <p className={styles.copy}>&copy; {displayYear} Всі права захищені.</p>
+        {/* Стовпчик 2: Покупцям */}
+        <div className={styles.column}>
+          <h4>Покупцям</h4>
+          <ul>
+            <li><Link to={`${import.meta.env.BASE_URL}`}>Каталог</Link></li>
+            <li><Link to={`${import.meta.env.BASE_URL}delivery`}>Доставка та оплата</Link></li>
+            <li><a href="#return" onClick={(e) => e.preventDefault()}>Повернення та обмін</a></li>
+            <li><a href="#faq" onClick={(e) => e.preventDefault()}>Питання та відповіді</a></li>
+          </ul>
         </div>
 
+        {/* Стовпчик 3: Інформація */}
+        <div className={styles.column}>
+          <h4>Інформація</h4>
+          <ul>
+            <li><Link to={`${import.meta.env.BASE_URL}about`}>Про нас</Link></li>
+            <li><Link to={`${import.meta.env.BASE_URL}contacts`}>Контакти</Link></li>
+            <li><a href="#privacy" onClick={(e) => e.preventDefault()}>Політика конфиденційності</a></li>
+            <li><a href="#terms" onClick={(e) => e.preventDefault()}>Умови користування</a></li>
+          </ul>
+        </div>
+
+        {/* Стовпчик 4: Підписка */}
+        <div className={styles.columnSubscribe}>
+          <h4>Підпишіться на новини</h4>
+          <p>Отримуйте знижки та новинки першими</p>
+          <form className={styles.subscribeForm} onSubmit={(e) => e.preventDefault()}>
+            <input type="email" placeholder="Ваш email" required />
+            <button type="submit" aria-label="Subscribe">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <hr className={styles.divider} />
+
+      {/* Нижня плашка футера */}
+      <div className={styles.bottomSection}>
+        <div className={styles.legalInfo}>
+          <span>&copy; {displayYear} Meloria. Усі права захищені.</span>
+          <span className={styles.fopSubtext}>ФОП Ходаківська О. С.</span>
+        </div>
+        <div className={styles.madeIn}>
+          Зроблено з <span className={styles.heart}>❤️</span> в Україні <span className={styles.flag}>🇺🇦</span>
+        </div>
       </div>
     </footer>
   );

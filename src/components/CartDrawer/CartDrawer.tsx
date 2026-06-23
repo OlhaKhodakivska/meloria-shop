@@ -11,15 +11,18 @@ interface CartDrawerProps {
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
-  const { cartItems, updateQuantity, removeFromCart, totalPrice } = useCart();
+  // Додали toggleSelect з нашого оновленого контексту!
+  const { cartItems, updateQuantity, removeFromCart, totalPrice, toggleSelect } = useCart();
   const navigate = useNavigate();
   const baseUrl = import.meta.env.BASE_URL;
+
+  // Перевіряємо, чи є хоча б один вибраний товар, щоб активувати кнопку замовлення
+  const hasSelectedItems = cartItems.some(item => item.selected);
 
   if (!isOpen) return null;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      {/* stopPropagation зупиняє закриття кошика при кліку всередині самої панелі */}
       <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h2>Кошик</h2>
@@ -38,7 +41,22 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           ) : (
             <div className={styles.itemsList}>
               {cartItems.map((item) => (
-                <div key={item.product.id} className={styles.item}>
+                /* Якщо товар не вибраний, додаємо клас itemUnselected для красивого затемнення */
+                <div
+                  key={item.product.id}
+                  className={`${styles.item} ${!item.selected ? styles.itemUnselected : ''}`}
+                >
+                  {/* КВАДРАТИК-ЧЕКБОКС ДЛЯ ВИБОРУ ТОВАРУ */}
+                  <label className={styles.checkboxContainer}>
+                    <input
+                      type="checkbox"
+                      checked={item.selected}
+                      onChange={() => toggleSelect(item.product.id)}
+                      className={styles.checkboxInput}
+                    />
+                    <span className={styles.customCheckbox}></span>
+                  </label>
+
                   <img src={item.product.imageUrl} alt={item.product.title} className={styles.itemImg} />
 
                   <div className={styles.itemInfo}>
@@ -87,12 +105,16 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
               <span className={styles.totalPrice}>{totalPrice} ₴</span>
             </div>
             <button
-            className={styles.checkoutBtn}
-            type="button"
-            onClick={() => {
-              onClose();
-              navigate(`${baseUrl}checkout`);
-            }}>
+              className={styles.checkoutBtn}
+              type="button"
+              disabled={!hasSelectedItems} // Блокуємо кнопку, якщо жоден товар не вибрано
+              onClick={() => {
+                if (hasSelectedItems) {
+                  onClose();
+                  navigate(`${baseUrl}checkout`);
+                }
+              }}
+            >
               Оформити замовлення
             </button>
           </div>

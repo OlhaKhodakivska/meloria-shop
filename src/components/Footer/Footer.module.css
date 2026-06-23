@@ -1,91 +1,210 @@
 /* src/components/Footer/Footer.module.css */
 .footer {
-  background-color: #e5e7eb;
-  color: #334155;
-  padding: 40px 20px;
-  border-top: 1px solid #d1d5db;
-  margin-top: auto; /* Допомагає притискати футер до низу на коротких сторінках */
+  background-color: #fcf9f5; /* Ніжний світлий матовий фон з макету */
+  color: #2c3e50;
+  padding: 60px 40px 25px 40px;
+  font-family: inherit;
+  margin-top: auto;
 }
 
-.container {
-  max-width: var(--max-width);
+.topSection {
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 0.8fr 1.2fr;
+  gap: 40px;
+}
+
+.columnBrand {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-bg-deep, #102346);
+  cursor: pointer;
+  margin: 0;
+}
+
+.star {
+  color: #e2b857;
+  font-size: 18px;
+  margin-left: 2px;
+  vertical-align: super;
+}
+
+.brandDescription {
+  font-size: 14px;
+  color: #5d6d7e;
+  line-height: 1.5;
+  max-width: 260px;
+}
+
+.socials {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.socials a {
+  color: #2c3e50;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.socials a:hover {
+  color: var(--color-bg-deep, #102346);
+}
+
+.tiktokIcon {
+  font-size: 18px;
+}
+
+/* Стовпчики меню */
+.column h4, .columnSubscribe h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-bg-deep, #102346);
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.column a {
+  font-size: 14px;
+  color: #5d6d7e;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.column a:hover {
+  color: var(--color-bg-deep, #102346);
+}
+
+/* Стовпчик підписки */
+.columnSubscribe p {
+  font-size: 14px;
+  color: #5d6d7e;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.subscribeForm {
+  display: flex;
+  max-width: 300px;
+  background-color: var(--color-white, #fff);
+  border-radius: 8px;
+  border: 1px solid #e5e8e8;
+  overflow: hidden;
+}
+
+.subscribeForm input {
+  flex: 1;
+  padding: 12px 15px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+}
+
+.subscribeForm button {
+  background-color: var(--color-bg-deep, #102346);
+  border: none;
+  padding: 0 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.subscribeForm button:hover {
+  background-color: #1a3563;
+}
+
+/* Розділювач */
+.divider {
+  border: 0;
+  height: 1px;
+  background-color: #eaeded;
+  margin: 40px 0 20px 0;
+}
+
+/* Нижня секція */
+.bottomSection {
+  max-width: var(--max-width, 1200px);
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-/* Стилі для логотипу у футері */
-.logo {
-  font-size: 24px;              /* Трохи крупніший шрифт для акценту */
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #111827;
-  cursor: pointer;
-  display: inline-block;        /* Щоб ефект hover працював чітко по тексту */
-  transition: opacity 0.2s ease;
-  margin-bottom: 5px;           /* Відступ до підпису знизу */
-}
-
-.logo:hover {
-  opacity: 0.8;                 /* Ефект при наведенні курсору */
-}
-
-/* Зірочка в логотипі */
-.star {
-  color: #b0892d;
-  font-size: 18px;
-  margin-left: 2px;
-  vertical-align: super;        /* Трішки піднята догори */
-}
-
-.brand h3 {
-  font-size: 18px;
-  letter-spacing: 1px;
-  margin-bottom: 5px;
-}
-
-.brand p {
   font-size: 13px;
-  color: #475569;
+  color: #7f8c8d;
 }
 
-.brandLegal {
-  font-weight: 600;
-  color: #1f2937;
+.legalInfo {
+  display: flex;
+  gap: 15px;
+  align-items: center;
 }
 
-.fopName {
-  font-size: 13px;
-  color: #475569;
-  margin-top: 2px;
-}
-
-.info {
-  text-align: right;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.copy {
+.fopSubtext {
   font-size: 12px;
-  color: #64748b;
-  margin-top: 4px;
+  opacity: 0.8;
+}
+
+.madeIn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.heart {
+  color: #e74c3c;
+}
+
+/* Адаптивність під мобільні версії */
+@media (max-width: 900px) {
+  .topSection {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
 }
 
 @media (max-width: 600px) {
-  .footer {
-    padding: 30px 16px;
+  .topSection {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    text-align: center;
   }
-
-  .container {
+  .brandDescription {
+    max-width: 100%;
+  }
+  .socials {
+    justify-content: center;
+  }
+  .subscribeForm {
+    margin: 0 auto;
+  }
+  .bottomSection {
     flex-direction: column;
+    gap: 15px;
     text-align: center;
-    gap: 16px;
   }
-  .info {
-    text-align: center;
+  .legalInfo {
+    flex-direction: column;
+    gap: 5px;
   }
 }

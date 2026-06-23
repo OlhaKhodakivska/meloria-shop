@@ -54,11 +54,87 @@
   color: var(--color-white);
 }
 
+/* Позиціонування елементів у правій частині хедера */
 .actions {
   display: flex;
   align-items: center;
   gap: 15px;
 }
+
+/* Контейнер форми пошуку */
+.searchForm {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.08); /* Легке світле тло на темному фоні хедера */
+  border-radius: 20px;
+  padding: 4px 12px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.searchForm:focus-within {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Поле введення пошуку */
+.searchInput {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--color-white, #fff);
+  font-size: 14px;
+  width: 140px; /* Акуратна ширина за замовчуванням */
+  transition: width 0.3s ease;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* На десктопах можна зробити, щоб інпут елегантно розширювався при фокусі */
+.searchInput:focus {
+  width: 180px;
+}
+
+.searchBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-silver, #b3c1d1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin-left: 5px;
+  transition: color 0.2s;
+}
+
+.searchBtn:hover {
+  color: var(--color-white, #fff);
+}
+
+/* Стиль кружечка-аватарки користувача */
+.avatarBadge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #e2b857; /* Наш золотавий фірмовий акцент */
+  color: #102346;            /* Темно-синій шрифт для контрасту */
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.avatarBadge:hover {
+  transform: scale(1.05);
+}
+
+
 
 .actionBtn {
   background: none;
@@ -157,5 +233,19 @@
     font-size: 16px;
     font-weight: 500;
     background-color: rgba(255, 255, 255, 0.04);
+  }
+}
+
+/* Адаптація пошуку для маленьких екранів */
+@media (max-width: 600px) {
+  .searchInput {
+    width: 80px;
+  }
+  .searchInput:focus {
+    width: 100px;
+  }
+  .searchForm {
+    padding: 4px 8px;
+    gap: 4px;
   }
 }

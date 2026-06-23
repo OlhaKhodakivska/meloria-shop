@@ -1,3 +1,4 @@
+// src/context/cartContextValue.ts
 import { createContext, useContext } from 'react';
 import type { Product } from '../types/product';
 import type { CartItem } from '../types/cart';
@@ -8,6 +9,8 @@ export interface CartContextType {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
+  toggleSelect: (productId: string) => void;        // Додали типізацію для чекбокса
+  clearOrderedItems: () => void;                    // Додали типізацію для очищення купленого
   totalItems: number;
   totalPrice: number;
 }
