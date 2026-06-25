@@ -4,7 +4,6 @@ import styles from './InfoPages.module.css';
 
 const paymentCardNumber = import.meta.env.VITE_PAYMENT_CARD_NUMBER || 'буде надіслано менеджером';
 const paymentIban = import.meta.env.VITE_PAYMENT_IBAN || 'буде надіслано менеджером';
-const paymentRecipient = import.meta.env.VITE_PAYMENT_RECIPIENT || 'MELORIA';
 
 export const ThankYou: React.FC = () => {
   const location = useLocation();
@@ -22,11 +21,13 @@ export const ThankYou: React.FC = () => {
         </p>
 
         <h3>Оплата</h3>
-        <p>Замовлення оплачується за умовами <strong>100% передплати</strong>.</p>
+        <p>
+          Замовлення оплачується за умовами <strong>100% передплати</strong> на
+          номер картки або IBAN.
+        </p>
         <ul>
           <li><strong>Картка:</strong> {paymentCardNumber}</li>
           <li><strong>IBAN:</strong> {paymentIban}</li>
-          <li><strong>Отримувач:</strong> {paymentRecipient}</li>
         </ul>
         <p>
           У призначенні платежу вкажіть номер заявки або ваше ім'я та прізвище.

@@ -13,6 +13,8 @@ type CatalogView = 'featured' | 'all' | 'new';
 const NEW_PRODUCTS_LIMIT = 48;
 const FEATURED_PRODUCTS_LIMIT = 12;
 
+const normalizeSearchText = (value: string) => value.trim().toLocaleLowerCase('uk');
+
 const getProductIdNumber = (productId: string) => {
   const parsedId = Number(productId);
   return Number.isFinite(parsedId) ? parsedId : 0;
@@ -78,6 +80,11 @@ export const Home: React.FC = () => {
     return category && categories.includes(category) && category !== 'Всі' ? category : null;
   }, [categories, searchParams]);
 
+  const searchQuery = useMemo(
+    () => normalizeSearchText(searchParams.get('search') || ''),
+    [searchParams]
+  );
+
   const categoryCards = useMemo(
     () =>
       categories
@@ -128,11 +135,25 @@ export const Home: React.FC = () => {
     navigate(`${baseUrl}?view=all#catalog`);
   };
 
+  const clearSearch = () => {
+    navigate(`${baseUrl}?view=all#catalog`);
+  };
+
   const showCatalogCategory = (category: string) => {
     navigate(`${baseUrl}?view=all&category=${encodeURIComponent(category)}#catalog`);
   };
 
   const filteredProducts = useMemo(() => {
+    if (searchQuery) {
+      return MOCK_PRODUCTS.filter((product) => {
+        const searchableText = normalizeSearchText(
+          `${product.title} ${product.category} ${product.description}`
+        );
+
+        return searchableText.includes(searchQuery);
+      });
+    }
+
     if (catalogView === 'new') {
       return newProducts;
     }
@@ -149,11 +170,13 @@ export const Home: React.FC = () => {
       : activeCategory === 'Всі'
         ? featuredProducts
         : categoryProducts.slice(0, FEATURED_PRODUCTS_LIMIT);
-  }, [activeCategory, catalogView, featuredProducts, newProducts, selectedCatalogCategory]);
+  }, [activeCategory, catalogView, featuredProducts, newProducts, searchQuery, selectedCatalogCategory]);
 
-  const showCategoryCards = catalogView === 'all' && !selectedCatalogCategory;
+  const showCategoryCards = catalogView === 'all' && !selectedCatalogCategory && !searchQuery;
 
-  const titleText = catalogView === 'new'
+  const titleText = searchQuery
+    ? `Пошук: ${searchParams.get('search')?.trim()}`
+    : catalogView === 'new'
     ? 'Новинки'
     : catalogView === 'all'
       ? selectedCatalogCategory || 'Каталог'
@@ -161,9 +184,13 @@ export const Home: React.FC = () => {
       ? 'Хіти продажів'
       : activeCategory;
 
-  const headingActionText = catalogView === 'all' && selectedCatalogCategory
+  const headingActionText = searchQuery
+    ? 'Очистити пошук'
+    : catalogView === 'all' && selectedCatalogCategory
     ? 'Усі категорії'
     : 'Дивитись всі';
+
+  const handleHeadingAction = searchQuery ? clearSearch : showAllProducts;
 
   return (
     <div className={styles.homeWrapper}>
@@ -190,7 +217,7 @@ export const Home: React.FC = () => {
             <ShieldCheck size={28} className={styles.benefitIcon} />
             <div>
               <h4>Безпечна оплата</h4>
-              <p>Онлайн або при отриманні</p>
+              <p>100% передоплата карткою або IBAN</p>
             </div>
           </div>
           <div className={styles.benefitItem}>
@@ -224,7 +251,7 @@ export const Home: React.FC = () => {
       <main className={styles.main} id="catalog">
         <div className={styles.heading}>
           <h2 className={styles.title}>{titleText}</h2>
-          <button className={styles.viewAllBtn} onClick={showAllProducts} type="button">
+          <button className={styles.viewAllBtn} onClick={handleHeadingAction} type="button">
             {headingActionText} <span className={styles.arrow}>→</span>
           </button>
         </div>
@@ -259,9 +286,17 @@ export const Home: React.FC = () => {
           </div>
         ) : (
           <div className={styles.productGrid}>
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            ) : (
+              <div className={styles.emptySearch}>
+                <h3>Нічого не знайдено</h3>
+                <p>Спробуйте інший запит або перегляньте весь каталог.</p>
+                <button onClick={clearSearch} type="button">До каталогу</button>
+              </div>
+            )}
           </div>
         )}
       </main>

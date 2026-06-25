@@ -4,7 +4,7 @@ import { ShoppingBag, User, Menu, X, Search } from 'lucide-react'; // Додал
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { useCart } from '../../context/cartContextValue';
 import styles from './Header.module.css';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 interface HeaderProps {
@@ -30,6 +30,7 @@ const ClerkAccountButton: React.FC<{ onProfileOpen: () => void }> = ({ onProfile
 
 export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // Стан для пошукового запиту
@@ -55,6 +56,11 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setSearchQuery(params.get('search') || '');
+  }, [location.search]);
+
+  useEffect(() => {
     document.body.classList.toggle('menu-open', isMenuOpen);
 
     const handleEscape = (event: KeyboardEvent) => {
@@ -75,8 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Коли буде реалізовано фільтр, ми можемо передавати query в URL, наприклад: /?search=сумка
-      navigate(`${baseUrl}?search=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`${baseUrl}?search=${encodeURIComponent(searchQuery.trim())}#catalog`);
       closeMenu();
     }
   };

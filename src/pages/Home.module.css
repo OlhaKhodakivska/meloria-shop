@@ -103,6 +103,44 @@
   margin-top: 20px;
 }
 
+.emptySearch {
+  grid-column: 1 / -1;
+  min-height: 220px;
+  padding: 48px 24px;
+  border: 1px solid #f0e9e1;
+  border-radius: 8px;
+  background-color: #fcfbfa;
+  color: var(--color-bg-deep);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.emptySearch h3 {
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.emptySearch p {
+  color: var(--color-gray);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.emptySearch button {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--color-bg-deep);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .catalogCategoryGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));

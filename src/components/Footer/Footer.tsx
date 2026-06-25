@@ -48,7 +48,7 @@ export const Footer: React.FC = () => {
           <ul>
             <li><Link to={catalogUrl}>Каталог</Link></li>
             <li><Link to={`${baseUrl}delivery`}>Доставка та оплата</Link></li>
-            <li><a href="#return" onClick={(e) => e.preventDefault()}>Повернення та обмін</a></li>
+            <li><Link to={`${baseUrl}returns-exchange`}>Повернення та обмін</Link></li>
             <li><a href="#faq" onClick={(e) => e.preventDefault()}>Питання та відповіді</a></li>
           </ul>
         </div>
@@ -59,7 +59,7 @@ export const Footer: React.FC = () => {
           <ul>
             <li><Link to={`${baseUrl}about`}>Про нас</Link></li>
             <li><Link to={`${baseUrl}contacts`}>Контакти</Link></li>
-            <li><a href="#privacy" onClick={(e) => e.preventDefault()}>Політика конфиденційності</a></li>
+            <li><a href="#privacy" onClick={(e) => e.preventDefault()}>Політика конфіденційності</a></li>
             <li><a href="#terms" onClick={(e) => e.preventDefault()}>Умови користування</a></li>
           </ul>
         </div>

@@ -7,8 +7,7 @@ import styles from './Checkout.module.css';
 
 const paymentDetails = {
   card: import.meta.env.VITE_PAYMENT_CARD_NUMBER || 'буде надіслано менеджером',
-  iban: import.meta.env.VITE_PAYMENT_IBAN || 'буде надіслано менеджером',
-  recipient: import.meta.env.VITE_PAYMENT_RECIPIENT || 'MELORIA'
+  iban: import.meta.env.VITE_PAYMENT_IBAN || 'буде надіслано менеджером'
 };
 
 export const Checkout: React.FC = () => {
@@ -71,8 +70,8 @@ export const Checkout: React.FC = () => {
         payment_method: formData.payment,
         payment_status: 'awaiting_prepayment',
         payment_details: formData.payment === 'card_prepayment'
-          ? { type: 'card', card: paymentDetails.card, recipient: paymentDetails.recipient }
-          : { type: 'iban', iban: paymentDetails.iban, recipient: paymentDetails.recipient },
+          ? { type: 'card', card: paymentDetails.card }
+          : { type: 'iban', iban: paymentDetails.iban },
         comment: formData.comment.trim(),
         items: orderItems,
         total_amount: selectedTotalPrice,
@@ -192,9 +191,9 @@ export const Checkout: React.FC = () => {
 
           <div className={styles.paymentNotice}>
             <strong>Реквізити для оплати:</strong>
+            <span>Оплата замовлення здійснюється за умовами 100% передоплати.</span>
             <span>Картка: {paymentDetails.card}</span>
             <span>IBAN: {paymentDetails.iban}</span>
-            <span>Отримувач: {paymentDetails.recipient}</span>
           </div>
 
           <div className={styles.inputGroup}>

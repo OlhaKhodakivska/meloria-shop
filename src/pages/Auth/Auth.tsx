@@ -6,6 +6,12 @@ import styles from './Auth.module.css';
 type AuthMode = 'login' | 'register';
 
 const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+const clerkAppearance = {
+  elements: {
+    rootBox: styles.clerkRoot,
+    cardBox: styles.clerkRoot,
+  },
+};
 
 export const Auth: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
@@ -61,13 +67,13 @@ export const Auth: React.FC = () => {
             <SignIn
               routing="hash"
               signUpUrl="#/sign-up"
-              appearance={{ elements: { rootBox: styles.clerkRoot } }}
+              appearance={clerkAppearance}
             />
           ) : (
             <SignUp
               routing="hash"
               signInUrl="#/sign-in"
-              appearance={{ elements: { rootBox: styles.clerkRoot } }}
+              appearance={clerkAppearance}
             />
           )}
         </SignedOut>

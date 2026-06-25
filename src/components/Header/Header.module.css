@@ -12,24 +12,26 @@
 }
 
 .container {
-  max-width: var(--max-width);
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 clamp(18px, 3vw, 48px);
   height: 70px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) auto minmax(260px, 1fr);
   align-items: center;
   gap: 18px;
 }
 
 .logo {
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 30px;
+  font-weight: 400;
   letter-spacing: 1.4px;
   user-select: none;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-self: start;
   color: var(--color-white);
 }
 
@@ -43,6 +45,10 @@
 .navList {
   display: flex;
   gap: 30px;
+}
+
+.nav {
+  justify-self: center;
 }
 
 .mobileMenuHeader,
@@ -66,6 +72,7 @@
 .actions {
   display: flex;
   align-items: center;
+  justify-self: end;
   gap: 10px;
 }
 
@@ -222,6 +229,7 @@
   .container {
     height: 64px;
     padding: 0 12px;
+    display: flex;
     justify-content: space-between;
     gap: 8px;
   }
