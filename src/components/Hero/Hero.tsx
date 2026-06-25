@@ -8,9 +8,10 @@ export const Hero: React.FC = () => {
       <div className={styles.heroContainer}>
         <div className={styles.content}>
           <span className={styles.subtitle}>Стиль. Затишок. Натхнення ✦</span>
-          <h1 className={styles.title}>Для гарних моментів кожного дня</h1>
+          <h1 className={styles.title}>Гарні моменти кожного дня</h1>
           <p className={styles.description}>
-            Подарунки, аксесуари для стилю та товари для затишку в домі. Обирайте з любов'ю.
+            Подарунки, аксесуари для стилю та товари для затишку в домі. Обирайте з любов'ю ❤️
+
           </p>
           <div className={styles.actions}>
             <button className={styles.primaryBtn}>Перейти в каталог</button>

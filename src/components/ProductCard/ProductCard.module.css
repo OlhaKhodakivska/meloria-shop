@@ -150,26 +150,67 @@
 }
 
 @media (max-width: 480px) {
+  .card {
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(16, 35, 70, 0.13);
+  }
+
   .info {
-    padding: 13px;
+    padding: 12px;
+  }
+
+  .category {
+    font-size: 10.5px;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
   }
 
   .title {
-    font-size: 14.5px;
+    font-size: 14px;
     line-height: 1.35;
+    margin-bottom: 8px;
   }
 
   .price {
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .buyButton {
-    padding: 9px 10px;
-    font-size: 13px;
+    min-height: 40px;
+    padding: 8px 9px;
+    font-size: 12.5px;
+    gap: 6px;
   }
 
   .description {
-    font-size: 13px;
-    margin-bottom: 16px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    margin-bottom: 14px;
+    -webkit-line-clamp: 2;
+  }
+
+  .quantityBadge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .info {
+    padding: 10px;
+  }
+
+  .title {
+    font-size: 13.5px;
+  }
+
+  .description {
+    display: none;
+  }
+
+  .footer {
+    gap: 9px;
   }
 }

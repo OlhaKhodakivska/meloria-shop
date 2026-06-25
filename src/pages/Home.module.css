@@ -1,25 +1,22 @@
 /* src/pages/Home.module.css */
-
 /* Базовий контейнер для всієї сторінки */
 .homeWrapper {
   width: 100%;
-  margin-top: 100px; /* Твій оригінальний відступ зверху під хедер */
 }
 
 /* Секція переваг точнісінько вписується в дизайн */
 .benefitsContainer {
-  max-width: var(--max-width);
-  margin: 40px auto 40px;
-  padding: 0 20px;
+  max-width: 100%;
+  padding: 0;
 }
 
 .benefitsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
   gap: 20px;
   background-color: #ececec6b; /* Ніжний матовий беж під макет */
   padding: 24px;
-  border-radius: 16px;
   border: 1px solid #f0e9e1;
 }
 
@@ -50,7 +47,7 @@
 /* Твій оригінальний контейнер .main тепер відповідає суто за блок товарів */
 .main {
   max-width: var(--max-width);
-  margin: 40px auto 40px; /* Зменшили верхній марджин, бо зверху тепер інші блоки */
+  margin: 104px auto 104px;
   padding: 0 20px;
 }
 
@@ -109,23 +106,46 @@
 
 @media (max-width: 768px) {
   .homeWrapper {
-    margin-top: 90px;
+    margin-top: 0;
   }
 
   .main {
-    margin-top: 30px;
+    margin-top: 40px;
+    margin-bottom: 40px;
     padding: 0 16px;
   }
 
   .benefitsContainer {
     padding: 0 16px;
-    margin-top: 24px;
+    margin-top: 0;
   }
 
   .benefitsGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 12px;
     padding: 16px;
+    border-radius: 14px;
+  }
+
+  .benefitItem {
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .benefitIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .benefitItem h4 {
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  .benefitItem p {
+    font-size: 12.5px;
+    line-height: 1.35;
   }
 
   .heading {
@@ -149,19 +169,104 @@
 }
 
 @media (max-width: 600px) {
+  .homeWrapper {
+    margin-top: 0;
+    overflow-x: hidden;
+  }
+
+  .benefitsContainer {
+    width: 100%;
+    margin: 0 0 24px;
+    padding: 0;
+  }
+
   .benefitsGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    padding: 12px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .benefitItem {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0;
+  }
+
+  .benefitIcon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .benefitItem h4 {
+    font-size: 12px;
+    line-height: 1.15;
+    white-space: nowrap;
+    margin-bottom: 2px;
+  }
+
+  .benefitItem p {
+    display: block;
+    font-size: 10px;
+    line-height: 1.2;
+    white-space: nowrap;
   }
 
   .heading {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .viewAllBtn {
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  .main {
+    margin-top: 32px;
+    margin-bottom: 32px;
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 430px) {
+  .benefitsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .benefitItem {
+    align-items: center;
+    min-height: 48px;
   }
 }
 
 @media (max-width: 360px) {
+  .benefitItem h4 {
+    font-size: 10.5px;
+  }
+
+  .benefitItem p {
+    font-size: 9px;
+  }
+
+  .benefitIcon {
+    width: 18px;
+    height: 18px;
+  }
+
   .main {
     padding: 0 12px;
   }

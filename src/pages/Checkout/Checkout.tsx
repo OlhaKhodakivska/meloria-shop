@@ -101,7 +101,7 @@ export const Checkout: React.FC = () => {
               type="text" id="city" required
               value={formData.city}
               onChange={(e) => setFormData({...formData, city: e.target.value})}
-              placeholder="Київ"
+              placeholder="Назва міста"
             />
           </div>
 
