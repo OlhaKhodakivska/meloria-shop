@@ -1,8 +1,12 @@
 // src/components/Hero/Hero.tsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styles from './Hero.module.css';
 
 export const Hero: React.FC = () => {
+  const catalogUrl = `${import.meta.env.BASE_URL}?view=all#catalog`;
+  const newProductsUrl = `${import.meta.env.BASE_URL}?view=new#catalog`;
+
   return (
     <section className={styles.heroSection}>
       <div className={styles.heroContainer}>
@@ -14,10 +18,10 @@ export const Hero: React.FC = () => {
 
           </p>
           <div className={styles.actions}>
-            <button className={styles.primaryBtn}>Перейти в каталог</button>
-            <button className={styles.secondaryBtn}>
+            <Link className={styles.primaryBtn} to={catalogUrl}>Перейти в каталог</Link>
+            <Link className={styles.secondaryBtn} to={newProductsUrl}>
               Дивитись новинки <span className={styles.arrow}>→</span>
-            </button>
+            </Link>
           </div>
           <div className={styles.dots}>
             <span className={`${styles.dot} ${styles.active}`}></span>

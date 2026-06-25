@@ -144,7 +144,13 @@
   transform: scale(1.05);
 }
 
-
+.clerkUserButton {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .actionBtn {
   background: none;

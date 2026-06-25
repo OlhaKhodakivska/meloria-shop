@@ -1,6 +1,7 @@
 // src/components/Header/Header.tsx
 import React, { useCallback, useEffect, useState } from 'react';
 import { ShoppingBag, User, Menu, X, Search } from 'lucide-react'; // Додали Search
+import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { useCart } from '../../context/cartContextValue';
 import styles from './Header.module.css';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,23 @@ interface HeaderProps {
   onCartOpen: () => void;
 }
 
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+
+const ClerkAccountButton: React.FC<{ onProfileOpen: () => void }> = ({ onProfileOpen }) => (
+  <>
+    <SignedIn>
+      <div className={styles.clerkUserButton}>
+        <UserButton afterSignOutUrl={import.meta.env.BASE_URL} />
+      </div>
+    </SignedIn>
+    <SignedOut>
+      <button className={styles.actionBtn} onClick={onProfileOpen} aria-label="Profile" type="button">
+        <User size={22} />
+      </button>
+    </SignedOut>
+  </>
+);
+
 export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
   const navigate = useNavigate();
 
@@ -18,17 +36,8 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
 
   const { totalItems } = useCart();
   const baseUrl = import.meta.env.BASE_URL;
+  const catalogUrl = `${baseUrl}?view=all#catalog`;
   const closeMenu = useCallback(() => setIsMenuOpen(false), []);
-
-  // ТИМЧАСОВА заглушка для перевірки аватарки (коли підключимо Supabase, братимемо це з контексту)
-  // Зміни значення на true, щоб протестувати вигляд з аватаркою
-  const isLoggedIn = false;
-  const userEmail = "olha.khodakivska@gmail.com";
-
-  // Функція для отримання першої літери пошти для аватарки
-  const getUserInitial = (email: string) => {
-    return email ? email.charAt(0).toUpperCase() : 'U';
-  };
 
   const handleCartOpen = () => {
     closeMenu();
@@ -122,7 +131,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
           </div>
 
           <ul className={styles.navList}>
-            <li><Link to={baseUrl} className={styles.navLink} onClick={closeMenu}>Каталог</Link></li>
+            <li><Link to={catalogUrl} className={styles.navLink} onClick={closeMenu}>Каталог</Link></li>
             <li><Link to={`${baseUrl}about`} className={styles.navLink} onClick={closeMenu}>Про нас</Link></li>
             <li><Link to={`${baseUrl}delivery`} className={styles.navLink} onClick={closeMenu}>Доставка та оплата</Link></li>
             <li><Link to={`${baseUrl}contacts`} className={styles.navLink} onClick={closeMenu}>Контакти</Link></li>
@@ -145,18 +154,14 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
           {/* Блок пошуку */}
           {renderSearchForm(styles.desktopSearch, 'Пошук товарів...')}
 
-          {/* Кнопка профілю / Аватарка клієнта */}
-          <button className={styles.actionBtn} onClick={handleProfileOpen} aria-label="Profile" type="button">
-            {isLoggedIn ? (
-              // Кружечок з першою літерою email, якщо користувач увійшов
-              <div className={styles.avatarBadge}>
-                {getUserInitial(userEmail)}
-              </div>
-            ) : (
-              // Звичайна іконка, якщо гість
+          {/* Кнопка профілю / меню клієнта */}
+          {clerkPublishableKey ? (
+            <ClerkAccountButton onProfileOpen={handleProfileOpen} />
+          ) : (
+            <button className={styles.actionBtn} onClick={handleProfileOpen} aria-label="Profile" type="button">
               <User size={22} />
-            )}
-          </button>
+            </button>
+          )}
 
           {/* Кошик */}
           <button className={styles.actionBtn} onClick={handleCartOpen} aria-label="Cart" type="button">

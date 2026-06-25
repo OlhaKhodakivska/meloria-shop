@@ -2,50 +2,95 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/cartContextValue';
+import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import styles from './Checkout.module.css';
 
+const paymentDetails = {
+  card: import.meta.env.VITE_PAYMENT_CARD_NUMBER || 'буде надіслано менеджером',
+  iban: import.meta.env.VITE_PAYMENT_IBAN || 'буде надіслано менеджером',
+  recipient: import.meta.env.VITE_PAYMENT_RECIPIENT || 'MELORIA'
+};
+
 export const Checkout: React.FC = () => {
-  const { cartItems, totalPrice, clearCart } = useCart();
+  const { cartItems, clearOrderedItems } = useCart();
   const navigate = useNavigate();
   const baseUrl = import.meta.env.BASE_URL;
+  const selectedCartItems = cartItems.filter((item) => item.selected);
+  const selectedTotalPrice = selectedCartItems.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0
+  );
 
   // Стани для полів форми
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     phone: '',
     city: '',
     delivery: 'nova_poshta',
     warehouse: '',
-    payment: 'card_prepayment'
+    payment: 'card_prepayment',
+    comment: ''
   });
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   // Сценарій відправки форми
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError('');
 
-    if (cartItems.length === 0) return;
+    if (selectedCartItems.length === 0) return;
 
-    // Тут у майбутньому буде запит до бекенду!
-    console.log('Замовлення оформлено:', { formData, items: cartItems, total: totalPrice });
+    if (!isSupabaseConfigured || !supabase) {
+      setSubmitError('Supabase ще не налаштований. Додайте VITE_SUPABASE_URL та VITE_SUPABASE_ANON_KEY у .env.');
+      return;
+    }
 
-    setIsSubmitted(true);
-    clearCart(); // Очищаємо кошик після успішного замовлення
+    setIsSubmitting(true);
+
+    const orderItems = selectedCartItems.map((item) => ({
+      product_id: item.product.id,
+      title: item.product.title,
+      category: item.product.category,
+      price: item.product.price,
+      quantity: item.quantity,
+      image_url: item.product.imageUrl
+    }));
+
+    const { data, error } = await supabase
+      .from('orders')
+      .insert({
+        customer_name: formData.name.trim(),
+        customer_email: formData.email.trim().toLowerCase(),
+        customer_phone: formData.phone.trim(),
+        delivery_method: formData.delivery,
+        delivery_city: formData.city.trim(),
+        delivery_branch: formData.warehouse.trim(),
+        payment_method: formData.payment,
+        payment_status: 'awaiting_prepayment',
+        payment_details: formData.payment === 'card_prepayment'
+          ? { type: 'card', card: paymentDetails.card, recipient: paymentDetails.recipient }
+          : { type: 'iban', iban: paymentDetails.iban, recipient: paymentDetails.recipient },
+        comment: formData.comment.trim(),
+        items: orderItems,
+        total_amount: selectedTotalPrice,
+        status: 'new'
+      })
+      .select('id')
+      .single();
+
+    setIsSubmitting(false);
+
+    if (error) {
+      setSubmitError(error.message);
+      return;
+    }
+
+    clearOrderedItems();
+    navigate(`${baseUrl}thank-you${data?.id ? `?order=${encodeURIComponent(String(data.id))}` : ''}`);
   };
-
-  if (isSubmitted) {
-    return (
-      <div className={styles.successContainer}>
-        <div className={styles.successCard}>
-          <div className={styles.successIcon}>✦</div>
-          <h2>Дякуємо за замовлення!</h2>
-          <p>Менеджер <strong>MELORIA</strong> зв'яжеться з вами найближчим часом для підтвердження.</p>
-          <button onClick={() => navigate(baseUrl)} className={styles.homeBtn} type="button">Повернутись до магазину</button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.pageWrapper}>
@@ -62,6 +107,16 @@ export const Checkout: React.FC = () => {
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
               placeholder="Іванов Іван"
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="email">Електронна пошта *</label>
+            <input
+              type="email" id="email" required
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              placeholder="example@mail.com"
             />
           </div>
 
@@ -123,20 +178,40 @@ export const Checkout: React.FC = () => {
                 checked={formData.payment === 'card_prepayment'}
                 onChange={(e) => setFormData({...formData, payment: e.target.value})}
               />
-              <span>Передплата на картку</span>
+              <span>100% передплата на картку</span>
             </label>
             <label className={styles.radioLabel}>
               <input
-                type="radio" name="payment" value="cod"
-                checked={formData.payment === 'cod'}
+                type="radio" name="payment" value="iban_prepayment"
+                checked={formData.payment === 'iban_prepayment'}
                 onChange={(e) => setFormData({...formData, payment: e.target.value})}
               />
-              <span>Накладений платіж (післяплата при отриманні)</span>
+              <span>100% передплата на IBAN</span>
             </label>
           </div>
 
-          <button type="submit" disabled={cartItems.length === 0} className={styles.submitOrderBtn}>
-            Підтвердити замовлення
+          <div className={styles.paymentNotice}>
+            <strong>Реквізити для оплати:</strong>
+            <span>Картка: {paymentDetails.card}</span>
+            <span>IBAN: {paymentDetails.iban}</span>
+            <span>Отримувач: {paymentDetails.recipient}</span>
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="comment">Коментар до замовлення</label>
+            <textarea
+              id="comment"
+              value={formData.comment}
+              onChange={(e) => setFormData({...formData, comment: e.target.value})}
+              placeholder="Побажання щодо доставки або замовлення"
+              rows={4}
+            />
+          </div>
+
+          {submitError && <p className={styles.errorText}>{submitError}</p>}
+
+          <button type="submit" disabled={selectedCartItems.length === 0 || isSubmitting} className={styles.submitOrderBtn}>
+            {isSubmitting ? 'Надсилаємо заявку...' : 'Підтвердити замовлення'}
           </button>
         </form>
 
@@ -144,12 +219,12 @@ export const Checkout: React.FC = () => {
         <div className={styles.summaryCard}>
           <h3 className={styles.summaryTitle}>Ваше замовлення</h3>
 
-          {cartItems.length === 0 ? (
+          {selectedCartItems.length === 0 ? (
             <p className={styles.emptyText}>У кошику немає товарів. Поверніться до каталогу.</p>
           ) : (
             <>
               <div className={styles.summaryItems}>
-                {cartItems.map((item) => (
+                {selectedCartItems.map((item) => (
                   <div key={item.product.id} className={styles.summaryItem}>
                     <img src={item.product.imageUrl} alt={item.product.title} />
                     <div className={styles.summaryItemInfo}>
@@ -164,7 +239,7 @@ export const Checkout: React.FC = () => {
               <div className={styles.divider} />
               <div className={styles.totalRow}>
                 <span>Всього до сплати:</span>
-                <span className={styles.totalPrice}>{totalPrice} ₴</span>
+                <span className={styles.totalPrice}>{selectedTotalPrice} ₴</span>
               </div>
             </>
           )}

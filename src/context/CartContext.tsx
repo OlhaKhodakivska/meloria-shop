@@ -16,12 +16,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.getItem(LEGACY_CART_STORAGE_KEY);
 
       if (savedCart) {
-        const parsed = JSON.parse(savedCart);
+        const parsed = JSON.parse(savedCart) as Partial<CartItem>[];
         // Про всяк випадок переконуємося, що у старих даних з localStorage з'явиться selected: true
-        return parsed.map((item: any) => ({
+        return parsed.map((item) => ({
           ...item,
           selected: item.selected !== undefined ? item.selected : true
-        }));
+        })) as CartItem[];
       }
       return [];
     } catch {

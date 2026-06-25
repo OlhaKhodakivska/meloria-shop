@@ -32,6 +32,128 @@
   object-fit: cover;
 }
 
+.imageButton {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.imageButton:hover .image {
+  transform: scale(1.04);
+}
+
+.image {
+  transition: transform 0.25s ease;
+}
+
+.imageFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  color: var(--color-gray);
+  background-color: #f5f1eb;
+  font-size: 14px;
+  text-align: center;
+}
+
+.galleryOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.galleryBackdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background-color: rgba(10, 16, 28, 0.78);
+  cursor: zoom-out;
+}
+
+.gallery {
+  position: relative;
+  z-index: 1;
+  width: min(920px, 100%);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.galleryImage {
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: 8px;
+  background-color: var(--color-gray-light);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+}
+
+.closeButton,
+.galleryControl {
+  border: 0;
+  color: var(--color-white);
+  background-color: rgba(16, 35, 70, 0.82);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.closeButton:hover,
+.galleryControl:hover {
+  background-color: rgba(16, 35, 70, 1);
+}
+
+.closeButton {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
+.galleryControl {
+  position: absolute;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.galleryControlPrev {
+  left: -58px;
+}
+
+.galleryControlNext {
+  right: -58px;
+}
+
+.galleryCaption {
+  width: min(720px, 100%);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--color-white);
+  font-size: 14px;
+  line-height: 1.4;
+}
 
 .info {
   padding: 20px;
@@ -194,6 +316,43 @@
     height: 20px;
     padding: 0 6px;
     font-size: 11px;
+  }
+
+  .galleryOverlay {
+    padding: 14px;
+  }
+
+  .gallery {
+    gap: 10px;
+  }
+
+  .galleryImage {
+    max-height: 72vh;
+  }
+
+  .closeButton {
+    top: 8px;
+    right: 8px;
+  }
+
+  .galleryControl {
+    top: auto;
+    bottom: 44px;
+    transform: none;
+  }
+
+  .galleryControlPrev {
+    left: 16px;
+  }
+
+  .galleryControlNext {
+    right: 16px;
+  }
+
+  .galleryCaption {
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
   }
 }
 

@@ -7,9 +7,11 @@ export const Footer: React.FC = () => {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   const displayYear = currentYear > 2026 ? `2026-${currentYear}` : '2026';
+  const baseUrl = import.meta.env.BASE_URL;
+  const catalogUrl = `${baseUrl}?view=all#catalog`;
 
   const handleLogoClick = () => {
-    navigate(`${import.meta.env.BASE_URL}`);
+    navigate(baseUrl);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -44,8 +46,8 @@ export const Footer: React.FC = () => {
         <div className={styles.column}>
           <h4>Покупцям</h4>
           <ul>
-            <li><Link to={`${import.meta.env.BASE_URL}`}>Каталог</Link></li>
-            <li><Link to={`${import.meta.env.BASE_URL}delivery`}>Доставка та оплата</Link></li>
+            <li><Link to={catalogUrl}>Каталог</Link></li>
+            <li><Link to={`${baseUrl}delivery`}>Доставка та оплата</Link></li>
             <li><a href="#return" onClick={(e) => e.preventDefault()}>Повернення та обмін</a></li>
             <li><a href="#faq" onClick={(e) => e.preventDefault()}>Питання та відповіді</a></li>
           </ul>
@@ -55,8 +57,8 @@ export const Footer: React.FC = () => {
         <div className={styles.column}>
           <h4>Інформація</h4>
           <ul>
-            <li><Link to={`${import.meta.env.BASE_URL}about`}>Про нас</Link></li>
-            <li><Link to={`${import.meta.env.BASE_URL}contacts`}>Контакти</Link></li>
+            <li><Link to={`${baseUrl}about`}>Про нас</Link></li>
+            <li><Link to={`${baseUrl}contacts`}>Контакти</Link></li>
             <li><a href="#privacy" onClick={(e) => e.preventDefault()}>Політика конфиденційності</a></li>
             <li><a href="#terms" onClick={(e) => e.preventDefault()}>Умови користування</a></li>
           </ul>

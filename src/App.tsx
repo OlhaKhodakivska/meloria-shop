@@ -11,6 +11,8 @@ import { About } from './pages/About';
 import { Delivery } from './pages/Delivery';
 import { Contacts } from './pages/Contacts';
 import { Footer } from './components/Footer/Footer';
+import { FreeDelivery } from './pages/FreeDelivery';
+import { ThankYou } from './pages/ThankYou';
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -34,6 +36,8 @@ function App() {
               <Route path={`${import.meta.env.BASE_URL}auth`} element={<Auth />} />
               <Route path={`${import.meta.env.BASE_URL}about`} element={<About />} />
               <Route path={`${import.meta.env.BASE_URL}delivery`} element={<Delivery />} />
+              <Route path={`${import.meta.env.BASE_URL}free-delivery`} element={<FreeDelivery />} />
+              <Route path={`${import.meta.env.BASE_URL}thank-you`} element={<ThankYou />} />
               <Route path={`${import.meta.env.BASE_URL}contacts`} element={<Contacts />} />
             </Routes>
           </div>

@@ -40,6 +40,10 @@
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .detailsBtn:hover {

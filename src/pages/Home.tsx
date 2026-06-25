@@ -1,5 +1,6 @@
 // src/pages/Home.tsx
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ProductCard } from '../components/ProductCard/ProductCard';
 import { Hero } from '../components/Hero/Hero';
 import { PromoBanner } from '../components/PromoBanner/PromoBanner';
@@ -7,13 +8,168 @@ import { MOCK_PRODUCTS } from '../data/products';
 import { Gift, Truck, ShieldCheck, Heart } from 'lucide-react';
 import styles from './Home.module.css';
 
+type CatalogView = 'featured' | 'all' | 'new';
+
+const NEW_PRODUCTS_LIMIT = 48;
+const FEATURED_PRODUCTS_LIMIT = 12;
+
+const getProductIdNumber = (productId: string) => {
+  const parsedId = Number(productId);
+  return Number.isFinite(parsedId) ? parsedId : 0;
+};
+
+const getMostExpensiveProduct = (products: typeof MOCK_PRODUCTS) =>
+  [...products].sort((firstProduct, secondProduct) => secondProduct.price - firstProduct.price)[0];
+
+const getFeaturedProducts = (products: typeof MOCK_PRODUCTS, limit: number) => {
+  const mostExpensiveProduct = getMostExpensiveProduct(products);
+  const randomProducts = [...products]
+    .filter((product) => product.id !== mostExpensiveProduct.id)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, limit - 1);
+
+  return [mostExpensiveProduct, ...randomProducts];
+};
+
 export const Home: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const baseUrl = import.meta.env.BASE_URL;
+
+  // Стейт для збереження активної категорії
+  const [activeCategory, setActiveCategory] = useState('Всі');
+
+  // Список усіх унікальних категорій + варіант "Всі"
+  const categories = useMemo(() => {
+    const preferredOrder = [
+      'Сумки та шопери',
+      'Подушки',
+      'Косметички',
+      'Годинники',
+      'Канцелярія',
+      'Килимки',
+      'Ключниці',
+      'Листівки',
+      'Маски для сну'
+    ];
+    const productCategories = Array.from(
+      new Set(MOCK_PRODUCTS.map((product) => product.category).filter(Boolean))
+    );
+    const orderedCategories = [
+      ...preferredOrder.filter((category) => productCategories.includes(category)),
+      ...productCategories
+        .filter((category) => !preferredOrder.includes(category))
+        .sort((firstCategory, secondCategory) => firstCategory.localeCompare(secondCategory, 'uk'))
+    ];
+
+    return ['Всі', ...orderedCategories];
+  }, []);
+
+  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+
+  const catalogView = useMemo<CatalogView>(() => {
+    const requestedView = searchParams.get('view');
+
+    return requestedView === 'all' || requestedView === 'new' ? requestedView : 'featured';
+  }, [searchParams]);
+
+  const selectedCatalogCategory = useMemo(() => {
+    const category = searchParams.get('category');
+    return category && categories.includes(category) && category !== 'Всі' ? category : null;
+  }, [categories, searchParams]);
+
+  const categoryCards = useMemo(
+    () =>
+      categories
+        .filter((category) => category !== 'Всі')
+        .map((category) => {
+          const products = MOCK_PRODUCTS.filter((product) => product.category === category);
+          const coverProduct =
+            products.find((product) => product.imageUrl) ||
+            products[0];
+
+          return {
+            category,
+            count: products.length,
+            coverProduct
+          };
+        }),
+    [categories]
+  );
+
+  const newProducts = useMemo(
+    () =>
+      [...MOCK_PRODUCTS]
+        .sort((firstProduct, secondProduct) =>
+          getProductIdNumber(secondProduct.id) - getProductIdNumber(firstProduct.id)
+        )
+        .slice(0, NEW_PRODUCTS_LIMIT),
+    []
+  );
+  const featuredProducts = useMemo(
+    () => getFeaturedProducts(MOCK_PRODUCTS, FEATURED_PRODUCTS_LIMIT),
+    []
+  );
+
+  useEffect(() => {
+    if (location.hash === '#catalog') {
+      window.requestAnimationFrame(() => {
+        document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }, [location.hash, location.search]);
+
+  const showCategory = (category: string) => {
+    setActiveCategory(category);
+    navigate(`${baseUrl}#catalog`);
+  };
+
+  const showAllProducts = () => {
+    navigate(`${baseUrl}?view=all#catalog`);
+  };
+
+  const showCatalogCategory = (category: string) => {
+    navigate(`${baseUrl}?view=all&category=${encodeURIComponent(category)}#catalog`);
+  };
+
+  const filteredProducts = useMemo(() => {
+    if (catalogView === 'new') {
+      return newProducts;
+    }
+
+    const selectedCategory = catalogView === 'all'
+      ? selectedCatalogCategory || 'Всі'
+      : activeCategory;
+    const categoryProducts = selectedCategory === 'Всі'
+      ? MOCK_PRODUCTS
+      : MOCK_PRODUCTS.filter((product) => product.category === selectedCategory);
+
+    return catalogView === 'all'
+      ? categoryProducts
+      : activeCategory === 'Всі'
+        ? featuredProducts
+        : categoryProducts.slice(0, FEATURED_PRODUCTS_LIMIT);
+  }, [activeCategory, catalogView, featuredProducts, newProducts, selectedCatalogCategory]);
+
+  const showCategoryCards = catalogView === 'all' && !selectedCatalogCategory;
+
+  const titleText = catalogView === 'new'
+    ? 'Новинки'
+    : catalogView === 'all'
+      ? selectedCatalogCategory || 'Каталог'
+      : activeCategory === 'Всі'
+      ? 'Хіти продажів'
+      : activeCategory;
+
+  const headingActionText = catalogView === 'all' && selectedCatalogCategory
+    ? 'Усі категорії'
+    : 'Дивитись всі';
+
   return (
     <div className={styles.homeWrapper}>
-      {/* 1. HERO БАНЕР */}
       <Hero />
 
-      {/* 2. СЕКЦІЯ ПЕРЕВАГ */}
+      {/* СЕКЦІЯ ПЕРЕВАГ */}
       <section className={styles.benefitsContainer}>
         <div className={styles.benefitsGrid}>
           <div className={styles.benefitItem}>
@@ -27,7 +183,7 @@ export const Home: React.FC = () => {
             <Truck size={28} className={styles.benefitIcon} />
             <div>
               <h4>Швидка доставка</h4>
-              <p>1–2 дні по Україні</p>
+              <p>1-2 дні по Україні</p>
             </div>
           </div>
           <div className={styles.benefitItem}>
@@ -47,23 +203,69 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. ГОЛОВНИЙ БЛОК ТОВАРІВ (Твій оригінальний .main) */}
-      <main className={styles.main}>
+      {/* СЕКЦІЯ КАТЕГОРІЙ (Популярні категорії з макету) */}
+      <section className={styles.categoriesSection}>
+        <h3 className={styles.categoriesTitle}>Популярні категорії ✦</h3>
+        <div className={styles.categoriesTabs}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              className={`${styles.categoryTab} ${activeCategory === cat ? styles.activeTab : ''}`}
+              onClick={() => showCategory(cat)}
+              type="button"
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* ГОЛОВНИЙ БЛОК ТОВАРІВ */}
+      <main className={styles.main} id="catalog">
         <div className={styles.heading}>
-          <h2 className={styles.title}>Хіти продажів</h2>
-          <button className={styles.viewAllBtn} type="button">
-            Дивитись всі <span className={styles.arrow}>→</span>
+          <h2 className={styles.title}>{titleText}</h2>
+          <button className={styles.viewAllBtn} onClick={showAllProducts} type="button">
+            {headingActionText} <span className={styles.arrow}>→</span>
           </button>
         </div>
 
-        <div className={styles.productGrid}>
-          {MOCK_PRODUCTS.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {showCategoryCards ? (
+          <div className={styles.catalogCategoryGrid}>
+            {categoryCards.map(({ category, count, coverProduct }) => (
+              <button
+                className={styles.catalogCategoryCard}
+                key={category}
+                onClick={() => showCatalogCategory(category)}
+                type="button"
+              >
+                <span className={styles.catalogCategoryImageWrapper}>
+                  {coverProduct?.imageUrl ? (
+                    <img
+                      src={coverProduct.imageUrl}
+                      alt={category}
+                      className={styles.catalogCategoryImage}
+                    />
+                  ) : (
+                    <span className={styles.catalogCategoryFallback}>Фото скоро буде</span>
+                  )}
+                </span>
+                <span className={styles.catalogCategoryInfo}>
+                  <span className={styles.catalogCategoryLabel}>Категорія</span>
+                  <span className={styles.catalogCategoryTitle}>{category}</span>
+                  <span className={styles.catalogCategoryCount}>{count} товарів</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.productGrid}>
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </main>
 
-      {/* 4. БАНЕР БЕЗКОШТОВНОЇ ДОСТАВКИ */}
       <PromoBanner />
     </div>
   );

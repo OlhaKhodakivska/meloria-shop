@@ -49,6 +49,7 @@
   max-width: var(--max-width);
   margin: 104px auto 104px;
   padding: 0 20px;
+  scroll-margin-top: 96px;
 }
 
 .heading {
@@ -100,6 +101,152 @@
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 30px;
   margin-top: 20px;
+}
+
+.catalogCategoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.catalogCategoryCard {
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--color-gray-light);
+  box-shadow: 0 4px 20px rgba(16, 35, 70, 0.209);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.catalogCategoryCard:hover {
+  box-shadow: 0 10px 30px rgba(16, 35, 70, 0.317);
+  transform: translateY(-2px);
+}
+
+.catalogCategoryImageWrapper {
+  width: 100%;
+  aspect-ratio: 1;
+  display: block;
+  background-color: #f5f1eb;
+  overflow: hidden;
+}
+
+.catalogCategoryImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.catalogCategoryCard:hover .catalogCategoryImage {
+  transform: scale(1.04);
+}
+
+.catalogCategoryFallback {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  color: var(--color-gray);
+  font-size: 14px;
+  text-align: center;
+}
+
+.catalogCategoryInfo {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.catalogCategoryLabel {
+  color: var(--color-gray);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.catalogCategoryTitle {
+  color: var(--color-bg-deep);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.catalogCategoryCount {
+  color: var(--color-gray);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Стилі для секції категорій */
+.categoriesSection {
+  max-width: var(--max-width);
+  margin: 30px auto 10px;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.categoriesTitle {
+  color: var(--color-bg-deep);
+  font-size: 22px;
+  font-family: serif;
+  margin-bottom: 20px;
+}
+
+.categoriesTabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.categoryTab {
+  background-color: #fcfbfa;
+  color: var(--color-bg-deep);
+  border: 1px solid #f0e9e1;
+  padding: 10px 20px;
+  border-radius: 30px; /* Круглі акуратні таби */
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.categoryTab:hover {
+  background-color: #f5ede0;
+}
+
+/* Активна вкладка стає фірмовою темно-синьою */
+.activeTab {
+  background-color: var(--color-bg-deep);
+  color: #fff;
+  border-color: var(--color-bg-deep);
+}
+
+.activeTab:hover {
+  background-color: var(--color-bg-deep);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .categoryTab {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
 }
 
 /* ================= МЕДІА-ЗАПИТИ (Гармонія збережена) ================= */
@@ -165,6 +312,29 @@
   .productGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
+  }
+
+  .catalogCategoryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .catalogCategoryInfo {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .catalogCategoryLabel {
+    font-size: 10.5px;
+    letter-spacing: 0.6px;
+  }
+
+  .catalogCategoryTitle {
+    font-size: 14px;
+  }
+
+  .catalogCategoryCount {
+    font-size: 12.5px;
   }
 }
 
