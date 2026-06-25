@@ -14,7 +14,7 @@ export const Hero: React.FC = () => {
           <span className={styles.subtitle}>Стиль. Затишок. Натхнення ✦</span>
           <h1 className={styles.title}>Гарні моменти кожного дня</h1>
           <p className={styles.description}>
-            Подарунки, аксесуари для стилю та товари для затишку в домі. Обирайте з любов'ю ❤️
+            Подарунки, стильні аксесуари та товари для затишку в домі. Обирайте з любов'ю ❤️
 
           </p>
           <div className={styles.actions}>

@@ -59,8 +59,8 @@ export const Footer: React.FC = () => {
           <ul>
             <li><Link to={`${baseUrl}about`}>Про нас</Link></li>
             <li><Link to={`${baseUrl}contacts`}>Контакти</Link></li>
-            <li><a href="#privacy" onClick={(e) => e.preventDefault()}>Політика конфіденційності</a></li>
-            <li><a href="#terms" onClick={(e) => e.preventDefault()}>Умови користування</a></li>
+            <li><Link to={`${baseUrl}privacy-policy`}>Політика конфіденційності</Link></li>
+            <li><Link to={`${baseUrl}terms-of-use`}>Умови користування</Link></li>
           </ul>
         </div>
 
