@@ -6,8 +6,11 @@ import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import styles from './Checkout.module.css';
 
 const paymentDetails = {
-  card: import.meta.env.VITE_PAYMENT_CARD_NUMBER || '4441 1110 7318 5823',
-  iban: import.meta.env.VITE_PAYMENT_IBAN || 'UA373220010000026203356831468'
+  recipient: import.meta.env.VITE_PAYMENT_RECIPIENT || 'Уточнюється менеджером',
+  card: import.meta.env.VITE_PAYMENT_CARD_NUMBER || 'Уточнюється менеджером',
+  iban: import.meta.env.VITE_PAYMENT_IBAN || 'Уточнюється менеджером',
+  taxId: import.meta.env.VITE_PAYMENT_TAX_ID || 'Уточнюється менеджером',
+  purpose: import.meta.env.VITE_PAYMENT_PURPOSE || 'Уточнюється менеджером'
 };
 
 export const Checkout: React.FC = () => {
@@ -69,8 +72,19 @@ export const Checkout: React.FC = () => {
         payment_method: formData.payment,
         payment_status: 'awaiting_prepayment',
         payment_details: formData.payment === 'card_prepayment'
-          ? { type: 'card', card: paymentDetails.card }
-          : { type: 'iban', iban: paymentDetails.iban },
+          ? {
+              type: 'card',
+              recipient: paymentDetails.recipient,
+              card: paymentDetails.card,
+              purpose: paymentDetails.purpose
+            }
+          : {
+              type: 'iban',
+              recipient: paymentDetails.recipient,
+              iban: paymentDetails.iban,
+              tax_id: paymentDetails.taxId,
+              purpose: paymentDetails.purpose
+            },
         comment: formData.comment.trim(),
         items: orderItems,
         total_amount: selectedTotalPrice,
@@ -191,8 +205,11 @@ export const Checkout: React.FC = () => {
           <div className={styles.paymentNotice}>
             <strong>Реквізити для оплати:</strong>
             <span>Оплата замовлення здійснюється за умовами 100% передоплати.</span>
-            <span>Картка: {paymentDetails.card}</span>
-            <span>IBAN: {paymentDetails.iban}</span>
+            <span><strong>Отримувач:</strong> {paymentDetails.recipient}</span>
+            <span><strong>IBAN:</strong> {paymentDetails.iban}</span>
+            <span><strong>ІПН/ЄДРПОУ:</strong> {paymentDetails.taxId}</span>
+            <span><strong>Призначення платежу:</strong> {paymentDetails.purpose}</span>
+            <span><strong>Картка:</strong> {paymentDetails.card}</span>
           </div>
 
           <div className={styles.inputGroup}>

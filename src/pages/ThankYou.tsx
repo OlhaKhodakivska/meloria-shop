@@ -2,8 +2,13 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './InfoPages.module.css';
 
-const paymentCardNumber = import.meta.env.VITE_PAYMENT_CARD_NUMBER || '4441 1110 7318 5823';
-const paymentIban = import.meta.env.VITE_PAYMENT_IBAN || 'UA373220010000026203356831468';
+const paymentDetails = {
+  recipient: import.meta.env.VITE_PAYMENT_RECIPIENT || 'Уточнюється менеджером',
+  card: import.meta.env.VITE_PAYMENT_CARD_NUMBER || 'Уточнюється менеджером',
+  iban: import.meta.env.VITE_PAYMENT_IBAN || 'Уточнюється менеджером',
+  taxId: import.meta.env.VITE_PAYMENT_TAX_ID || 'Уточнюється менеджером',
+  purpose: import.meta.env.VITE_PAYMENT_PURPOSE || 'Уточнюється менеджером'
+};
 
 export const ThankYou: React.FC = () => {
   const location = useLocation();
@@ -26,12 +31,12 @@ export const ThankYou: React.FC = () => {
           номер картки або IBAN.
         </p>
         <ul>
-          <li><strong>Картка:</strong> {paymentCardNumber}</li>
-          <li><strong>IBAN:</strong> {paymentIban}</li>
+          <li><strong>Отримувач:</strong> {paymentDetails.recipient}</li>
+          <li><strong>IBAN:</strong> {paymentDetails.iban}</li>
+          <li><strong>ІПН/ЄДРПОУ:</strong> {paymentDetails.taxId}</li>
+          <li><strong>Призначення платежу:</strong> {paymentDetails.purpose}</li>
+          <li><strong>Картка:</strong> {paymentDetails.card}</li>
         </ul>
-        <p>
-          У призначенні платежу вкажіть номер заявки або ваше ім'я та прізвище.
-        </p>
 
         <Link className={styles.link} to={import.meta.env.BASE_URL}>
           Повернутися до магазину
