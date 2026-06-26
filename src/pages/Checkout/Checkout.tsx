@@ -13,7 +13,6 @@ const paymentDetails = {
 export const Checkout: React.FC = () => {
   const { cartItems, clearOrderedItems } = useCart();
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.BASE_URL;
   const selectedCartItems = cartItems.filter((item) => item.selected);
   const selectedTotalPrice = selectedCartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -88,7 +87,7 @@ export const Checkout: React.FC = () => {
     }
 
     clearOrderedItems();
-    navigate(`${baseUrl}thank-you${data?.id ? `?order=${encodeURIComponent(String(data.id))}` : ''}`);
+    navigate(`/thank-you${data?.id ? `?order=${encodeURIComponent(String(data.id))}` : ''}`);
   };
 
   return (

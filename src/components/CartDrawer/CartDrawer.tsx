@@ -14,7 +14,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
   // Додали toggleSelect з нашого оновленого контексту!
   const { cartItems, updateQuantity, removeFromCart, totalPrice, toggleSelect } = useCart();
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.BASE_URL;
 
   // Перевіряємо, чи є хоча б один вибраний товар, щоб активувати кнопку замовлення
   const hasSelectedItems = cartItems.some(item => item.selected);
@@ -111,7 +110,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
               onClick={() => {
                 if (hasSelectedItems) {
                   onClose();
-                  navigate(`${baseUrl}checkout`);
+                  navigate('/checkout');
                 }
               }}
             >

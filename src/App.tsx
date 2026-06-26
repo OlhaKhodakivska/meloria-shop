@@ -19,11 +19,13 @@ const ReturnsExchange = lazy(() => import('./pages/ReturnsExchange').then((modul
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy').then((module) => ({ default: module.PrivacyPolicy })));
 const TermsOfUse = lazy(() => import('./pages/TermsOfUse').then((module) => ({ default: module.TermsOfUse })));
 
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
+
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <BrowserRouter basename={routerBasename}>
       <CartProvider>
         <SEO />
         {/* Головна обгортка для притискання футера */}

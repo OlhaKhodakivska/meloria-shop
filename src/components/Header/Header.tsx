@@ -36,8 +36,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
   const [searchQuery, setSearchQuery] = useState(''); // Стан для пошукового запиту
 
   const { totalItems } = useCart();
-  const baseUrl = import.meta.env.BASE_URL;
-  const catalogUrl = `${baseUrl}?view=all#catalog`;
+  const catalogUrl = '/?view=all#catalog';
   const closeMenu = useCallback(() => setIsMenuOpen(false), []);
 
   const handleCartOpen = () => {
@@ -47,12 +46,12 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
 
   const handleProfileOpen = () => {
     closeMenu();
-    navigate(`${baseUrl}auth`);
+    navigate('/auth');
   };
 
   const handleLogoClick = () => {
     closeMenu();
-    navigate(baseUrl);
+    navigate('/');
   };
 
   useEffect(() => {
@@ -81,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`${baseUrl}?search=${encodeURIComponent(searchQuery.trim())}#catalog`);
+      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}#catalog`);
       closeMenu();
     }
   };
@@ -137,9 +136,9 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
 
           <ul className={styles.navList}>
             <li><Link to={catalogUrl} className={styles.navLink} onClick={closeMenu}>Каталог</Link></li>
-            <li><Link to={`${baseUrl}about`} className={styles.navLink} onClick={closeMenu}>Про нас</Link></li>
-            <li><Link to={`${baseUrl}delivery`} className={styles.navLink} onClick={closeMenu}>Доставка та оплата</Link></li>
-            <li><Link to={`${baseUrl}contacts`} className={styles.navLink} onClick={closeMenu}>Контакти</Link></li>
+            <li><Link to="/about" className={styles.navLink} onClick={closeMenu}>Про нас</Link></li>
+            <li><Link to="/delivery" className={styles.navLink} onClick={closeMenu}>Доставка та оплата</Link></li>
+            <li><Link to="/contacts" className={styles.navLink} onClick={closeMenu}>Контакти</Link></li>
           </ul>
 
           <div className={styles.mobileMenuFooter}>

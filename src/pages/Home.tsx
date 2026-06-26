@@ -162,19 +162,19 @@ export const Home: React.FC = () => {
 
   const showCategory = (category: string) => {
     setActiveCategory(category);
-    navigate(`${baseUrl}#catalog`);
+    navigate('/#catalog');
   };
 
   const showAllProducts = () => {
-    navigate(`${baseUrl}?view=all#catalog`);
+    navigate('/?view=all#catalog');
   };
 
   const clearSearch = () => {
-    navigate(`${baseUrl}?view=all#catalog`);
+    navigate('/?view=all#catalog');
   };
 
   const showCatalogCategory = (category: string) => {
-    navigate(`${baseUrl}?view=all&category=${encodeURIComponent(category)}#catalog`);
+    navigate(`/?view=all&category=${encodeURIComponent(category)}#catalog`);
   };
 
   const filteredProducts = useMemo(() => {
