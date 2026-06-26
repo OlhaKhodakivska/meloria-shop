@@ -4,9 +4,6 @@ import { Link } from 'react-router-dom';
 import styles from './Hero.module.css';
 
 export const Hero: React.FC = () => {
-  const catalogUrl = `${import.meta.env.BASE_URL}?view=all#catalog`;
-  const newProductsUrl = `${import.meta.env.BASE_URL}?view=new#catalog`;
-
   return (
     <section className={styles.heroSection}>
       <div className={styles.heroContainer}>
@@ -18,8 +15,8 @@ export const Hero: React.FC = () => {
 
           </p>
           <div className={styles.actions}>
-            <Link className={styles.primaryBtn} to={catalogUrl}>Перейти в каталог</Link>
-            <Link className={styles.secondaryBtn} to={newProductsUrl}>
+            <Link className={styles.primaryBtn} to="/?view=all#catalog">Перейти в каталог</Link>
+            <Link className={styles.secondaryBtn} to="/?view=new#catalog">
               Дивитись новинки <span className={styles.arrow}>→</span>
             </Link>
           </div>
