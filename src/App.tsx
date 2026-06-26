@@ -23,7 +23,7 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <CartProvider>
         <SEO />
         {/* Головна обгортка для притискання футера */}
@@ -37,18 +37,17 @@ function App() {
           <div style={{ flexGrow: 1 }}>
             <Suspense fallback={null}>
               <Routes>
-                {/* Використовуємо динамічний базовий URL */}
-                <Route path={`${import.meta.env.BASE_URL}`} element={<Home />} />
-                <Route path={`${import.meta.env.BASE_URL}checkout`} element={<Checkout />} />
-                <Route path={`${import.meta.env.BASE_URL}auth`} element={<Auth />} />
-                <Route path={`${import.meta.env.BASE_URL}about`} element={<About />} />
-                <Route path={`${import.meta.env.BASE_URL}delivery`} element={<Delivery />} />
-                <Route path={`${import.meta.env.BASE_URL}free-delivery`} element={<FreeDelivery />} />
-                <Route path={`${import.meta.env.BASE_URL}returns-exchange`} element={<ReturnsExchange />} />
-                <Route path={`${import.meta.env.BASE_URL}privacy-policy`} element={<PrivacyPolicy />} />
-                <Route path={`${import.meta.env.BASE_URL}terms-of-use`} element={<TermsOfUse />} />
-                <Route path={`${import.meta.env.BASE_URL}thank-you`} element={<ThankYou />} />
-                <Route path={`${import.meta.env.BASE_URL}contacts`} element={<Contacts />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/delivery" element={<Delivery />} />
+                <Route path="/free-delivery" element={<FreeDelivery />} />
+                <Route path="/returns-exchange" element={<ReturnsExchange />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-use" element={<TermsOfUse />} />
+                <Route path="/thank-you" element={<ThankYou />} />
+                <Route path="/contacts" element={<Contacts />} />
               </Routes>
             </Suspense>
           </div>
