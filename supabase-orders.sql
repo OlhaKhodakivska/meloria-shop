@@ -16,13 +16,34 @@ create table if not exists public.orders (
   status text not null default 'new'
 );
 
+alter table public.orders
+  add column if not exists customer_name text,
+  add column if not exists customer_email text,
+  add column if not exists customer_phone text,
+  add column if not exists delivery_method text,
+  add column if not exists delivery_city text,
+  add column if not exists delivery_branch text,
+  add column if not exists payment_method text,
+  add column if not exists payment_status text not null default 'awaiting_prepayment',
+  add column if not exists payment_details jsonb not null default '{}'::jsonb,
+  add column if not exists comment text,
+  add column if not exists items jsonb,
+  add column if not exists total_amount numeric(12, 2),
+  add column if not exists status text not null default 'new';
+
 alter table public.orders enable row level security;
+
+notify pgrst, 'reload schema';
+
+drop policy if exists "Customers can create orders" on public.orders;
 
 create policy "Customers can create orders"
 on public.orders
 for insert
 to anon, authenticated
 with check (true);
+
+drop policy if exists "No public order reads" on public.orders;
 
 create policy "No public order reads"
 on public.orders
