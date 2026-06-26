@@ -1,0 +1,1 @@
+var e={container:`_container_tsj2n_2`,title:`_title_tsj2n_11`,content:`_content_tsj2n_20`,link:`_link_tsj2n_48`};export{e as t};
