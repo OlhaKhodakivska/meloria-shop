@@ -59,6 +59,24 @@ export const Checkout: React.FC = () => {
       quantity: item.quantity,
       image_url: item.product.imageUrl
     }));
+    const customerComment = formData.comment.trim();
+    const selectedPaymentDetails = formData.payment === 'card_prepayment'
+      ? {
+          type: 'card',
+          recipient: paymentDetails.recipient,
+          card: paymentDetails.card,
+          purpose: paymentDetails.purpose
+        }
+      : {
+          type: 'iban',
+          recipient: paymentDetails.recipient,
+          iban: paymentDetails.iban,
+          tax_id: paymentDetails.taxId,
+          purpose: paymentDetails.purpose
+        };
+    const orderPaymentDetails = customerComment
+      ? { ...selectedPaymentDetails, customer_comment: customerComment }
+      : selectedPaymentDetails;
 
     const { data, error } = await supabase
       .from('orders')
@@ -71,21 +89,7 @@ export const Checkout: React.FC = () => {
         delivery_branch: formData.warehouse.trim(),
         payment_method: formData.payment,
         payment_status: 'awaiting_prepayment',
-        payment_details: formData.payment === 'card_prepayment'
-          ? {
-              type: 'card',
-              recipient: paymentDetails.recipient,
-              card: paymentDetails.card,
-              purpose: paymentDetails.purpose
-            }
-          : {
-              type: 'iban',
-              recipient: paymentDetails.recipient,
-              iban: paymentDetails.iban,
-              tax_id: paymentDetails.taxId,
-              purpose: paymentDetails.purpose
-            },
-        comment: formData.comment.trim(),
+        payment_details: orderPaymentDetails,
         items: orderItems,
         total_amount: selectedTotalPrice,
         status: 'new'
