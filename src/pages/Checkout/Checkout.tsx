@@ -13,6 +13,21 @@ const paymentDetails = {
   purpose: import.meta.env.VITE_PAYMENT_PURPOSE || 'Уточнюється менеджером'
 };
 
+type OrderPayload = {
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  delivery_method: string;
+  delivery_city: string;
+  delivery_branch: string;
+  payment_method: string;
+  payment_status: string;
+  payment_details: Record<string, unknown>;
+  items: Array<Record<string, unknown>>;
+  total_amount: number;
+  status: string;
+};
+
 export const Checkout: React.FC = () => {
   const { cartItems, clearOrderedItems } = useCart();
   const navigate = useNavigate();
@@ -44,11 +59,6 @@ export const Checkout: React.FC = () => {
 
     if (selectedCartItems.length === 0) return;
 
-    if (!isSupabaseConfigured || !supabase) {
-      setSubmitError('Supabase ще не налаштований. Додайте VITE_SUPABASE_URL та VITE_SUPABASE_ANON_KEY у .env.');
-      return;
-    }
-
     setIsSubmitting(true);
 
     const orderItems = selectedCartItems.map((item) => ({
@@ -78,34 +88,76 @@ export const Checkout: React.FC = () => {
       ? { ...selectedPaymentDetails, customer_comment: customerComment }
       : selectedPaymentDetails;
 
-    const { data, error } = await supabase
-      .from('orders')
-      .insert({
-        customer_name: formData.name.trim(),
-        customer_email: formData.email.trim().toLowerCase(),
-        customer_phone: formData.phone.trim(),
-        delivery_method: formData.delivery,
-        delivery_city: formData.city.trim(),
-        delivery_branch: formData.warehouse.trim(),
-        payment_method: formData.payment,
-        payment_status: 'awaiting_prepayment',
-        payment_details: orderPaymentDetails,
-        items: orderItems,
-        total_amount: selectedTotalPrice,
-        status: 'new'
-      })
-      .select('id')
-      .single();
+    const orderPayload: OrderPayload = {
+      customer_name: formData.name.trim(),
+      customer_email: formData.email.trim().toLowerCase(),
+      customer_phone: formData.phone.trim(),
+      delivery_method: formData.delivery,
+      delivery_city: formData.city.trim(),
+      delivery_branch: formData.warehouse.trim(),
+      payment_method: formData.payment,
+      payment_status: 'awaiting_prepayment',
+      payment_details: orderPaymentDetails,
+      items: orderItems,
+      total_amount: selectedTotalPrice,
+      status: 'new'
+    };
 
-    setIsSubmitting(false);
+    try {
+      let orderId = '';
 
-    if (error) {
-      setSubmitError(error.message);
-      return;
+      try {
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderPayload),
+        });
+
+        if (response.ok) {
+          const contentType = response.headers.get('content-type') || '';
+          if (!contentType.includes('application/json')) {
+            throw new TypeError('Orders API returned a non-JSON response.');
+          }
+
+          const result = await response.json() as { order?: { id?: string } };
+          orderId = result.order?.id || '';
+        } else if (response.status !== 404) {
+          const result = await response.json().catch(() => null) as { error?: string } | null;
+          throw new Error(result?.error || 'Не вдалося оформити замовлення.');
+        }
+      } catch (apiError) {
+        if (apiError instanceof TypeError) {
+          // Static hosting without server API: keep accepting orders through Supabase.
+        } else {
+          throw apiError;
+        }
+      }
+
+      if (!orderId) {
+        if (!isSupabaseConfigured || !supabase) {
+          throw new Error('Supabase ще не налаштований. Додайте VITE_SUPABASE_URL та VITE_SUPABASE_ANON_KEY у .env.');
+        }
+
+        const { data, error } = await supabase
+          .from('orders')
+          .insert(orderPayload)
+          .select('id')
+          .single();
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        orderId = data?.id ? String(data.id) : '';
+      }
+
+      clearOrderedItems();
+      navigate(`/thank-you${orderId ? `?order=${encodeURIComponent(orderId)}` : ''}`);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Не вдалося оформити замовлення.');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    clearOrderedItems();
-    navigate(`/thank-you${data?.id ? `?order=${encodeURIComponent(String(data.id))}` : ''}`);
   };
 
   return (
