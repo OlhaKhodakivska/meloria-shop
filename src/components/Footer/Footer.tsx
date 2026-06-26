@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
             MELORIA<span className={styles.star}>✦</span>
           </h3>
           <p className={styles.brandDescription}>
-            Подарунки, які створюють емоції та залишають приємні спогади.
+            Речі, які створюють емоції та залишають приємні спогади.
           </p>
           <div className={styles.socials}>
             {/* Instagram */}
