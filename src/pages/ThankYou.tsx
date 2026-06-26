@@ -2,8 +2,8 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './InfoPages.module.css';
 
-const paymentCardNumber = import.meta.env.VITE_PAYMENT_CARD_NUMBER || 'буде надіслано менеджером';
-const paymentIban = import.meta.env.VITE_PAYMENT_IBAN || 'буде надіслано менеджером';
+const paymentCardNumber = import.meta.env.VITE_PAYMENT_CARD_NUMBER || '4441 1110 7318 5823';
+const paymentIban = import.meta.env.VITE_PAYMENT_IBAN || 'UA373220010000026203356831468';
 
 export const ThankYou: React.FC = () => {
   const location = useLocation();

@@ -6,8 +6,8 @@ import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import styles from './Checkout.module.css';
 
 const paymentDetails = {
-  card: import.meta.env.VITE_PAYMENT_CARD_NUMBER || 'буде надіслано менеджером',
-  iban: import.meta.env.VITE_PAYMENT_IBAN || 'буде надіслано менеджером'
+  card: import.meta.env.VITE_PAYMENT_CARD_NUMBER || '4441 1110 7318 5823',
+  iban: import.meta.env.VITE_PAYMENT_IBAN || 'UA373220010000026203356831468'
 };
 
 export const Checkout: React.FC = () => {
