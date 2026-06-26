@@ -1,21 +1,23 @@
 // src/App.tsx
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header/Header';
 import { CartDrawer } from './components/CartDrawer/CartDrawer';
-import { Home } from './pages/Home';
-import { Checkout } from './pages/Checkout/Checkout';
 import { CartProvider } from './context/CartContext';
-import { Auth } from './pages/Auth/Auth';
-import { About } from './pages/About';
-import { Delivery } from './pages/Delivery';
-import { Contacts } from './pages/Contacts';
 import { Footer } from './components/Footer/Footer';
-import { FreeDelivery } from './pages/FreeDelivery';
-import { ThankYou } from './pages/ThankYou';
-import { ReturnsExchange } from './pages/ReturnsExchange';
-import { PrivacyPolicy } from './pages/PrivacyPolicy';
-import { TermsOfUse } from './pages/TermsOfUse';
+import { SEO } from './components/SEO/SEO';
+
+const Home = lazy(() => import('./pages/Home').then((module) => ({ default: module.Home })));
+const Checkout = lazy(() => import('./pages/Checkout/Checkout').then((module) => ({ default: module.Checkout })));
+const Auth = lazy(() => import('./pages/Auth/Auth').then((module) => ({ default: module.Auth })));
+const About = lazy(() => import('./pages/About').then((module) => ({ default: module.About })));
+const Delivery = lazy(() => import('./pages/Delivery').then((module) => ({ default: module.Delivery })));
+const Contacts = lazy(() => import('./pages/Contacts').then((module) => ({ default: module.Contacts })));
+const FreeDelivery = lazy(() => import('./pages/FreeDelivery').then((module) => ({ default: module.FreeDelivery })));
+const ThankYou = lazy(() => import('./pages/ThankYou').then((module) => ({ default: module.ThankYou })));
+const ReturnsExchange = lazy(() => import('./pages/ReturnsExchange').then((module) => ({ default: module.ReturnsExchange })));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy').then((module) => ({ default: module.PrivacyPolicy })));
+const TermsOfUse = lazy(() => import('./pages/TermsOfUse').then((module) => ({ default: module.TermsOfUse })));
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -23,6 +25,7 @@ function App() {
   return (
     <BrowserRouter>
       <CartProvider>
+        <SEO />
         {/* Головна обгортка для притискання футера */}
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
 
@@ -32,20 +35,22 @@ function App() {
 
           {/* Контентна зона, яка розтягується і штовхає футер донизу */}
           <div style={{ flexGrow: 1 }}>
-            <Routes>
-              {/* Використовуємо динамічний базовий URL */}
-              <Route path={`${import.meta.env.BASE_URL}`} element={<Home />} />
-              <Route path={`${import.meta.env.BASE_URL}checkout`} element={<Checkout />} />
-              <Route path={`${import.meta.env.BASE_URL}auth`} element={<Auth />} />
-              <Route path={`${import.meta.env.BASE_URL}about`} element={<About />} />
-              <Route path={`${import.meta.env.BASE_URL}delivery`} element={<Delivery />} />
-              <Route path={`${import.meta.env.BASE_URL}free-delivery`} element={<FreeDelivery />} />
-              <Route path={`${import.meta.env.BASE_URL}returns-exchange`} element={<ReturnsExchange />} />
-              <Route path={`${import.meta.env.BASE_URL}privacy-policy`} element={<PrivacyPolicy />} />
-              <Route path={`${import.meta.env.BASE_URL}terms-of-use`} element={<TermsOfUse />} />
-              <Route path={`${import.meta.env.BASE_URL}thank-you`} element={<ThankYou />} />
-              <Route path={`${import.meta.env.BASE_URL}contacts`} element={<Contacts />} />
-            </Routes>
+            <Suspense fallback={null}>
+              <Routes>
+                {/* Використовуємо динамічний базовий URL */}
+                <Route path={`${import.meta.env.BASE_URL}`} element={<Home />} />
+                <Route path={`${import.meta.env.BASE_URL}checkout`} element={<Checkout />} />
+                <Route path={`${import.meta.env.BASE_URL}auth`} element={<Auth />} />
+                <Route path={`${import.meta.env.BASE_URL}about`} element={<About />} />
+                <Route path={`${import.meta.env.BASE_URL}delivery`} element={<Delivery />} />
+                <Route path={`${import.meta.env.BASE_URL}free-delivery`} element={<FreeDelivery />} />
+                <Route path={`${import.meta.env.BASE_URL}returns-exchange`} element={<ReturnsExchange />} />
+                <Route path={`${import.meta.env.BASE_URL}privacy-policy`} element={<PrivacyPolicy />} />
+                <Route path={`${import.meta.env.BASE_URL}terms-of-use`} element={<TermsOfUse />} />
+                <Route path={`${import.meta.env.BASE_URL}thank-you`} element={<ThankYou />} />
+                <Route path={`${import.meta.env.BASE_URL}contacts`} element={<Contacts />} />
+              </Routes>
+            </Suspense>
           </div>
 
           {/* Наш новий стильний футер */}

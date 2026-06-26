@@ -3,7 +3,7 @@ import fs from 'fs';
 import csv from 'csvtojson';
 
 const csvFilePath = './express.csv';
-const outputFilePath = './src/data/products.ts';
+const outputFilePath = './public/products.json';
 
 console.log('Починаємо розумну конвертацію товарів Presentville за категоріями...');
 
@@ -75,7 +75,7 @@ csv()
       };
     });
 
-    const fileContent = `import type { Product } from '../types/product';\n\nexport const MOCK_PRODUCTS: Product[] = ${JSON.stringify(formattedProducts, null, 2)};\n`;
+    const fileContent = `${JSON.stringify(formattedProducts, null, 2)}\n`;
 
     fs.writeFileSync(outputFilePath, fileContent, 'utf8');
     console.log(`✨ Успішно розсортовано ${formattedProducts.length} товарів по категоріях!`);

@@ -64,17 +64,6 @@ export const Footer: React.FC = () => {
           </ul>
         </div>
 
-        {/* Стовпчик 4: Підписка */}
-        <div className={styles.columnSubscribe}>
-          <h4>Підпишіться на новини</h4>
-          <p>Отримуйте знижки та новинки першими</p>
-          <form className={styles.subscribeForm} onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="Ваш email" required />
-            <button type="submit" aria-label="Subscribe">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </form>
-        </div>
       </div>
 
       <hr className={styles.divider} />

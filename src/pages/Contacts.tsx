@@ -20,8 +20,8 @@ export const Contacts: React.FC = () => (
 
       <p>
         <strong>Email: </strong>
-        <a href="mailto:info@meloria.shop" className={styles.link}>
-          info@meloria.shop
+        <a href="mailto:info@meloria.pp.ua" className={styles.link}>
+          info@meloria.pp.ua
         </a>
       </p>
 

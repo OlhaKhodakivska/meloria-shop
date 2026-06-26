@@ -1,0 +1,23 @@
+{
+  "name": "MELORIA - подарунки та товари для дому",
+  "short_name": "MELORIA",
+  "description": "Український інтернет-магазин подарунків, аксесуарів і затишних товарів для дому.",
+  "lang": "uk",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fff7f9",
+  "theme_color": "#f6c6d4",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

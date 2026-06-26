@@ -11,7 +11,7 @@
   max-width: var(--max-width, 1200px);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr 0.8fr 1.2fr;
+  grid-template-columns: 1.4fr 0.8fr 0.8fr;
   gap: 40px;
 }
 
@@ -66,7 +66,7 @@
 }
 
 /* Стовпчики меню */
-.column h4, .columnSubscribe h4 {
+.column h4 {
   font-size: 15px;
   font-weight: 600;
   color: var(--color-bg-deep, #102346);
@@ -92,47 +92,6 @@
 
 .column a:hover {
   color: var(--color-bg-deep, #102346);
-}
-
-/* Стовпчик підписки */
-.columnSubscribe p {
-  font-size: 14px;
-  color: #5d6d7e;
-  margin-top: 0;
-  margin-bottom: 15px;
-}
-
-.subscribeForm {
-  display: flex;
-  max-width: 300px;
-  background-color: var(--color-white, #fff);
-  border-radius: 8px;
-  border: 1px solid #e5e8e8;
-  overflow: hidden;
-}
-
-.subscribeForm input {
-  flex: 1;
-  padding: 12px 15px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: transparent;
-}
-
-.subscribeForm button {
-  background-color: var(--color-bg-deep, #102346);
-  border: none;
-  padding: 0 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
-}
-
-.subscribeForm button:hover {
-  background-color: #1a3563;
 }
 
 /* Розділювач */
@@ -194,9 +153,6 @@
   }
   .socials {
     justify-content: center;
-  }
-  .subscribeForm {
-    margin: 0 auto;
   }
   .bottomSection {
     flex-direction: column;

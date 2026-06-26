@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ProductCard } from '../components/ProductCard/ProductCard';
 import { Hero } from '../components/Hero/Hero';
 import { PromoBanner } from '../components/PromoBanner/PromoBanner';
-import { MOCK_PRODUCTS } from '../data/products';
+import type { Product } from '../types/product';
 import { Gift, Truck, ShieldCheck, Heart } from 'lucide-react';
 import styles from './Home.module.css';
 
@@ -20,10 +20,14 @@ const getProductIdNumber = (productId: string) => {
   return Number.isFinite(parsedId) ? parsedId : 0;
 };
 
-const getMostExpensiveProduct = (products: typeof MOCK_PRODUCTS) =>
+const getMostExpensiveProduct = (products: Product[]) =>
   [...products].sort((firstProduct, secondProduct) => secondProduct.price - firstProduct.price)[0];
 
-const getFeaturedProducts = (products: typeof MOCK_PRODUCTS, limit: number) => {
+const getFeaturedProducts = (products: Product[], limit: number) => {
+  if (products.length === 0) {
+    return [];
+  }
+
   const mostExpensiveProduct = getMostExpensiveProduct(products);
   const randomProducts = [...products]
     .filter((product) => product.id !== mostExpensiveProduct.id)
@@ -40,6 +44,8 @@ export const Home: React.FC = () => {
 
   // Стейт для збереження активної категорії
   const [activeCategory, setActiveCategory] = useState('Всі');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsError, setProductsError] = useState('');
 
   // Список усіх унікальних категорій + варіант "Всі"
   const categories = useMemo(() => {
@@ -55,7 +61,7 @@ export const Home: React.FC = () => {
       'Маски для сну'
     ];
     const productCategories = Array.from(
-      new Set(MOCK_PRODUCTS.map((product) => product.category).filter(Boolean))
+      new Set(products.map((product) => product.category).filter(Boolean))
     );
     const orderedCategories = [
       ...preferredOrder.filter((category) => productCategories.includes(category)),
@@ -65,7 +71,7 @@ export const Home: React.FC = () => {
     ];
 
     return ['Всі', ...orderedCategories];
-  }, []);
+  }, [products]);
 
   const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
 
@@ -90,33 +96,61 @@ export const Home: React.FC = () => {
       categories
         .filter((category) => category !== 'Всі')
         .map((category) => {
-          const products = MOCK_PRODUCTS.filter((product) => product.category === category);
+          const categoryProducts = products.filter((product) => product.category === category);
           const coverProduct =
-            products.find((product) => product.imageUrl) ||
-            products[0];
+            categoryProducts.find((product) => product.imageUrl) ||
+            categoryProducts[0];
 
           return {
             category,
-            count: products.length,
+            count: categoryProducts.length,
             coverProduct
           };
         }),
-    [categories]
+    [categories, products]
   );
 
   const newProducts = useMemo(
     () =>
-      [...MOCK_PRODUCTS]
+      [...products]
         .sort((firstProduct, secondProduct) =>
           getProductIdNumber(secondProduct.id) - getProductIdNumber(firstProduct.id)
         )
         .slice(0, NEW_PRODUCTS_LIMIT),
-    []
+    [products]
   );
   const featuredProducts = useMemo(
-    () => getFeaturedProducts(MOCK_PRODUCTS, FEATURED_PRODUCTS_LIMIT),
-    []
+    () => getFeaturedProducts(products, FEATURED_PRODUCTS_LIMIT),
+    [products]
   );
+
+  useEffect(() => {
+    let ignore = false;
+
+    fetch(`${baseUrl}products.json`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Не вдалося завантажити каталог товарів.');
+        }
+
+        return response.json() as Promise<Product[]>;
+      })
+      .then((loadedProducts) => {
+        if (!ignore) {
+          setProducts(loadedProducts);
+          setProductsError('');
+        }
+      })
+      .catch(() => {
+        if (!ignore) {
+          setProductsError('Не вдалося завантажити товари. Оновіть сторінку або спробуйте пізніше.');
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [baseUrl]);
 
   useEffect(() => {
     if (location.hash === '#catalog') {
@@ -145,7 +179,7 @@ export const Home: React.FC = () => {
 
   const filteredProducts = useMemo(() => {
     if (searchQuery) {
-      return MOCK_PRODUCTS.filter((product) => {
+      return products.filter((product) => {
         const searchableText = normalizeSearchText(
           `${product.title} ${product.category} ${product.description}`
         );
@@ -162,15 +196,15 @@ export const Home: React.FC = () => {
       ? selectedCatalogCategory || 'Всі'
       : activeCategory;
     const categoryProducts = selectedCategory === 'Всі'
-      ? MOCK_PRODUCTS
-      : MOCK_PRODUCTS.filter((product) => product.category === selectedCategory);
+      ? products
+      : products.filter((product) => product.category === selectedCategory);
 
     return catalogView === 'all'
       ? categoryProducts
       : activeCategory === 'Всі'
         ? featuredProducts
         : categoryProducts.slice(0, FEATURED_PRODUCTS_LIMIT);
-  }, [activeCategory, catalogView, featuredProducts, newProducts, searchQuery, selectedCatalogCategory]);
+  }, [activeCategory, catalogView, featuredProducts, newProducts, products, searchQuery, selectedCatalogCategory]);
 
   const showCategoryCards = catalogView === 'all' && !selectedCatalogCategory && !searchQuery;
 
@@ -286,7 +320,17 @@ export const Home: React.FC = () => {
           </div>
         ) : (
           <div className={styles.productGrid}>
-            {filteredProducts.length > 0 ? (
+            {productsError ? (
+              <div className={styles.emptySearch}>
+                <h3>Каталог тимчасово недоступний</h3>
+                <p>{productsError}</p>
+              </div>
+            ) : products.length === 0 ? (
+              <div className={styles.emptySearch}>
+                <h3>Завантажуємо товари</h3>
+                <p>Каталог з'явиться за мить.</p>
+              </div>
+            ) : filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))
