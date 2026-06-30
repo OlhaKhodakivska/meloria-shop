@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://olhakhodakivska.github.io/meloria-shop/sitemap.xml
+Sitemap: https://www.meloria.pp.ua/sitemap.xml

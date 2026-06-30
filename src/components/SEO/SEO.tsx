@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const SITE_NAME = 'MELORIA';
-const SITE_URL = 'https://olhakhodakivska.github.io/meloria-shop';
-const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
+const SITE_URL = 'https://www.meloria.pp.ua';
+const DEFAULT_IMAGE = `${SITE_URL}/og-image.png?v=2`;
 const DEFAULT_LOGO = `${SITE_URL}/android-chrome-512x512.png`;
 const DEFAULT_DESCRIPTION =
   'Український інтернет-магазин подарунків, аксесуарів і затишних товарів для дому. Сумки, шопери, подушки, косметички, канцелярія та доставка по Україні.';
@@ -235,6 +235,7 @@ export const SEO = () => {
     setMeta('meta[property="og:description"]', 'property', 'og:description', page.description);
     setMeta('meta[property="og:url"]', 'property', 'og:url', canonicalUrl);
     setMeta('meta[property="og:image"]', 'property', 'og:image', DEFAULT_IMAGE);
+    setMeta('meta[property="og:image:secure_url"]', 'property', 'og:image:secure_url', DEFAULT_IMAGE);
     setMeta('meta[property="og:image:alt"]', 'property', 'og:image:alt', 'MELORIA - подарунки, аксесуари та товари для затишку');
     setMeta('meta[property="og:image:type"]', 'property', 'og:image:type', 'image/png');
     setMeta('meta[property="og:image:width"]', 'property', 'og:image:width', '1200');
