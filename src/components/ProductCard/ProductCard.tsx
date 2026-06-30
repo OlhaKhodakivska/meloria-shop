@@ -19,6 +19,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [failedImages, setFailedImages] = useState<string[]>([]);
   const currentImage = images[selectedImageIndex] || images[0];
   const hasImage = Boolean(currentImage) && !failedImages.includes(currentImage);
+  const deliveryLabel = product.deliveryLabel || 'Експрес';
+  const deliveryDescription =
+    product.deliveryDescription || 'Відправка відбувається наступного робочого дня після оплати.';
 
   const openDetails = () => {
     setIsDetailOpen(true);
@@ -93,6 +96,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       <div className={styles.info}>
         <span className={styles.category}>{product.category}</span>
+        <span className={styles.deliveryBadge}>{deliveryLabel}</span>
         <button className={styles.detailsButton} onClick={openDetails} type="button">
           <span className={styles.title}>{product.title}</span>
           <span className={styles.description}>{product.description || 'Детальніше про товар'}</span>
@@ -190,8 +194,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
             <div className={styles.detailInfo}>
               <span className={styles.detailCategory}>{product.category}</span>
+              <span className={styles.detailDeliveryBadge}>{deliveryLabel}</span>
               <h2 id={`product-${product.id}-title`} className={styles.detailTitle}>{product.title}</h2>
               <div className={styles.detailPrice}>{product.price} ₴</div>
+
+              <div className={styles.deliveryNotice}>
+                <strong>{deliveryLabel}</strong>
+                <span>{deliveryDescription}</span>
+              </div>
 
               <div className={styles.detailDescription}>
                 <h3>Опис</h3>

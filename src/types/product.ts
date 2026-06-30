@@ -8,4 +8,7 @@ export interface Product {
   description: string;
   category: string;
   isAvailable: boolean;
+  deliveryGroup?: 'express' | 'made_to_order';
+  deliveryLabel?: string;
+  deliveryDescription?: string;
 }

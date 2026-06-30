@@ -9,9 +9,31 @@ import { Gift, Truck, ShieldCheck, Heart } from 'lucide-react';
 import styles from './Home.module.css';
 
 type CatalogView = 'featured' | 'all' | 'new';
+type DeliveryGroupFilter = 'all' | 'express' | 'made_to_order';
 
 const NEW_PRODUCTS_LIMIT = 48;
 const FEATURED_PRODUCTS_LIMIT = 12;
+const deliveryGroups: Array<{
+  value: DeliveryGroupFilter;
+  label: string;
+  description: string;
+}> = [
+  {
+    value: 'all',
+    label: 'Усі',
+    description: 'У каталозі разом показані товари зі швидкою відправкою та товари під замовлення.'
+  },
+  {
+    value: 'express',
+    label: 'Експрес',
+    description: 'Відправка відбувається наступного робочого дня після оплати.'
+  },
+  {
+    value: 'made_to_order',
+    label: 'Під замовлення',
+    description: 'Виробник виготовляє на замовлення. Зазвичай потрібно від 2 до 5 робочих днів після оплати.'
+  }
+];
 
 const normalizeSearchText = (value: string) => value.trim().toLocaleLowerCase('uk');
 
@@ -44,8 +66,16 @@ export const Home: React.FC = () => {
 
   // Стейт для збереження активної категорії
   const [activeCategory, setActiveCategory] = useState('Всі');
+  const [activeDeliveryGroup, setActiveDeliveryGroup] = useState<DeliveryGroupFilter>('all');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsError, setProductsError] = useState('');
+  const deliveryFilteredProducts = useMemo(
+    () =>
+      activeDeliveryGroup === 'all'
+        ? products
+        : products.filter((product) => (product.deliveryGroup || 'express') === activeDeliveryGroup),
+    [activeDeliveryGroup, products]
+  );
 
   // Список усіх унікальних категорій + варіант "Всі"
   const categories = useMemo(() => {
@@ -61,7 +91,7 @@ export const Home: React.FC = () => {
       'Маски для сну'
     ];
     const productCategories = Array.from(
-      new Set(products.map((product) => product.category).filter(Boolean))
+      new Set(deliveryFilteredProducts.map((product) => product.category).filter(Boolean))
     );
     const orderedCategories = [
       ...preferredOrder.filter((category) => productCategories.includes(category)),
@@ -71,7 +101,7 @@ export const Home: React.FC = () => {
     ];
 
     return ['Всі', ...orderedCategories];
-  }, [products]);
+  }, [deliveryFilteredProducts]);
 
   const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
 
@@ -96,7 +126,7 @@ export const Home: React.FC = () => {
       categories
         .filter((category) => category !== 'Всі')
         .map((category) => {
-          const categoryProducts = products.filter((product) => product.category === category);
+          const categoryProducts = deliveryFilteredProducts.filter((product) => product.category === category);
           const coverProduct =
             categoryProducts.find((product) => product.imageUrl) ||
             categoryProducts[0];
@@ -107,21 +137,21 @@ export const Home: React.FC = () => {
             coverProduct
           };
         }),
-    [categories, products]
+    [categories, deliveryFilteredProducts]
   );
 
   const newProducts = useMemo(
     () =>
-      [...products]
+      [...deliveryFilteredProducts]
         .sort((firstProduct, secondProduct) =>
           getProductIdNumber(secondProduct.id) - getProductIdNumber(firstProduct.id)
         )
         .slice(0, NEW_PRODUCTS_LIMIT),
-    [products]
+    [deliveryFilteredProducts]
   );
   const featuredProducts = useMemo(
-    () => getFeaturedProducts(products, FEATURED_PRODUCTS_LIMIT),
-    [products]
+    () => getFeaturedProducts(deliveryFilteredProducts, FEATURED_PRODUCTS_LIMIT),
+    [deliveryFilteredProducts]
   );
 
   useEffect(() => {
@@ -179,7 +209,7 @@ export const Home: React.FC = () => {
 
   const filteredProducts = useMemo(() => {
     if (searchQuery) {
-      return products.filter((product) => {
+      return deliveryFilteredProducts.filter((product) => {
         const searchableText = normalizeSearchText(
           `${product.title} ${product.category} ${product.description}`
         );
@@ -196,17 +226,19 @@ export const Home: React.FC = () => {
       ? selectedCatalogCategory || 'Всі'
       : activeCategory;
     const categoryProducts = selectedCategory === 'Всі'
-      ? products
-      : products.filter((product) => product.category === selectedCategory);
+      ? deliveryFilteredProducts
+      : deliveryFilteredProducts.filter((product) => product.category === selectedCategory);
 
     return catalogView === 'all'
       ? categoryProducts
       : activeCategory === 'Всі'
         ? featuredProducts
         : categoryProducts.slice(0, FEATURED_PRODUCTS_LIMIT);
-  }, [activeCategory, catalogView, featuredProducts, newProducts, products, searchQuery, selectedCatalogCategory]);
+  }, [activeCategory, catalogView, deliveryFilteredProducts, featuredProducts, newProducts, searchQuery, selectedCatalogCategory]);
 
   const showCategoryCards = catalogView === 'all' && !selectedCatalogCategory && !searchQuery;
+  const activeDeliveryGroupDescription =
+    deliveryGroups.find((group) => group.value === activeDeliveryGroup)?.description || deliveryGroups[0].description;
 
   const titleText = searchQuery
     ? `Пошук: ${searchParams.get('search')?.trim()}`
@@ -283,6 +315,22 @@ export const Home: React.FC = () => {
 
       {/* ГОЛОВНИЙ БЛОК ТОВАРІВ */}
       <main className={styles.main} id="catalog">
+        <div className={styles.deliveryGroups} aria-label="Групи товарів за строком відправки">
+          <div className={styles.deliveryGroupTabs}>
+            {deliveryGroups.map((group) => (
+              <button
+                key={group.value}
+                className={`${styles.deliveryGroupButton} ${activeDeliveryGroup === group.value ? styles.deliveryGroupButtonActive : ''}`}
+                onClick={() => setActiveDeliveryGroup(group.value)}
+                type="button"
+              >
+                {group.label}
+              </button>
+            ))}
+          </div>
+          <p>{activeDeliveryGroupDescription}</p>
+        </div>
+
         <div className={styles.heading}>
           <h2 className={styles.title}>{titleText}</h2>
           <button className={styles.viewAllBtn} onClick={handleHeadingAction} type="button">

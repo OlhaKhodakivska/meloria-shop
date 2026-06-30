@@ -239,6 +239,23 @@
   margin-bottom: 10px;
 }
 
+.detailDeliveryBadge,
+.deliveryBadge {
+  width: fit-content;
+  border: 1px solid #d9e4f2;
+  border-radius: 999px;
+  background-color: #f8fbff;
+  color: var(--color-bg-deep);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.detailDeliveryBadge {
+  padding: 8px 11px;
+  margin-bottom: 12px;
+}
+
 .detailTitle {
   color: var(--color-bg-deep);
   font-size: 26px;
@@ -252,6 +269,23 @@
   font-size: 24px;
   font-weight: 800;
   margin-bottom: 22px;
+}
+
+.deliveryNotice {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 22px;
+  padding: 12px;
+  border: 1px solid #e5edf7;
+  border-radius: 8px;
+  background-color: #f8fbff;
+  color: var(--color-gray);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.deliveryNotice strong {
+  color: var(--color-bg-deep);
 }
 
 .detailDescription {
@@ -311,6 +345,11 @@
   letter-spacing: 1px;
   color: var(--color-gray);
   margin-bottom: 8px;
+}
+
+.deliveryBadge {
+  padding: 7px 10px;
+  margin-bottom: 10px;
 }
 
 .title {

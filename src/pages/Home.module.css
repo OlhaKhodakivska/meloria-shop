@@ -61,6 +61,51 @@
   padding-bottom: 12px;
 }
 
+.deliveryGroups {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 18px;
+  border: 1px solid #e5edf7;
+  border-radius: 8px;
+  background-color: #f8fbff;
+}
+
+.deliveryGroupTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.deliveryGroupButton {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid #d9e4f2;
+  border-radius: 8px;
+  background-color: var(--color-white);
+  color: var(--color-bg-deep);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.deliveryGroupButton:hover {
+  border-color: var(--color-bg-deep);
+}
+
+.deliveryGroupButtonActive {
+  background-color: var(--color-bg-deep);
+  border-color: var(--color-bg-deep);
+  color: var(--color-white);
+}
+
+.deliveryGroups p {
+  margin: 0;
+  color: var(--color-gray);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .title {
   color: var(--color-bg-deep);
   font-size: 28px;
@@ -336,6 +381,17 @@
   .heading {
     margin-bottom: 24px;
     padding-bottom: 8px;
+  }
+
+  .deliveryGroups {
+    margin-bottom: 22px;
+    padding: 14px;
+  }
+
+  .deliveryGroupButton {
+    flex: 1 1 auto;
+    padding: 0 12px;
+    font-size: 13px;
   }
 
   .title {
