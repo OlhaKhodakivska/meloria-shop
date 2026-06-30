@@ -3,7 +3,8 @@ import { useLocation } from 'react-router-dom';
 
 const SITE_NAME = 'MELORIA';
 const SITE_URL = 'https://olhakhodakivska.github.io/meloria-shop';
-const DEFAULT_IMAGE = `${SITE_URL}/android-chrome-512x512.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
+const DEFAULT_LOGO = `${SITE_URL}/android-chrome-512x512.png`;
 const DEFAULT_DESCRIPTION =
   'Український інтернет-магазин подарунків, аксесуарів і затишних товарів для дому. Сумки, шопери, подушки, косметички, канцелярія та доставка по Україні.';
 
@@ -161,7 +162,7 @@ const buildHomeStructuredData = (): StructuredData[] => [
       '@type': 'OnlineStore',
       name: SITE_NAME,
       url: `${SITE_URL}/`,
-      logo: DEFAULT_IMAGE,
+      logo: DEFAULT_LOGO,
       image: DEFAULT_IMAGE,
       description: DEFAULT_DESCRIPTION,
       email: 'info@meloria.pp.ua',
@@ -234,7 +235,10 @@ export const SEO = () => {
     setMeta('meta[property="og:description"]', 'property', 'og:description', page.description);
     setMeta('meta[property="og:url"]', 'property', 'og:url', canonicalUrl);
     setMeta('meta[property="og:image"]', 'property', 'og:image', DEFAULT_IMAGE);
-    setMeta('meta[property="og:image:alt"]', 'property', 'og:image:alt', 'Логотип інтернет-магазину MELORIA');
+    setMeta('meta[property="og:image:alt"]', 'property', 'og:image:alt', 'MELORIA - подарунки, аксесуари та товари для затишку');
+    setMeta('meta[property="og:image:type"]', 'property', 'og:image:type', 'image/png');
+    setMeta('meta[property="og:image:width"]', 'property', 'og:image:width', '1200');
+    setMeta('meta[property="og:image:height"]', 'property', 'og:image:height', '630');
     setMeta('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image');
     setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', page.title);
     setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', page.description);

@@ -25,6 +25,7 @@ export const Contacts: React.FC = () => (
         </a>
       </p>
 
+      {/*
       <p>
         <strong>Instagram: </strong>
         <a
@@ -36,6 +37,7 @@ export const Contacts: React.FC = () => (
           @meloria.shop
         </a>
       </p>
+      */}
     </div>
   </div>
 );
