@@ -21,10 +21,138 @@ type OrderPayload = {
   payment_method: string;
   payment_status: string;
   payment_details: Record<string, unknown>;
+  comment: string | null;
   items: Array<Record<string, unknown>>;
   total_amount: number;
   status: string;
 };
+
+type FormErrors = Partial<Record<'name' | 'email' | 'phone' | 'city' | 'warehouse' | 'comment', string>>;
+
+const ukrainianCities = [
+  'Київ',
+  'Харків',
+  'Одеса',
+  'Дніпро',
+  'Донецьк',
+  'Запоріжжя',
+  'Львів',
+  'Кривий Ріг',
+  'Миколаїв',
+  'Маріуполь',
+  'Луганськ',
+  'Вінниця',
+  'Макіївка',
+  'Севастополь',
+  'Сімферополь',
+  'Херсон',
+  'Полтава',
+  'Чернігів',
+  'Черкаси',
+  'Хмельницький',
+  'Чернівці',
+  'Житомир',
+  'Суми',
+  'Рівне',
+  'Івано-Франківськ',
+  'Камʼянське',
+  'Кропивницький',
+  'Тернопіль',
+  'Кременчук',
+  'Луцьк',
+  'Біла Церква',
+  'Краматорськ',
+  'Мелітополь',
+  'Нікополь',
+  'Ужгород',
+  'Бердянськ',
+  'Словʼянськ',
+  'Алчевськ',
+  'Павлоград',
+  'Сєвєродонецьк',
+  'Камʼянець-Подільський',
+  'Бровари',
+  'Бориспіль',
+  'Ірпінь',
+  'Буча',
+  'Вишневе',
+  'Обухів',
+  'Фастів',
+  'Ніжин',
+  'Прилуки',
+  'Умань',
+  'Сміла',
+  'Коломия',
+  'Дрогобич',
+  'Стрий',
+  'Мукачево',
+  'Червоноград',
+  'Нововолинськ',
+  'Ковель',
+  'Олександрія',
+  'Вознесенськ',
+  'Первомайськ',
+  'Ізмаїл',
+  'Білгород-Дністровський',
+  'Чорноморськ',
+  'Южне',
+  'Нетішин',
+  'Славута',
+  'Шепетівка'
+];
+
+const ukrainianNameRegex = /^[А-ЩЬЮЯЄІЇҐа-щьюяєіїґ]+(?:[ '\u2019-][А-ЩЬЮЯЄІЇҐа-щьюяєіїґ]+)+$/;
+const ukrainianTextRegex = /^[0-9А-ЩЬЮЯЄІЇҐа-щьюяєіїґ№.,!?():;"'`\u2019\-\s/]+$/;
+const ukrainianPhoneRegex = /^\+380\d{9}$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const branchRegex = /^(відділення|поштомат|пункт|№|[0-9])/i;
+
+function normalizePhone(value: string) {
+  return value.replace(/[\s()-]/g, '');
+}
+
+function validateForm(formData: {
+  name: string;
+  email: string;
+  phone: string;
+  city: string;
+  warehouse: string;
+  comment: string;
+}) {
+  const errors: FormErrors = {};
+  const name = formData.name.trim();
+  const email = formData.email.trim();
+  const phone = normalizePhone(formData.phone.trim());
+  const city = formData.city.trim();
+  const warehouse = formData.warehouse.trim();
+  const comment = formData.comment.trim();
+
+  if (!ukrainianNameRegex.test(name)) {
+    errors.name = 'Вкажіть прізвище та імʼя кирилицею.';
+  }
+
+  if (!emailRegex.test(email)) {
+    errors.email = 'Вкажіть коректну електронну пошту.';
+  }
+
+  if (!ukrainianPhoneRegex.test(phone)) {
+    errors.phone = 'Телефон має бути у форматі +380XXXXXXXXX.';
+  }
+
+  if (!ukrainianTextRegex.test(city) || city.length < 2) {
+    errors.city = 'Вкажіть український населений пункт кирилицею.';
+  }
+
+  if (!ukrainianTextRegex.test(warehouse) || !branchRegex.test(warehouse)) {
+    errors.warehouse = 'Напишіть відділення або поштомат, наприклад "Відділення №4".';
+  }
+
+  if (comment && !ukrainianTextRegex.test(comment)) {
+    errors.comment = 'Коментар має бути українською кирилицею.';
+  }
+
+  return errors;
+}
 
 export const Checkout: React.FC = () => {
   const { cartItems, clearOrderedItems } = useCart();
@@ -49,13 +177,23 @@ export const Checkout: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   // Сценарій відправки форми
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError('');
+    setFormErrors({});
 
     if (selectedCartItems.length === 0) return;
+
+    const validationErrors = validateForm(formData);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setFormErrors(validationErrors);
+      setSubmitError('Перевірте, будь ласка, поля форми.');
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -82,17 +220,19 @@ export const Checkout: React.FC = () => {
     const orderPaymentDetails = customerComment
       ? { ...selectedPaymentDetails, customer_comment: customerComment }
       : selectedPaymentDetails;
+    const normalizedPhone = normalizePhone(formData.phone.trim());
 
     const orderPayload: OrderPayload = {
       customer_name: formData.name.trim(),
       customer_email: formData.email.trim().toLowerCase(),
-      customer_phone: formData.phone.trim(),
+      customer_phone: normalizedPhone,
       delivery_method: formData.delivery,
       delivery_city: formData.city.trim(),
       delivery_branch: formData.warehouse.trim(),
       payment_method: formData.payment,
       payment_status: 'awaiting_prepayment',
       payment_details: orderPaymentDetails,
+      comment: customerComment || null,
       items: orderItems,
       total_amount: selectedTotalPrice,
       status: 'new'
@@ -100,6 +240,7 @@ export const Checkout: React.FC = () => {
 
     try {
       let orderId = '';
+      let orderNumber = '';
 
       try {
         const response = await fetch('/api/orders', {
@@ -114,8 +255,9 @@ export const Checkout: React.FC = () => {
             throw new TypeError('Orders API returned a non-JSON response.');
           }
 
-          const result = await response.json() as { order?: { id?: string } };
+          const result = await response.json() as { order?: { id?: string; order_number?: number | string | null } };
           orderId = result.order?.id || '';
+          orderNumber = result.order?.order_number ? `№${result.order.order_number}` : '';
         } else if (response.status !== 404) {
           const result = await response.json().catch(() => null) as { error?: string } | null;
           throw new Error(result?.error || 'Не вдалося оформити замовлення.');
@@ -151,7 +293,7 @@ export const Checkout: React.FC = () => {
       });
 
       if (orderId) {
-        thankYouParams.set('order', orderId);
+        thankYouParams.set('order', orderNumber || orderId);
       }
 
       clearOrderedItems();
@@ -177,8 +319,11 @@ export const Checkout: React.FC = () => {
               type="text" id="name" required
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
-              placeholder="Іванов Іван"
+              placeholder="Ходаківська Ольга"
+              autoComplete="name"
+              aria-invalid={Boolean(formErrors.name)}
             />
+            {formErrors.name && <span className={styles.fieldError}>{formErrors.name}</span>}
           </div>
 
           <div className={styles.inputGroup}>
@@ -188,7 +333,10 @@ export const Checkout: React.FC = () => {
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               placeholder="example@mail.com"
+              autoComplete="email"
+              aria-invalid={Boolean(formErrors.email)}
             />
+            {formErrors.email && <span className={styles.fieldError}>{formErrors.email}</span>}
           </div>
 
           <div className={styles.inputGroup}>
@@ -197,8 +345,12 @@ export const Checkout: React.FC = () => {
               type="tel" id="phone" required
               value={formData.phone}
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              placeholder="+380"
+              placeholder="+380XXXXXXXXX"
+              autoComplete="tel"
+              inputMode="tel"
+              aria-invalid={Boolean(formErrors.phone)}
             />
+            {formErrors.phone && <span className={styles.fieldError}>{formErrors.phone}</span>}
           </div>
 
           <h3 className={styles.sectionTitle}>2. Спосіб доставки</h3>
@@ -227,8 +379,17 @@ export const Checkout: React.FC = () => {
               type="text" id="city" required
               value={formData.city}
               onChange={(e) => setFormData({...formData, city: e.target.value})}
-              placeholder="Назва міста"
+              placeholder="Почніть вводити населений пункт"
+              list="ukrainian-cities"
+              autoComplete="address-level2"
+              aria-invalid={Boolean(formErrors.city)}
             />
+            <datalist id="ukrainian-cities">
+              {ukrainianCities.map((city) => (
+                <option key={city} value={city} />
+              ))}
+            </datalist>
+            {formErrors.city && <span className={styles.fieldError}>{formErrors.city}</span>}
           </div>
 
           <div className={styles.inputGroup}>
@@ -238,7 +399,9 @@ export const Checkout: React.FC = () => {
               value={formData.warehouse}
               onChange={(e) => setFormData({...formData, warehouse: e.target.value})}
               placeholder="Відділення №1"
+              aria-invalid={Boolean(formErrors.warehouse)}
             />
+            {formErrors.warehouse && <span className={styles.fieldError}>{formErrors.warehouse}</span>}
           </div>
 
           <h3 className={styles.sectionTitle}>3. Спосіб оплати</h3>
@@ -285,7 +448,9 @@ export const Checkout: React.FC = () => {
               onChange={(e) => setFormData({...formData, comment: e.target.value})}
               placeholder="Побажання щодо доставки або замовлення"
               rows={4}
+              aria-invalid={Boolean(formErrors.comment)}
             />
+            {formErrors.comment && <span className={styles.fieldError}>{formErrors.comment}</span>}
           </div>
 
           {submitError && <p className={styles.errorText}>{submitError}</p>}

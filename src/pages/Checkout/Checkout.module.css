@@ -71,6 +71,17 @@
   border-color: var(--color-bg-deep);
 }
 
+.inputGroup input[aria-invalid='true'],
+.inputGroup textarea[aria-invalid='true'] {
+  border-color: #b42318;
+}
+
+.fieldError {
+  color: #8a1f1f;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
 .radioGroup {
   display: flex;
   flex-direction: column;
