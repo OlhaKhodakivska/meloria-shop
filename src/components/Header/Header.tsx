@@ -1,5 +1,5 @@
 // src/components/Header/Header.tsx
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ShoppingBag, User, Menu, X, Search } from 'lucide-react'; // Додали Search
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { useCart } from '../../context/cartContextValue';
@@ -33,11 +33,16 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
   const location = useLocation();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(''); // Стан для пошукового запиту
+  const [searchDraft, setSearchDraft] = useState<string | null>(null);
 
   const { totalItems } = useCart();
   const catalogUrl = '/?view=all#catalog';
   const closeMenu = useCallback(() => setIsMenuOpen(false), []);
+  const searchQueryFromUrl = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('search') || '';
+  }, [location.search]);
+  const searchQuery = searchDraft ?? searchQueryFromUrl;
 
   const handleCartOpen = () => {
     closeMenu();
@@ -53,11 +58,6 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
     closeMenu();
     navigate('/');
   };
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    setSearchQuery(params.get('search') || '');
-  }, [location.search]);
 
   useEffect(() => {
     document.body.classList.toggle('menu-open', isMenuOpen);
@@ -81,6 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/?search=${encodeURIComponent(searchQuery.trim())}#catalog`);
+      setSearchDraft(null);
       closeMenu();
     }
   };
@@ -91,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
         type="text"
         placeholder={placeholder}
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={(e) => setSearchDraft(e.target.value)}
         className={styles.searchInput}
       />
       <button type="submit" className={styles.searchBtn} aria-label="Пошук">
