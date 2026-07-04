@@ -278,7 +278,7 @@ export const Checkout: React.FC = () => {
         const { data, error } = await supabase
           .from('orders')
           .insert(orderPayload)
-          .select('id')
+          .select()
           .single();
 
         if (error) {
@@ -286,6 +286,7 @@ export const Checkout: React.FC = () => {
         }
 
         orderId = data?.id ? String(data.id) : '';
+        orderNumber = data?.order_number ? `№${data.order_number}` : '';
       }
 
       const thankYouParams = new URLSearchParams({
@@ -319,7 +320,7 @@ export const Checkout: React.FC = () => {
               type="text" id="name" required
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
-              placeholder="Ходаківська Ольга"
+              placeholder="Прізвище Ім'я"
               autoComplete="name"
               aria-invalid={Boolean(formErrors.name)}
             />
