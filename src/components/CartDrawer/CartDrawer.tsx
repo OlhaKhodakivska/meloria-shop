@@ -4,6 +4,7 @@ import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../../context/cartContextValue';
 import styles from './CartDrawer.module.css';
 import { useNavigate } from 'react-router-dom';
+import { useModalFocus } from '../../hooks/useModalFocus';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
   // Додали toggleSelect з нашого оновленого контексту!
   const { cartItems, updateQuantity, removeFromCart, totalPrice, toggleSelect } = useCart();
   const navigate = useNavigate();
+  const dialogRef = useModalFocus(isOpen, onClose);
 
   // Перевіряємо, чи є хоча б один вибраний товар, щоб активувати кнопку замовлення
   const hasSelectedItems = cartItems.some(item => item.selected);
@@ -22,10 +24,18 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={dialogRef}
+        className={styles.drawer}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-title"
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={styles.header}>
-          <h2>Кошик</h2>
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Close cart" type="button">
+          <h2 id="cart-title">Кошик</h2>
+          <button className={styles.closeBtn} onClick={onClose} aria-label="Закрити кошик" type="button">
             <X size={24} />
           </button>
         </div>
@@ -49,6 +59,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                   <label className={styles.checkboxContainer}>
                     <input
                       type="checkbox"
+                      aria-label={`Вибрати товар ${item.product.title}`}
                       checked={item.selected}
                       onChange={() => toggleSelect(item.product.id)}
                       className={styles.checkboxInput}

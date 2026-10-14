@@ -305,3 +305,8 @@
     font-size: 20px;
   }
 }
+
+.checkboxInput:focus-visible + .customCheckbox {
+  outline: 2px solid var(--color-bg-deep);
+  outline-offset: 3px;
+}

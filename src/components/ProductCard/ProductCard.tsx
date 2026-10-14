@@ -1,9 +1,10 @@
 // src/components/ProductCard/ProductCard.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ChevronLeft, ChevronRight, ShoppingCart, X } from 'lucide-react';
 import type { Product } from '../../types/product';
 import { useCart } from '../../context/cartContextValue'; // Імпортуємо хук кошика
 import styles from './ProductCard.module.css';
+import { useModalFocus } from '../../hooks/useModalFocus';
 
 interface ProductCardProps {
   product: Product;
@@ -16,6 +17,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const images = product.images?.length ? product.images : product.imageUrl ? [product.imageUrl] : [];
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const closeDetails = useCallback(() => setIsDetailOpen(false), []);
+  const dialogRef = useModalFocus(isDetailOpen, closeDetails);
   const [failedImages, setFailedImages] = useState<string[]>([]);
   const currentImage = images[selectedImageIndex] || images[0];
   const hasImage = Boolean(currentImage) && !failedImages.includes(currentImage);
@@ -44,24 +47,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       currentImages.includes(imageUrl) ? currentImages : [...currentImages, imageUrl]
     );
   };
-
-  useEffect(() => {
-    if (!isDetailOpen) return;
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsDetailOpen(false);
-      }
-    };
-
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleEscape);
-    };
-  }, [isDetailOpen]);
 
   const cartButtonLabel = isInCart ? 'У кошику' : 'До кошика';
 
@@ -120,17 +105,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       {isDetailOpen && (
-        <div className={styles.galleryOverlay} role="dialog" aria-modal="true" aria-labelledby={`product-${product.id}-title`}>
+        <div className={styles.galleryOverlay}>
           <button
             className={styles.galleryBackdrop}
-            onClick={() => setIsDetailOpen(false)}
+            onClick={closeDetails}
             type="button"
             aria-label="Закрити перегляд товару"
           />
-          <div className={styles.productDialog}>
+          <div
+            ref={dialogRef}
+            className={styles.productDialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`product-${product.id}-title`}
+            tabIndex={-1}
+          >
             <button
               className={styles.closeButton}
-              onClick={() => setIsDetailOpen(false)}
+              onClick={closeDetails}
               type="button"
               aria-label="Закрити"
             >
