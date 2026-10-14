@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header/Header';
 import { CartDrawer } from './components/CartDrawer/CartDrawer';

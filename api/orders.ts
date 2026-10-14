@@ -144,8 +144,7 @@ async function sendTelegramOrderNotification(order: SavedOrder) {
   );
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Telegram notification failed:', errorText);
+    console.error('Telegram notification failed.');
   }
 }
 
@@ -199,7 +198,12 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       return response.status(400).json({ error: error.message });
     }
 
-    await sendTelegramOrderNotification(order as SavedOrder);
+    try {
+      await sendTelegramOrderNotification(order as SavedOrder);
+    } catch {
+      // The order is already saved; a notification failure must not invite a retry.
+      console.error('Telegram order notification could not be sent.');
+    }
 
     return response.status(201).json({ order });
   } catch (error) {

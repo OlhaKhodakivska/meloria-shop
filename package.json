@@ -6,9 +6,11 @@
   "homepage": "https://OlhaKhodakivska.github.io/meloria-shop/",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && node scripts/prerender-seo.js",
-    "build:github": "tsc && VITE_BASE_PATH=/meloria-shop/ vite build && node scripts/prerender-seo.js",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit",
+    "build": "npm run typecheck && vite build && node scripts/prerender-seo.js",
+    "build:github": "npm run typecheck && VITE_BASE_PATH=/meloria-shop/ vite build && node scripts/prerender-seo.js",
     "import:prom": "node scripts/import-prom-feed.js",
+    "test": "node --test tests/*.test.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build:github",
