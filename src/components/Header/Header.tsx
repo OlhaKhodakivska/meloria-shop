@@ -1,5 +1,5 @@
 // src/components/Header/Header.tsx
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ShoppingBag, User, Menu, X, Search } from 'lucide-react'; // Додали Search
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { useCart } from '../../context/cartContextValue';
@@ -21,7 +21,7 @@ const ClerkAccountButton: React.FC<{ onProfileOpen: () => void }> = ({ onProfile
       </div>
     </SignedIn>
     <SignedOut>
-      <button className={styles.actionBtn} onClick={onProfileOpen} aria-label="Profile" type="button">
+      <button className={styles.actionBtn} onClick={onProfileOpen} aria-label="Особистий кабінет" type="button">
         <User size={22} />
       </button>
     </SignedOut>
@@ -33,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
   const location = useLocation();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLElement>(null);
   const [searchDraft, setSearchDraft] = useState<string | null>(null);
 
   const { totalItems } = useCart();
@@ -54,13 +55,15 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
     navigate('/auth');
   };
 
-  const handleLogoClick = () => {
-    closeMenu();
-    navigate('/');
-  };
-
   useEffect(() => {
     document.body.classList.toggle('menu-open', isMenuOpen);
+    const previousFocus = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+
+    const focusFrame = isMenuOpen
+      ? window.requestAnimationFrame(() => menuRef.current?.querySelector('input')?.focus())
+      : undefined;
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -71,8 +74,10 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
     window.addEventListener('keydown', handleEscape);
 
     return () => {
+      if (focusFrame !== undefined) window.cancelAnimationFrame(focusFrame);
       document.body.classList.remove('menu-open');
       window.removeEventListener('keydown', handleEscape);
+      if (isMenuOpen && previousFocus?.isConnected) previousFocus.focus();
     };
   }, [isMenuOpen, closeMenu]);
 
@@ -108,16 +113,17 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
         <button
           className={styles.burger}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle menu"
+          aria-label="Відкрити або закрити меню"
           aria-expanded={isMenuOpen}
+          aria-controls="main-navigation"
           type="button"
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        <div className={styles.logo} onClick={handleLogoClick}>
-          MELORIA<span className={styles.star}>✦</span>
-        </div>
+        <Link to="/" className={styles.logo} onClick={closeMenu} aria-label="MELORIA — головна сторінка">
+          MELORIA<span className={styles.star} aria-hidden="true">✦</span>
+        </Link>
 
         {isMenuOpen && (
           <button
@@ -128,7 +134,12 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
           />
         )}
 
-        <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
+        <nav
+          ref={menuRef}
+          id="main-navigation"
+          aria-label="Основна навігація"
+          className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}
+        >
           <div className={styles.mobileMenuHeader}>
             <span>Меню</span>
             <button className={styles.mobileCloseBtn} onClick={closeMenu} aria-label="Закрити меню" type="button">
@@ -166,13 +177,13 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
           {clerkPublishableKey ? (
             <ClerkAccountButton onProfileOpen={handleProfileOpen} />
           ) : (
-            <button className={styles.actionBtn} onClick={handleProfileOpen} aria-label="Profile" type="button">
+            <button className={styles.actionBtn} onClick={handleProfileOpen} aria-label="Особистий кабінет" type="button">
               <User size={22} />
             </button>
           )}
 
           {/* Кошик */}
-          <button className={styles.actionBtn} onClick={handleCartOpen} aria-label="Cart" type="button">
+          <button className={styles.actionBtn} onClick={handleCartOpen} aria-label="Кошик" type="button">
             <ShoppingBag size={22} />
             {totalItems > 0 && <span className={styles.cartBadge}>{totalItems}</span>}
           </button>

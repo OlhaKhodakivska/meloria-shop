@@ -84,7 +84,7 @@
   border-radius: 20px;
   padding: 4px 12px;
   border: 1px solid transparent;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .searchForm:focus-within {
@@ -298,6 +298,7 @@
     background-color: #fff;
     color: var(--color-bg-deep);
     transform: translateX(-105%);
+    visibility: hidden;
     transition: transform 0.28s ease;
     box-shadow: 16px 0 40px rgba(8, 18, 38, 0.24);
     z-index: 1001;
@@ -310,6 +311,7 @@
 
   .navOpen {
     transform: translateX(0);
+    visibility: visible;
   }
 
   .mobileMenuHeader {

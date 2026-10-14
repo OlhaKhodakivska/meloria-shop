@@ -192,6 +192,8 @@ export const Checkout: React.FC = () => {
     if (Object.keys(validationErrors).length > 0) {
       setFormErrors(validationErrors);
       setSubmitError('Перевірте, будь ласка, поля форми.');
+      const firstInvalidField = Object.keys(validationErrors)[0];
+      document.getElementById(firstInvalidField)?.focus();
       return;
     }
 
@@ -313,7 +315,7 @@ export const Checkout: React.FC = () => {
       <div className={styles.checkoutLayout}>
         {/* ЛІВА ЧАСТИНА: Форма даних */}
         <form onSubmit={handleSubmit} className={styles.formCard}>
-          <h3 className={styles.sectionTitle}>1. Контактні дані</h3>
+          <h2 className={styles.sectionTitle}>1. Контактні дані</h2>
           <div className={styles.inputGroup}>
             <label htmlFor="name">Прізвище та Ім'я *</label>
             <input
@@ -323,8 +325,9 @@ export const Checkout: React.FC = () => {
               placeholder="Прізвище Ім'я"
               autoComplete="name"
               aria-invalid={Boolean(formErrors.name)}
+              aria-describedby={formErrors.name ? "name-error" : undefined}
             />
-            {formErrors.name && <span className={styles.fieldError}>{formErrors.name}</span>}
+            {formErrors.name && <span id="name-error" className={styles.fieldError}>{formErrors.name}</span>}
           </div>
 
           <div className={styles.inputGroup}>
@@ -336,8 +339,9 @@ export const Checkout: React.FC = () => {
               placeholder="example@mail.com"
               autoComplete="email"
               aria-invalid={Boolean(formErrors.email)}
+              aria-describedby={formErrors.email ? "email-error" : undefined}
             />
-            {formErrors.email && <span className={styles.fieldError}>{formErrors.email}</span>}
+            {formErrors.email && <span id="email-error" className={styles.fieldError}>{formErrors.email}</span>}
           </div>
 
           <div className={styles.inputGroup}>
@@ -350,12 +354,13 @@ export const Checkout: React.FC = () => {
               autoComplete="tel"
               inputMode="tel"
               aria-invalid={Boolean(formErrors.phone)}
+              aria-describedby={formErrors.phone ? "phone-error" : undefined}
             />
-            {formErrors.phone && <span className={styles.fieldError}>{formErrors.phone}</span>}
+            {formErrors.phone && <span id="phone-error" className={styles.fieldError}>{formErrors.phone}</span>}
           </div>
 
-          <h3 className={styles.sectionTitle}>2. Спосіб доставки</h3>
-          <div className={styles.radioGroup}>
+          <h2 id="delivery-heading" className={styles.sectionTitle}>2. Спосіб доставки</h2>
+          <div className={styles.radioGroup} role="radiogroup" aria-labelledby="delivery-heading">
             <label className={styles.radioLabel}>
               <input
                 type="radio" name="delivery" value="nova_poshta"
@@ -384,13 +389,14 @@ export const Checkout: React.FC = () => {
               list="ukrainian-cities"
               autoComplete="address-level2"
               aria-invalid={Boolean(formErrors.city)}
+              aria-describedby={formErrors.city ? "city-error" : undefined}
             />
             <datalist id="ukrainian-cities">
               {ukrainianCities.map((city) => (
                 <option key={city} value={city} />
               ))}
             </datalist>
-            {formErrors.city && <span className={styles.fieldError}>{formErrors.city}</span>}
+            {formErrors.city && <span id="city-error" className={styles.fieldError}>{formErrors.city}</span>}
           </div>
 
           <div className={styles.inputGroup}>
@@ -401,12 +407,13 @@ export const Checkout: React.FC = () => {
               onChange={(e) => setFormData({...formData, warehouse: e.target.value})}
               placeholder="Відділення №1"
               aria-invalid={Boolean(formErrors.warehouse)}
+              aria-describedby={formErrors.warehouse ? "warehouse-error" : undefined}
             />
-            {formErrors.warehouse && <span className={styles.fieldError}>{formErrors.warehouse}</span>}
+            {formErrors.warehouse && <span id="warehouse-error" className={styles.fieldError}>{formErrors.warehouse}</span>}
           </div>
 
-          <h3 className={styles.sectionTitle}>3. Спосіб оплати</h3>
-          <div className={styles.radioGroup}>
+          <h2 id="payment-heading" className={styles.sectionTitle}>3. Спосіб оплати</h2>
+          <div className={styles.radioGroup} role="radiogroup" aria-labelledby="payment-heading">
             <label className={styles.radioLabel}>
               <input
                 type="radio" name="payment" value="card_prepayment"
@@ -450,11 +457,12 @@ export const Checkout: React.FC = () => {
               placeholder="Побажання щодо доставки або замовлення"
               rows={4}
               aria-invalid={Boolean(formErrors.comment)}
+              aria-describedby={formErrors.comment ? "comment-error" : undefined}
             />
-            {formErrors.comment && <span className={styles.fieldError}>{formErrors.comment}</span>}
+            {formErrors.comment && <span id="comment-error" className={styles.fieldError}>{formErrors.comment}</span>}
           </div>
 
-          {submitError && <p className={styles.errorText}>{submitError}</p>}
+          {submitError && <p className={styles.errorText} role="alert">{submitError}</p>}
 
           <button type="submit" disabled={selectedCartItems.length === 0 || isSubmitting} className={styles.submitOrderBtn}>
             {isSubmitting ? 'Надсилаємо заявку...' : 'Підтвердити замовлення'}
@@ -463,7 +471,7 @@ export const Checkout: React.FC = () => {
 
         {/* ПРАВА ЧАСТИНА: Склад замовлення */}
         <div className={styles.summaryCard}>
-          <h3 className={styles.summaryTitle}>Ваше замовлення</h3>
+          <h2 className={styles.summaryTitle}>Ваше замовлення</h2>
 
           {selectedCartItems.length === 0 ? (
             <p className={styles.emptyText}>У кошику немає товарів. Поверніться до каталогу.</p>
@@ -474,7 +482,7 @@ export const Checkout: React.FC = () => {
                   <div key={item.product.id} className={styles.summaryItem}>
                     <img src={item.product.imageUrl} alt={item.product.title} />
                     <div className={styles.summaryItemInfo}>
-                      <h4>{item.product.title}</h4>
+                      <h3>{item.product.title}</h3>
                       <p>{item.quantity} шт. × {item.product.price} ₴</p>
                     </div>
                     <span className={styles.itemSum}>{item.product.price * item.quantity} ₴</span>

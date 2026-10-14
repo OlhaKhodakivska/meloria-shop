@@ -1,16 +1,14 @@
 // src/components/Footer/Footer.tsx
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 
 export const Footer: React.FC = () => {
-  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   const displayYear = currentYear > 2026 ? `2026-${currentYear}` : '2026';
   const catalogUrl = '/?view=all#catalog';
 
   const handleLogoClick = () => {
-    navigate('/');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -19,8 +17,10 @@ export const Footer: React.FC = () => {
       <div className={styles.topSection}>
         {/* Стовпчик 1: Брендинг та соцмережі */}
         <div className={styles.columnBrand}>
-          <h3 className={styles.logo} onClick={handleLogoClick}>
-            MELORIA<span className={styles.star}>✦</span>
+          <h3 className={styles.logo}>
+            <Link to="/" onClick={handleLogoClick} aria-label="MELORIA — головна сторінка">
+              MELORIA<span className={styles.star} aria-hidden="true">✦</span>
+            </Link>
           </h3>
           <p className={styles.brandDescription}>
             Речі, які створюють емоції та залишають приємні спогади.
