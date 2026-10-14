@@ -41,7 +41,7 @@
   margin-bottom: 30px;
 }
 
-.brandHeader h2 {
+.brandHeader h1 {
   font-size: 28px;
   color: var(--color-bg-deep);
   font-weight: 700;
@@ -303,7 +303,7 @@
     margin-bottom: 24px;
   }
 
-  .brandHeader h2 {
+  .brandHeader h1 {
     font-size: 24px;
   }
 

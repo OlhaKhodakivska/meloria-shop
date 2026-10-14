@@ -24,7 +24,7 @@ export const ThankYou: React.FC = () => {
           підтвердження наявності товарів і доставки.
         </p>
 
-        <h3>Оплата</h3>
+        <h2>Оплата</h2>
         {paymentMethod === 'iban' ? (
           <>
             <p><strong>Оплата за IBAN:</strong></p>

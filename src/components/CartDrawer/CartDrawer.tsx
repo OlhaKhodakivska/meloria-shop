@@ -70,7 +70,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                   <img src={item.product.imageUrl} alt={item.product.title} className={styles.itemImg} />
 
                   <div className={styles.itemInfo}>
-                    <h4 className={styles.itemTitle}>{item.product.title}</h4>
+                    <h3 className={styles.itemTitle}>{item.product.title}</h3>
                     <span className={styles.itemPrice}>{item.product.price} ₴</span>
 
                     <div className={styles.itemActions}>

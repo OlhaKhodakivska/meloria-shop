@@ -36,7 +36,7 @@ function App() {
           <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
           {/* Контентна зона, яка розтягується і штовхає футер донизу */}
-          <div style={{ flexGrow: 1 }}>
+          <main id="main-content" style={{ flexGrow: 1 }}>
             <Suspense fallback={null}>
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -52,7 +52,7 @@ function App() {
                 <Route path="/contacts" element={<Contacts />} />
               </Routes>
             </Suspense>
-          </div>
+          </main>
 
           {/* Наш новий стильний футер */}
           <Footer />

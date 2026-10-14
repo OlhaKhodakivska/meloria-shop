@@ -21,7 +21,7 @@ export const Auth: React.FC = () => {
       <div className={styles.authContainer}>
         <div className={styles.authCard}>
           <div className={styles.brandHeader}>
-            <h2>MELORIA<span className={styles.star}>✦</span></h2>
+            <h1>MELORIA<span className={styles.star}>✦</span></h1>
             <p>Авторизація Clerk ще не налаштована</p>
           </div>
           <p className={styles.errorMessage}>
@@ -42,7 +42,7 @@ export const Auth: React.FC = () => {
 
         <SignedOut>
           <div className={styles.brandHeader}>
-            <h2>MELORIA<span className={styles.star}>✦</span></h2>
+            <h1>MELORIA<span className={styles.star}>✦</span></h1>
             <p>Ваш персональний простір естетики</p>
           </div>
 

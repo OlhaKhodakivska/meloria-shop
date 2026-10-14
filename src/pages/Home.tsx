@@ -274,28 +274,28 @@ export const Home: React.FC = () => {
           <div className={styles.benefitItem}>
             <Gift size={28} className={styles.benefitIcon} />
             <div>
-              <h4>Оригінальні товари</h4>
+              <h2>Оригінальні товари</h2>
               <p>Ретельно підібрані для вас</p>
             </div>
           </div>
           <div className={styles.benefitItem}>
             <Truck size={28} className={styles.benefitIcon} />
             <div>
-              <h4>Швидка доставка</h4>
+              <h2>Швидка доставка</h2>
               <p>1-2 дні по Україні</p>
             </div>
           </div>
           <div className={styles.benefitItem}>
             <ShieldCheck size={28} className={styles.benefitIcon} />
             <div>
-              <h4>Безпечна оплата</h4>
+              <h2>Безпечна оплата</h2>
               <p>100% передоплата карткою або IBAN</p>
             </div>
           </div>
           <div className={styles.benefitItem}>
             <Heart size={28} className={styles.benefitIcon} />
             <div>
-              <h4>Затишок у деталях</h4>
+              <h2>Затишок у деталях</h2>
               <p>Товари для особливого дому</p>
             </div>
           </div>
@@ -304,7 +304,7 @@ export const Home: React.FC = () => {
 
       {/* СЕКЦІЯ КАТЕГОРІЙ (Популярні категорії з макету) */}
       <section className={styles.categoriesSection}>
-        <h3 className={styles.categoriesTitle}>Популярні категорії ✦</h3>
+        <h2 className={styles.categoriesTitle}>Популярні категорії ✦</h2>
         <div className={styles.categoriesTabs}>
           {categories.map((cat) => (
             <button
@@ -320,7 +320,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ГОЛОВНИЙ БЛОК ТОВАРІВ */}
-      <main className={styles.main} id="catalog">
+      <section className={styles.main} id="catalog" aria-labelledby="catalog-title">
         <div className={styles.deliveryGroups} aria-label="Групи товарів за строком відправки">
           <div className={styles.deliveryGroupTabs}>
             {deliveryGroups.map((group) => (
@@ -338,7 +338,7 @@ export const Home: React.FC = () => {
         </div>
 
         <div className={styles.heading}>
-          <h2 className={styles.title}>{titleText}</h2>
+          <h2 id="catalog-title" className={styles.title}>{titleText}</h2>
           <button className={styles.viewAllBtn} onClick={handleHeadingAction} type="button">
             {headingActionText} <span className={styles.arrow}>→</span>
           </button>
@@ -408,7 +408,7 @@ export const Home: React.FC = () => {
             )}
           </div>
         )}
-      </main>
+      </section>
 
       <PromoBanner />
     </div>
