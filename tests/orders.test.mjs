@@ -1,11 +1,25 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { beforeEach, test } from 'node:test';
+import fs from 'node:fs/promises';
+import { join } from 'node:path';
 
 // Synthetic configuration only. Every network request is intercepted below.
 process.env.SUPABASE_URL = 'https://orders-test.invalid';
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key';
 process.env.TELEGRAM_BOT_TOKEN = 'test-bot-token';
 process.env.TELEGRAM_CHAT_ID = 'test-chat-id';
+
+const catalogueProduct = {
+  id: 'test-product', title: 'Тестовий товар', price: 100,
+  category: 'Подушки', imageUrl: '', description: '', isAvailable: true,
+};
+
+beforeEach((t) => {
+  t.mock.method(fs, 'readFile', async (path) => {
+    assert.equal(path, join(process.cwd(), 'public/products.json'));
+    return JSON.stringify([catalogueProduct]);
+  });
+});
 
 const { default: handler } = await import('../api/orders.ts');
 
@@ -155,4 +169,79 @@ test('does not expose database error details to the customer', async (t) => {
   await handler({ method: 'POST', body: order }, response);
   assert.equal(response.statusCode, 500);
   assert.equal(JSON.stringify(response.body).includes('internal-database-detail'), false);
+});
+
+const catalogueConflicts = [
+  ['unknown product', { ...order, items: [{ product_id: 'unknown', price: 100, quantity: 1 }] }],
+  ['forged price', { ...order, items: [{ product_id: 'test-product', price: 1, quantity: 1 }], total_amount: 1 }],
+  ['forged total', { ...order, total_amount: 1 }],
+  ['repeated product', { ...order, items: [...order.items, ...order.items], total_amount: 200 }],
+  ['total exceeding database precision', { ...order, items: [{ product_id: 'test-product', price: 100, quantity: Number.MAX_SAFE_INTEGER }] }],
+];
+
+for (const [label, body] of catalogueConflicts) {
+  test(`rejects ${label} before saving the order`, async (t) => {
+    let requests = 0;
+    t.mock.method(globalThis, 'fetch', async () => {
+      requests += 1;
+      throw new Error('Unexpected network request blocked by test');
+    });
+    const response = createResponse();
+    await handler({ method: 'POST', body }, response);
+    assert.equal(response.statusCode, 409);
+    assert.equal(requests, 0);
+  });
+}
+
+test('rejects a product marked unavailable in the catalogue', async (t) => {
+  t.mock.method(fs, 'readFile', async () => JSON.stringify([{ ...catalogueProduct, isAvailable: false }]));
+  let requests = 0;
+  t.mock.method(globalThis, 'fetch', async () => { requests += 1; throw new Error('Blocked'); });
+  const response = createResponse();
+  await handler({ method: 'POST', body: order }, response);
+  assert.equal(response.statusCode, 409);
+  assert.equal(requests, 0);
+});
+
+test('stores catalogue details and calculates decimal totals in kopiykas', async (t) => {
+  t.mock.method(fs, 'readFile', async () => JSON.stringify([
+    { ...catalogueProduct, price: 0.1 },
+    { ...catalogueProduct, id: 'second-product', price: 0.2 },
+  ]));
+  let inserted;
+  t.mock.method(globalThis, 'fetch', async (input, options) => {
+    if (String(input).startsWith('https://orders-test.invalid/rest/v1/orders')) {
+      inserted = JSON.parse(options.body);
+      return new Response(JSON.stringify({ ...inserted, id: order.id }), {
+        status: 201, headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    if (String(input).startsWith('https://api.telegram.org/bottest-bot-token/')) return new Response('{}');
+    throw new Error('Unexpected network request blocked by test');
+  });
+  const response = createResponse();
+  await handler({ method: 'POST', body: {
+    ...order,
+    items: [
+      { product_id: 'test-product', price: 0.1, quantity: 1, title: 'Forged title', category: 'Forged category', image_url: 'Forged image' },
+      { product_id: 'second-product', price: 0.2, quantity: 1 },
+    ],
+    total_amount: 0.1 + 0.2,
+  } }, response);
+  assert.equal(response.statusCode, 201);
+  assert.equal(inserted.total_amount, 0.3);
+  assert.equal(inserted.items[0].title, catalogueProduct.title);
+  assert.equal(inserted.items[0].category, catalogueProduct.category);
+  assert.equal(inserted.items[0].image_url, catalogueProduct.imageUrl);
+});
+
+test('does not save an order when the catalogue file cannot be read', async (t) => {
+  t.mock.method(console, 'error', () => {});
+  t.mock.method(fs, 'readFile', async () => { throw new Error('Simulated missing file'); });
+  let requests = 0;
+  t.mock.method(globalThis, 'fetch', async () => { requests += 1; throw new Error('Blocked'); });
+  const response = createResponse();
+  await handler({ method: 'POST', body: order }, response);
+  assert.equal(response.statusCode, 500);
+  assert.equal(requests, 0);
 });

@@ -1,4 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
+import fs from 'node:fs/promises';
+import { join } from 'node:path';
+import type { Product } from '../src/types/product.js';
 
 type ApiRequest = {
   method?: string;
@@ -143,6 +146,58 @@ function validateOrderPayload(payload: Partial<OrderPayload>) {
   return errors;
 }
 
+type RequestedItem = { product_id: string; price: number; quantity: number };
+
+async function buildOrderFromCatalogue(requestedItems: RequestedItem[]) {
+  const file = await fs.readFile(join(process.cwd(), 'public/products.json'), 'utf8');
+  const catalogue: unknown = JSON.parse(file);
+  if (!Array.isArray(catalogue)) throw new Error('Invalid product catalogue');
+
+  const productsById = new Map(
+    (catalogue as Product[]).map((product) => [product.id, product])
+  );
+  const items = [];
+  const seenIds = new Set<string>();
+  let totalCents = 0;
+
+  for (const requested of requestedItems) {
+    const product = productsById.get(requested.product_id);
+    if (!product || !product.isAvailable) {
+      return { error: 'Товар більше недоступний. Оновіть каталог і перевірте кошик.' };
+    }
+
+    if (typeof product.price !== 'number' || !Number.isFinite(product.price) || product.price <= 0) {
+      throw new Error('Invalid catalogue price');
+    }
+
+    if (seenIds.has(product.id)) {
+      return { error: 'Товар повторюється у замовленні. Оновіть сторінку та перевірте кошик.' };
+    }
+    seenIds.add(product.id);
+
+    if (requested.price !== product.price) {
+      return { error: 'Ціна товару змінилася. Оновіть сторінку, видаліть товар із кошика та додайте його знову.' };
+    }
+
+    // Calculate in kopiykas to avoid floating-point errors in currency totals.
+    totalCents += Math.round(product.price * 100) * requested.quantity;
+    if (!Number.isSafeInteger(totalCents) || totalCents > 999_999_999_999) {
+      return { error: 'Сума замовлення перевищує допустиме значення.' };
+    }
+
+    items.push({
+      product_id: product.id,
+      title: product.title,
+      category: product.category,
+      price: product.price,
+      quantity: requested.quantity,
+      image_url: product.imageUrl,
+    });
+  }
+
+  return { items, totalAmount: totalCents / 100 };
+}
+
 async function sendTelegramOrderNotification(order: SavedOrder) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -214,6 +269,15 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       return response.status(400).json({ error: validationErrors.join(' ') });
     }
 
+    const catalogueOrder = await buildOrderFromCatalogue(payload.items as RequestedItem[]);
+    if ('error' in catalogueOrder) {
+      return response.status(409).json({ error: catalogueOrder.error });
+    }
+
+    if (Math.round((payload.total_amount as number) * 100) !== Math.round(catalogueOrder.totalAmount * 100)) {
+      return response.status(409).json({ error: 'Сума замовлення змінилася. Оновіть каталог і перевірте кошик.' });
+    }
+
     const customerComment =
       typeof payload.comment === 'string'
         ? payload.comment.trim()
@@ -234,8 +298,8 @@ export default async function handler(request: ApiRequest, response: ApiResponse
         payment_status: 'awaiting_prepayment',
         payment_details: payload.payment_details || {},
         comment: customerComment || null,
-        items: payload.items || [],
-        total_amount: payload.total_amount,
+        items: catalogueOrder.items,
+        total_amount: catalogueOrder.totalAmount,
         status: 'new',
       })
       .select('*')

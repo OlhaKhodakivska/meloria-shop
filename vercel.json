@@ -5,5 +5,10 @@
       "source": "/((?!api/.*).*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/orders.ts": {
+      "includeFiles": "public/products.json"
+    }
+  }
 }
