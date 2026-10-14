@@ -444,3 +444,41 @@
     font-size: 19px;
   }
 }
+
+.mobileSearch {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobileSearch {
+    display: flex;
+    flex-shrink: 0;
+    margin: 16px 0 8px;
+    min-height: 44px;
+    background-color: #f8fafc;
+    border-color: #d9e4f2;
+  }
+
+  .mobileSearch:focus-within {
+    background-color: #fff;
+    border-color: var(--color-bg-deep);
+  }
+
+  .mobileSearch .searchInput {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    color: var(--color-bg-deep);
+  }
+
+  .mobileSearch .searchInput::placeholder {
+    color: var(--color-gray);
+  }
+
+  .mobileSearch .searchBtn {
+    flex-shrink: 0;
+    min-width: 36px;
+    min-height: 36px;
+    color: var(--color-bg-deep);
+  }
+}

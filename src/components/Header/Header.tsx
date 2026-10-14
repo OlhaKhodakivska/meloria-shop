@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
     };
   }, [isMenuOpen, closeMenu]);
 
-  // Обробник пошуку (спрацьовує при натисканні Enter або втраті фокусу)
+  // Submit the same search query from the desktop header or mobile menu.
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -91,6 +91,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
       <input
         type="text"
         placeholder={placeholder}
+        aria-label="Пошук товарів"
         value={searchQuery}
         onChange={(e) => setSearchDraft(e.target.value)}
         className={styles.searchInput}
@@ -134,6 +135,8 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
               <X size={22} />
             </button>
           </div>
+
+          {renderSearchForm(styles.mobileSearch, 'Пошук товарів...')}
 
           <ul className={styles.navList}>
             <li><Link to={catalogUrl} className={styles.navLink} onClick={closeMenu}>Каталог</Link></li>

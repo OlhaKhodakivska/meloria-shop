@@ -464,6 +464,11 @@
     padding: 0;
   }
 
+  .benefitItem > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
   .benefitIcon {
     width: 20px;
     height: 20px;
@@ -472,7 +477,7 @@
   .benefitItem h4 {
     font-size: 12px;
     line-height: 1.15;
-    white-space: nowrap;
+    white-space: normal;
     margin-bottom: 2px;
   }
 
@@ -480,7 +485,7 @@
     display: block;
     font-size: 10px;
     line-height: 1.2;
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .heading {
