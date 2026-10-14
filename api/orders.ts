@@ -30,17 +30,19 @@ type OrderPayload = {
   status: string;
 };
 
-type SavedOrder = OrderPayload & {
+type SavedOrder = Omit<OrderPayload, 'payment_details'> & {
+  payment_details: string;
   id: string;
   order_number?: number | null;
 };
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const supabase = supabaseUrl && supabaseKey
-  ? createClient(supabaseUrl, supabaseKey)
+  ? createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    })
   : null;
 
 function escapeHtml(value: unknown) {
@@ -207,12 +209,7 @@ async function sendTelegramOrderNotification(order: SavedOrder) {
     return;
   }
 
-  const customerComment =
-    typeof order.comment === 'string' && order.comment.trim()
-      ? order.comment
-      : typeof order.payment_details?.customer_comment === 'string'
-      ? order.payment_details.customer_comment
-      : '';
+  const customerComment = typeof order.comment === 'string' ? order.comment.trim() : '';
   const orderNumber = order.order_number ? `№${order.order_number}` : order.id;
 
   const text = `
@@ -254,7 +251,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
   }
 
   if (!supabase) {
-    return response.status(500).json({ error: 'Supabase is not configured.' });
+    return response.status(503).json({ error: 'Оформлення замовлень тимчасово недоступне. Звʼяжіться з нами.' });
   }
 
   try {
@@ -296,7 +293,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
         delivery_branch: payload.delivery_branch?.trim(),
         payment_method: payload.payment_method,
         payment_status: 'awaiting_prepayment',
-        payment_details: payload.payment_details || {},
+        payment_details: JSON.stringify(payload.payment_details || {}),
         comment: customerComment || null,
         items: catalogueOrder.items,
         total_amount: catalogueOrder.totalAmount,

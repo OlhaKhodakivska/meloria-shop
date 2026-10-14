@@ -1,9 +1,9 @@
 // src/pages/Checkout/Checkout.tsx
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/cartContextValue';
-import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 import styles from './Checkout.module.css';
+import { submitOrder } from '../../lib/submitOrder';
 
 const paymentDetails = {
   recipient: import.meta.env.VITE_PAYMENT_RECIPIENT || 'Ходаківська О. С.',
@@ -176,12 +176,14 @@ export const Checkout: React.FC = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submissionInProgress = useRef(false);
   const [submitError, setSubmitError] = useState('');
   const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   // Сценарій відправки форми
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submissionInProgress.current) return;
     setSubmitError('');
     setFormErrors({});
 
@@ -196,8 +198,6 @@ export const Checkout: React.FC = () => {
       document.getElementById(firstInvalidField)?.focus();
       return;
     }
-
-    setIsSubmitting(true);
 
     const orderItems = selectedCartItems.map((item) => ({
       product_id: item.product.id,
@@ -240,70 +240,25 @@ export const Checkout: React.FC = () => {
       status: 'new'
     };
 
+    submissionInProgress.current = true;
+    setIsSubmitting(true);
+
     try {
-      let orderId = '';
-      let orderNumber = '';
-
-      try {
-        const response = await fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(orderPayload),
-        });
-
-        if (response.ok) {
-          const contentType = response.headers.get('content-type') || '';
-          if (!contentType.includes('application/json')) {
-            throw new TypeError('Orders API returned a non-JSON response.');
-          }
-
-          const result = await response.json() as { order?: { id?: string; order_number?: number | string | null } };
-          orderId = result.order?.id || '';
-          orderNumber = result.order?.order_number ? `№${result.order.order_number}` : '';
-        } else if (response.status !== 404) {
-          const result = await response.json().catch(() => null) as { error?: string } | null;
-          throw new Error(result?.error || 'Не вдалося оформити замовлення.');
-        }
-      } catch (apiError) {
-        if (apiError instanceof TypeError) {
-          // Static hosting without server API: keep accepting orders through Supabase.
-        } else {
-          throw apiError;
-        }
-      }
-
-      if (!orderId) {
-        if (!isSupabaseConfigured || !supabase) {
-          throw new Error('Supabase ще не налаштований. Додайте VITE_SUPABASE_URL та VITE_SUPABASE_ANON_KEY у .env.');
-        }
-
-        const { data, error } = await supabase
-          .from('orders')
-          .insert(orderPayload)
-          .select()
-          .single();
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        orderId = data?.id ? String(data.id) : '';
-        orderNumber = data?.order_number ? `№${data.order_number}` : '';
-      }
+      const order = await submitOrder(orderPayload);
+      const orderNumber = order.order_number ? `№${order.order_number}` : order.id;
 
       const thankYouParams = new URLSearchParams({
         payment: formData.payment === 'iban_prepayment' ? 'iban' : 'card'
       });
 
-      if (orderId) {
-        thankYouParams.set('order', orderNumber || orderId);
-      }
+      thankYouParams.set('order', orderNumber);
 
       clearOrderedItems();
       navigate(`/thank-you?${thankYouParams.toString()}`);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Не вдалося оформити замовлення.');
     } finally {
+      submissionInProgress.current = false;
       setIsSubmitting(false);
     }
   };

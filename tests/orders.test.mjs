@@ -245,3 +245,49 @@ test('does not save an order when the catalogue file cannot be read', async (t) 
   assert.equal(response.statusCode, 500);
   assert.equal(requests, 0);
 });
+
+test('does not use a public key when the server secret is missing', async (t) => {
+  const previousSecret = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const previousPublicKey = process.env.VITE_SUPABASE_ANON_KEY;
+  delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.VITE_SUPABASE_ANON_KEY = 'test-public-key';
+  try {
+    let requests = 0;
+    t.mock.method(globalThis, 'fetch', async () => {
+      requests += 1;
+      throw new Error('Unexpected network request blocked by test');
+    });
+    const { default: handlerWithoutSecret } = await import('../api/orders.ts?missing-server-secret');
+    const response = createResponse();
+    await handlerWithoutSecret({ method: 'POST', body: order }, response);
+    assert.equal(response.statusCode, 503);
+    assert.equal(requests, 0);
+  } finally {
+    if (previousSecret === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+    else process.env.SUPABASE_SERVICE_ROLE_KEY = previousSecret;
+    if (previousPublicKey === undefined) delete process.env.VITE_SUPABASE_ANON_KEY;
+    else process.env.VITE_SUPABASE_ANON_KEY = previousPublicKey;
+  }
+});
+
+test('stores payment details as text and supports a database without order_number', async (t) => {
+  const paymentDetails = { type: 'card', recipient: 'Тестовий отримувач', card: 'TEST_CARD' };
+  let inserted;
+  t.mock.method(globalThis, 'fetch', async (input, options) => {
+    if (String(input).startsWith('https://orders-test.invalid/rest/v1/orders')) {
+      inserted = JSON.parse(options.body);
+      return new Response(JSON.stringify({ ...inserted, id: order.id }), {
+        status: 201, headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    if (String(input).startsWith('https://api.telegram.org/bottest-bot-token/')) return new Response('{}');
+    throw new Error('Unexpected network request blocked by test');
+  });
+  const response = createResponse();
+  await handler({ method: 'POST', body: { ...order, payment_details: paymentDetails } }, response);
+  assert.equal(response.statusCode, 201);
+  assert.equal(typeof inserted.payment_details, 'string');
+  assert.deepEqual(JSON.parse(inserted.payment_details), paymentDetails);
+  assert.equal(response.body.order.id, order.id);
+  assert.equal(response.body.order.order_number, undefined);
+});

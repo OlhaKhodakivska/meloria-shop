@@ -10,7 +10,7 @@ create table if not exists public.orders (
   delivery_branch text not null,
   payment_method text not null,
   payment_status text not null default 'awaiting_prepayment',
-  payment_details jsonb not null default '{}'::jsonb,
+  payment_details text not null default '{}',
   comment text,
   items jsonb not null,
   total_amount numeric(12, 2) not null,
@@ -27,7 +27,7 @@ alter table public.orders
   add column if not exists delivery_branch text,
   add column if not exists payment_method text,
   add column if not exists payment_status text not null default 'awaiting_prepayment',
-  add column if not exists payment_details jsonb not null default '{}'::jsonb,
+  add column if not exists payment_details text not null default '{}',
   add column if not exists comment text,
   add column if not exists items jsonb,
   add column if not exists total_amount numeric(12, 2),
@@ -61,18 +61,13 @@ alter table public.orders enable row level security;
 
 notify pgrst, 'reload schema';
 
+-- Orders are created through the server API with its private Supabase key.
+-- Browser roles must not bypass the API's validation.
+revoke all privileges on table public.orders from anon, authenticated, public;
+grant select, insert on table public.orders to service_role;
+revoke all privileges on sequence public.orders_order_number_seq from anon, authenticated, public;
+grant usage on sequence public.orders_order_number_seq to service_role;
+
+drop policy if exists "Anyone can insert orders" on public.orders;
+drop policy if exists "Allow public insert to orders" on public.orders;
 drop policy if exists "Customers can create orders" on public.orders;
-
-create policy "Customers can create orders"
-on public.orders
-for insert
-to anon, authenticated
-with check (true);
-
-drop policy if exists "No public order reads" on public.orders;
-
-create policy "No public order reads"
-on public.orders
-for select
-to anon, authenticated
-using (false);
