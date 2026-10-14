@@ -69,6 +69,7 @@ export const Home: React.FC = () => {
   const [activeDeliveryGroup, setActiveDeliveryGroup] = useState<DeliveryGroupFilter>('all');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsError, setProductsError] = useState('');
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
   const deliveryFilteredProducts = useMemo(
     () =>
       activeDeliveryGroup === 'all'
@@ -174,6 +175,11 @@ export const Home: React.FC = () => {
       .catch(() => {
         if (!ignore) {
           setProductsError('Не вдалося завантажити товари. Оновіть сторінку або спробуйте пізніше.');
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          setIsProductsLoading(false);
         }
       });
 
@@ -338,7 +344,28 @@ export const Home: React.FC = () => {
           </button>
         </div>
 
-        {showCategoryCards ? (
+        {isProductsLoading ? (
+          <div className={styles.productGrid}>
+            <div className={styles.emptySearch} role="status">
+              <h3>Завантажуємо товари</h3>
+              <p>Каталог з'явиться за мить.</p>
+            </div>
+          </div>
+        ) : productsError ? (
+          <div className={styles.productGrid}>
+            <div className={styles.emptySearch} role="alert">
+              <h3>Каталог тимчасово недоступний</h3>
+              <p>{productsError}</p>
+            </div>
+          </div>
+        ) : products.length === 0 ? (
+          <div className={styles.productGrid}>
+            <div className={styles.emptySearch} role="status">
+              <h3>У каталозі поки немає товарів</h3>
+              <p>Завітайте пізніше — ми готуємо нові товари.</p>
+            </div>
+          </div>
+        ) : showCategoryCards ? (
           <div className={styles.catalogCategoryGrid}>
             {categoryCards.map(({ category, count, coverProduct }) => (
               <button
@@ -368,17 +395,7 @@ export const Home: React.FC = () => {
           </div>
         ) : (
           <div className={styles.productGrid}>
-            {productsError ? (
-              <div className={styles.emptySearch}>
-                <h3>Каталог тимчасово недоступний</h3>
-                <p>{productsError}</p>
-              </div>
-            ) : products.length === 0 ? (
-              <div className={styles.emptySearch}>
-                <h3>Завантажуємо товари</h3>
-                <p>Каталог з'явиться за мить.</p>
-              </div>
-            ) : filteredProducts.length > 0 ? (
+            {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))
