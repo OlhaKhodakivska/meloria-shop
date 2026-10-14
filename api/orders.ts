@@ -21,7 +21,7 @@ type OrderPayload = {
   payment_method: string;
   payment_status: string;
   payment_details: Record<string, unknown>;
-  comment?: string;
+  comment?: string | null;
   items: unknown[];
   total_amount: number;
   status: string;
@@ -59,13 +59,21 @@ const ukrainianPhoneRegex = /^\+380\d{9}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const branchRegex = /^(відділення|поштомат|пункт|№|[0-9])/i;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function readText(value: unknown) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
 function validateOrderPayload(payload: Partial<OrderPayload>) {
   const errors: string[] = [];
-  const customerName = String(payload.customer_name || '').trim();
-  const customerEmail = String(payload.customer_email || '').trim();
-  const customerPhone = String(payload.customer_phone || '').trim();
-  const deliveryCity = String(payload.delivery_city || '').trim();
-  const deliveryBranch = String(payload.delivery_branch || '').trim();
+  const customerName = readText(payload.customer_name);
+  const customerEmail = readText(payload.customer_email);
+  const customerPhone = readText(payload.customer_phone);
+  const deliveryCity = readText(payload.delivery_city);
+  const deliveryBranch = readText(payload.delivery_branch);
   const customerComment =
     typeof payload.comment === 'string'
       ? payload.comment.trim()
@@ -95,6 +103,41 @@ function validateOrderPayload(payload: Partial<OrderPayload>) {
 
   if (customerComment && !ukrainianTextRegex.test(customerComment)) {
     errors.push('Коментар до замовлення має бути українською кирилицею.');
+  }
+
+  if (payload.comment !== undefined && payload.comment !== null && typeof payload.comment !== 'string') {
+    errors.push('Коментар має бути текстом.');
+  }
+
+  if (!['nova_poshta', 'ukr_poshta'].includes(payload.delivery_method || '')) {
+    errors.push('Оберіть доступний спосіб доставки.');
+  }
+
+  if (!['card_prepayment', 'iban_prepayment'].includes(payload.payment_method || '')) {
+    errors.push('Оберіть доступний спосіб оплати.');
+  }
+
+  if (payload.payment_details !== undefined && !isRecord(payload.payment_details)) {
+    errors.push('Некоректні дані способу оплати.');
+  }
+
+  if (!Array.isArray(payload.items) || payload.items.length === 0) {
+    errors.push('Замовлення має містити товари.');
+  } else {
+    const hasInvalidItem = payload.items.some((item) =>
+      !isRecord(item) ||
+      typeof item.product_id !== 'string' || !item.product_id.trim() ||
+      typeof item.price !== 'number' || !Number.isFinite(item.price) || item.price <= 0 ||
+      typeof item.quantity !== 'number' || !Number.isSafeInteger(item.quantity) || item.quantity <= 0
+    );
+
+    if (hasInvalidItem) {
+      errors.push('Перевірте товари, ціни та кількість у замовленні.');
+    }
+  }
+
+  if (typeof payload.total_amount !== 'number' || !Number.isFinite(payload.total_amount) || payload.total_amount <= 0) {
+    errors.push('Некоректна сума замовлення.');
   }
 
   return errors;
@@ -160,6 +203,10 @@ export default async function handler(request: ApiRequest, response: ApiResponse
   }
 
   try {
+    if (!isRecord(request.body)) {
+      return response.status(400).json({ error: 'Некоректні дані замовлення.' });
+    }
+
     const payload = request.body as Partial<OrderPayload>;
     const validationErrors = validateOrderPayload(payload);
 
@@ -184,18 +231,18 @@ export default async function handler(request: ApiRequest, response: ApiResponse
         delivery_city: payload.delivery_city?.trim(),
         delivery_branch: payload.delivery_branch?.trim(),
         payment_method: payload.payment_method,
-        payment_status: payload.payment_status || 'awaiting_prepayment',
+        payment_status: 'awaiting_prepayment',
         payment_details: payload.payment_details || {},
         comment: customerComment || null,
         items: payload.items || [],
         total_amount: payload.total_amount,
-        status: payload.status || 'new',
+        status: 'new',
       })
       .select('*')
       .single();
 
     if (error) {
-      return response.status(400).json({ error: error.message });
+      return response.status(500).json({ error: 'Не вдалося зберегти замовлення. Спробуйте пізніше.' });
     }
 
     try {
