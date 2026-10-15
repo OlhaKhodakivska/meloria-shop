@@ -1,0 +1,47 @@
+Meloria Shop — verification record, 15 October 2026
+
+Automated checks
+- npm test: 65 passing tests, including client/API integration tests.
+- npm run typecheck: frontend and Vite configuration pass.
+- npm run lint: passes.
+- Order API types were checked separately after its last change.
+- Production build: checked in an isolated copy with synthetic environment values.
+- No additional dependencies were installed.
+
+Critical purchase flows
+- The server validates contacts, delivery/payment options, product IDs, prices,
+  quantities and totals before inserting an order.
+- Initial order/payment statuses come from the server.
+- An uncertain response preserves the request ID for a retry in the same tab.
+- The real client helper and API are tested together after a lost response and
+  simulated client-module reload. There is one saved row and one notification.
+- Simultaneous identical client calls now share an in-flight promise.
+  This fixes a race found by the new integration test.
+- Concurrent API requests are tested separately against a simulated unique key.
+- Concurrent inserts were also verified against isolated local PostgreSQL.
+- Telegram failures do not turn a saved order into a failed purchase.
+- Cart cleanup subtracts submitted quantities from the latest cart state.
+  Later additions and selection changes survive; verified in the browser and
+  after a page reload using a delayed synthetic local API.
+
+Production evidence (deployment 5b63274)
+- The owner supplied Vercel Ready / Production status for commit 5b63274.
+- The owner supplied Supabase metadata confirming a unique primary key on id.
+- GET /api/orders returned 405 with Allow: POST.
+- POST with an empty object returned 400 with Ukrainian validation errors.
+- A synthetic request with a new UUID and a deliberately nonexistent product
+  returned 409 with the expected unavailable-product error. This exercised
+  the database lookup and server catalogue read without inserting a row.
+- The in-flight client fix and its integration tests are newer than 5b63274.
+
+Limits
+- No successful production order was submitted and no customer rows were read.
+- Database write compatibility was checked locally against the reported schema;
+  a successful production insert and production Telegram delivery are unverified.
+- Retry continuity requires the same payload and the same browser tab's
+  sessionStorage. Closing the tab or clearing storage can lose the pending ID.
+- Mocked database tests do not replace PostgreSQL constraint checks.
+- Browser checks are manual/agent-assisted, not a committed automated E2E suite.
+- Clerk authentication and screen-reader behaviour remain unverified.
+- No Lighthouse score is claimed.
+- README, performance work and final acceptance checks remain open.

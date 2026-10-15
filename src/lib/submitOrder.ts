@@ -21,10 +21,24 @@ function readSavedOrder(value: unknown): SubmittedOrder {
   };
 }
 
-export async function submitOrder(payload: Record<string, unknown>): Promise<SubmittedOrder> {
+const pendingSubmissions = new Map<string, Promise<SubmittedOrder>>();
+
+export function submitOrder(payload: Record<string, unknown>): Promise<SubmittedOrder> {
+  const serialized = JSON.stringify(payload);
+  const pending = pendingSubmissions.get(serialized);
+  if (pending) return pending;
+
+  // Register before the asynchronous hash, so simultaneous callers share one request.
+  const submission = sendOrder(payload, serialized).finally(() => {
+    pendingSubmissions.delete(serialized);
+  });
+  pendingSubmissions.set(serialized, submission);
+  return submission;
+}
+
+async function sendOrder(payload: Record<string, unknown>, serialized: string): Promise<SubmittedOrder> {
   // Keep an ID for each unresolved payload, including after a reload in this tab.
   // Only the hash and UUID are stored, never the customer's contact details.
-  const serialized = JSON.stringify(payload);
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(serialized));
   const fingerprint = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
   const storageKey = `meloria_order_request:${fingerprint}`;
