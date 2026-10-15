@@ -1,7 +1,7 @@
 // src/components/Header/Header.tsx
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ShoppingBag, User, Menu, X, Search } from 'lucide-react'; // Додали Search
-import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { useAuth, UserButton } from '@clerk/clerk-react';
 import { useCart } from '../../context/cartContextValue';
 import styles from './Header.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -13,20 +13,29 @@ interface HeaderProps {
 
 const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 
-const ClerkAccountButton: React.FC<{ onProfileOpen: () => void }> = ({ onProfileOpen }) => (
-  <>
-    <SignedIn>
-      <div className={styles.clerkUserButton}>
-        <UserButton afterSignOutUrl={import.meta.env.BASE_URL} />
-      </div>
-    </SignedIn>
-    <SignedOut>
-      <button className={styles.actionBtn} onClick={onProfileOpen} aria-label="Особистий кабінет" type="button">
-        <User size={22} />
-      </button>
-    </SignedOut>
-  </>
+const AccountEntry: React.FC<{ onProfileOpen: () => void }> = ({ onProfileOpen }) => (
+  <button
+    className={`${styles.actionBtn} ${styles.accountBtn}`}
+    onClick={onProfileOpen}
+    aria-label="Особистий кабінет"
+    title="Вхід та реєстрація"
+    type="button"
+  >
+    <User size={22} />
+    <span className={styles.accountLabel}>Вхід</span>
+  </button>
 );
+
+const ClerkAccountButton: React.FC<{ onProfileOpen: () => void }> = ({ onProfileOpen }) => {
+  const { isSignedIn } = useAuth();
+
+  // Keep the account entry available while Clerk determines the session state.
+  return isSignedIn ? (
+    <div className={styles.clerkUserButton}>
+      <UserButton afterSignOutUrl={import.meta.env.BASE_URL} />
+    </div>
+  ) : <AccountEntry onProfileOpen={onProfileOpen} />;
+};
 
 export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
   const navigate = useNavigate();
@@ -174,13 +183,13 @@ export const Header: React.FC<HeaderProps> = ({ onCartOpen }) => {
           {renderSearchForm(styles.desktopSearch, 'Пошук товарів...')}
 
           {/* Кнопка профілю / меню клієнта */}
-          {clerkPublishableKey ? (
-            <ClerkAccountButton onProfileOpen={handleProfileOpen} />
-          ) : (
-            <button className={styles.actionBtn} onClick={handleProfileOpen} aria-label="Особистий кабінет" type="button">
-              <User size={22} />
-            </button>
-          )}
+          <div className={styles.account}>
+            {clerkPublishableKey ? (
+              <ClerkAccountButton onProfileOpen={handleProfileOpen} />
+            ) : (
+              <AccountEntry onProfileOpen={handleProfileOpen} />
+            )}
+          </div>
 
           {/* Кошик */}
           <button className={styles.actionBtn} onClick={handleCartOpen} aria-label="Кошик" type="button">

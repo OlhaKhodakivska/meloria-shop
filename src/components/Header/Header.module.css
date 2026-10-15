@@ -18,7 +18,7 @@
   padding: 0 clamp(18px, 3vw, 48px);
   height: 70px;
   display: grid;
-  grid-template-columns: minmax(190px, 1fr) auto minmax(260px, 1fr);
+  grid-template-columns: minmax(156px, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 18px;
 }
@@ -73,6 +73,7 @@
   display: flex;
   align-items: center;
   justify-self: end;
+  max-width: 100%;
   gap: 10px;
 }
 
@@ -92,6 +93,10 @@
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+.desktopSearch {
+  min-width: 0;
+}
+
 /* Поле введення пошуку */
 .searchInput {
   background: none;
@@ -99,6 +104,7 @@
   outline: none;
   color: var(--color-white, #fff);
   font-size: 15px;
+  min-width: 0;
   width: 140px; /* Акуратна ширина за замовчуванням */
   transition: width 0.3s ease;
 }
@@ -168,6 +174,7 @@
   height: 42px;
   padding: 0;
   position: relative;
+  flex-shrink: 0;
   transition: color 0.3s ease;
   display: inline-flex;
   align-items: center;
@@ -176,6 +183,33 @@
 
 .actionBtn:hover {
   color: var(--color-white);
+}
+
+.account {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.accountBtn {
+  width: auto;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.accountLabel {
+  font-size: 14px;
+}
+
+@media (min-width: 901px) and (max-width: 1100px) {
+  .accountBtn {
+    width: 42px;
+    padding: 0;
+  }
+
+  .accountLabel {
+    display: none;
+  }
 }
 
 .cartBadge {
@@ -225,7 +259,7 @@
 }
 
 /* Мобільна адаптивність (Планшети та Телефони) */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .container {
     height: 64px;
     padding: 0 12px;
@@ -272,7 +306,7 @@
     border-radius: 10px;
   }
 
-  .actions .actionBtn:first-of-type {
+  .account {
     display: none;
   }
 
@@ -451,7 +485,7 @@
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .mobileSearch {
     display: flex;
     flex-shrink: 0;
