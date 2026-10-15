@@ -1,0 +1,270 @@
+MELORIA SHOP
+English practice for 14 October 2026
+
+Це щоденний навчальний текст, а не готова десятихвилинна презентація.
+Він описує роботу та стан проєкту на кінець 14 жовтня 2026 року.
+Після завершення наступних етапів текст потрібно буде оновити.
+
+ЯК ВЧИТИ
+
+1. Спочатку прочитай українське пояснення кожного блоку.
+2. Читай англійський блок уголос по одному реченню.
+3. Закрий англійський текст і спробуй пояснити зміст своїми словами.
+4. Для початку вивчи блоки 1–3. Решту опрацьовуй поступово.
+5. Запиши одну спробу на телефон. Перевір, чи ти розумієш кожне речення.
+   Не потрібно вивчати всі технічні відповіді за один вечір.
+
+ОСНОВНИЙ ТЕКСТ ДЛЯ ВИВЧЕННЯ
+
+1. Project purpose
+
+I created Meloria to test my own online shop idea.
+The shop offers gifts and home products from a Ukrainian brand.
+My first target market is Ukraine.
+I also want to support Ukrainian manufacturers.
+
+Я створила Meloria, щоб перевірити власну ідею інтернет-магазину.
+Магазин пропонує подарунки й товари для дому від українського бренду.
+Мій перший цільовий ринок — Україна.
+Також я хочу підтримувати українських виробників.
+
+2. Technology and components
+
+My project uses React, TypeScript and Vite.
+I use separate components for the header, product cards and cart.
+This makes the code easier to read and maintain.
+
+Мій проєкт використовує React, TypeScript і Vite.
+Я використовую окремі компоненти для шапки, карток товарів і кошика.
+Це допомагає читати та підтримувати код.
+
+3. Catalogue and cart
+
+The catalogue loads products from a JSON file.
+The page shows loading, empty and error states.
+The cart uses React Context and saves its state in localStorage.
+
+Каталог завантажує товари з JSON-файла.
+Сторінка показує завантаження, порожній результат і помилку.
+Кошик використовує React Context і зберігає свій стан у localStorage.
+
+4. Accessibility
+
+I improved mobile search and keyboard navigation.
+Users can close the cart and product dialogs with Escape.
+Focus returns to the button that opened the dialog.
+Form errors are connected to the relevant fields.
+
+Я покращила мобільний пошук і навігацію з клавіатури.
+Кошик і вікно товару можна закрити клавішею Escape.
+Фокус повертається на кнопку, яка відкрила вікно.
+Помилки форми пов’язані з відповідними полями.
+
+5. Server validation and security
+
+The new API checks product IDs and prices against the catalogue.
+It calculates the total in kopiykas.
+The server uses a private database key.
+Public users cannot access the orders table directly.
+
+Новий API звіряє ID та ціни товарів із каталогом.
+Він розраховує загальну суму в копійках.
+Сервер використовує приватний ключ бази даних.
+Публічні користувачі не мають прямого доступу до таблиці замовлень.
+
+6. Testing and current limitations
+
+I added automated tests and checked the application in Chrome.
+The database changes were tested in a separate local PostgreSQL database.
+The updated checkout still needs deployment and more protection against repeated orders.
+
+Я додала автоматичні тести та перевірила застосунок у Chrome.
+Зміни бази перевірено в окремій локальній PostgreSQL-базі.
+Оновлене оформлення ще потрібно опублікувати й доповнити захистом від повторних заявок.
+
+7. AI assistance and future plans
+
+I used AI assistance for code review, fixes and tests.
+I review the changes and learn to explain the code myself.
+In the future, I may work with more Ukrainian manufacturers and expand to Germany.
+
+Я використовувала AI для перевірки коду, виправлень і тестів.
+Я переглядаю зміни й навчаюся самостійно пояснювати код.
+У майбутньому можлива співпраця з іншими українськими виробниками та вихід на ринок Німеччини.
+
+ПИТАННЯ ДЛЯ FACHGESPRÄCH
+
+1. Why did you use components?
+
+I separated the interface into smaller parts.
+Each component has a clear responsibility.
+
+Компоненти поділяють інтерфейс на менші частини з конкретними завданнями.
+Приклад: Header відповідає за навігацію й пошук, ProductCard — за представлення товару.
+
+2. What are props?
+
+Props pass data from a parent component to a child component.
+For example, ProductCard receives a product through props.
+
+Props — дані, які батьківський компонент передає дочірньому.
+У нашому коді це, наприклад, product у ProductCard та isOpen у CartDrawer.
+
+3. How does the cart work?
+
+React Context shares the cart state with different components.
+When the cart changes, localStorage saves it.
+
+CartProvider зберігає стан кошика. Хук useCart надає доступ до нього.
+Після змін useEffect записує кошик у localStorage.
+Початковий стан зчитується з localStorage під час створення стану.
+
+4. Why is an empty catalogue different from loading?
+
+Loading means the request is still running.
+An empty catalogue means the request finished, but there are no products.
+
+Тому ми додали окремий isProductsLoading.
+Кількість товарів сама по собі не показує, чи запит уже завершився.
+
+5. Why did you change the build command?
+
+The old command did not check the application files.
+Now the build runs the application and Vite type checks first.
+
+Старий виклик tsc використовував кореневий конфіг із порожнім files.
+Команда npm run typecheck явно перевіряє tsconfig.app.json і tsconfig.node.json.
+API перевіряли окремо: він не входить до цих frontend-конфігурацій.
+
+6. What happens when a dialog opens?
+
+Focus moves into the dialog.
+Tab stays inside it, and Escape closes it.
+When it closes, focus returns to the previous control.
+
+Спільний useModalFocus керує фокусом, клавіатурою та прокруткою.
+Його використовують кошик і вікно товару.
+
+7. Why do you validate on the server?
+
+Browser data can be changed.
+The server must check the request before saving an order.
+
+Перевірки у формі допомагають покупцю, але їх можна обійти.
+API перевіряє поля, способи доставки й оплати, товари, кількість і ціни.
+Початкові status та payment_status задає сервер.
+
+8. Why calculate money in kopiykas?
+
+JavaScript can produce small errors with decimal numbers.
+Integer calculations make currency totals more reliable.
+
+Наприклад, 0.1 + 0.2 у JavaScript не дорівнює точно 0.3.
+Для гривень переводимо ціни в копійки, рахуємо суму та ділимо результат на 100.
+
+9. Why use useRef for submission protection?
+
+A ref changes immediately without a new render.
+It blocks a second submission while the first request is running.
+
+useState керує виглядом кнопки, а useRef зберігає миттєвий прапорець запиту.
+Цей захист працює в одній відкритій формі.
+Захист повторного надсилання після перезавантаження ще не реалізовано.
+
+10. Why not try another database write after a network error?
+
+A missing response does not mean the order was not saved.
+A second write could create a duplicate.
+
+Тому після невизначеної відповіді API ми залишаємо кошик і показуємо повідомлення.
+Успіх підтверджується лише після отримання ID замовлення.
+
+11. What is RLS?
+
+RLS means Row Level Security.
+It controls access to database rows.
+
+Права таблиці визначають, які операції дозволені ролі.
+RLS додатково визначає, до яких рядків роль може отримати доступ.
+Для orders ми ввімкнули RLS і прибрали публічні права.
+Серверний secret key має розширені права та використовується лише в API.
+
+12. Why is payment_details stored as a string?
+
+The existing database column has the text type.
+The API uses JSON.stringify to store the details as JSON text.
+
+Дані у запиті — об’єкт, а у наявній базі колонка текстова.
+Ми узгодили код із цією схемою без перетворення production-колонки.
+Колонки order_number у production немає; доступний UUID id.
+
+13. How did you test the changes?
+
+I ran type checks, lint and automated tests.
+I also checked browser behaviour and tested database permissions locally.
+
+На кінець дня npm test: 44 тести пройшли.
+Build і frontend typecheck проходили після останніх frontend-змін.
+Після останнього серверного виправлення пройшли lint, окремий API typecheck,
+44 тести та локальний INSERT із повідомленими типами production-колонок.
+У Chrome перевіряли каталог, кошик, меню, форми, діалоги й підставні відповіді API.
+Автоматичні тести використовують підставні запити. Тестові записи створювалися
+тільки в ізольованій локальній базі, не в Supabase.
+Робота авторизації Clerk і перевірка зі скринрідером залишаються неперевіреними.
+
+СЛОВНИК
+
+component — компонент, окрема частина інтерфейсу
+props — дані, передані компоненту
+state — стан, дані, від яких залежить інтерфейс
+hook — React-функція для роботи зі станом та іншою логікою
+request — запит
+response — відповідь
+loading — завантаження
+empty state — стан без даних
+validation — перевірка введених даних
+focus — елемент, який зараз отримує дії з клавіатури
+private key — приватний ключ
+permission — право доступу
+duplicate — дублікат
+deployment — публікація застосунку
+maintain — підтримувати код
+
+ФАКТИЧНИЙ СТАН НА КІНЕЦЬ ДНЯ
+
+[Виконано] 1. TypeScript-перевірка та початкові помилки типів.
+[Виконано] 2. Обробка збою Telegram після збереження замовлення.
+[Виконано] 3. Завантаження, помилка та порожній каталог.
+[Виконано] 4. Мобільний пошук і перенесення довгих підписів.
+[Виконано] 5. Заплановані виправлення доступності.
+[Виконується] 6. API та Supabase.
+[Не завершено] 7. Додаткові тести основних сценаріїв.
+[Не завершено] 8. README та конфігурація. Приклад середовища вже оновлений.
+[Не завершено] 9. Оптимізація зображень і каталогу.
+[Не завершено] 10. Фінальні перевірки та звіт.
+
+5 із 10 основних етапів повністю завершено. 5 залишаються відкритими.
+Додано за обставинами й виконано: закриття публічного доступу P0 та
+узгодження з повідомленими типами production-колонок.
+
+У Supabase власниця підтвердила: RLS увімкнений; anon і authenticated
+не мають SELECT, INSERT, UPDATE, DELETE; відкриті політики відсутні.
+У Vercel власниця додала серверні змінні. Значення ключів не передавалися в чат.
+Оновлений API ще не опублікований і не перевірений у production.
+Поточне оформлення може бути недоступним до узгодженого redeploy.
+
+До створення цього навчального файла робоче дерево було чистим.
+Останній коміт: 5eb0cff — Secure server-only checkout and align order storage.
+За локальним Git-станом main випереджає origin/main на 9 комітів.
+Codex не виконував commit, push або deploy: коміти створювала власниця.
+
+З ЧОГО ПРОДОВЖИТИ ЗАВТРА
+
+1. Перевірити Git-стан і зберегти сьогоднішні зміни.
+2. Продовжити етап 6: підготувати ідентифікатор заявки та захист від повторного
+   запису після втрати відповіді або перезавантаження.
+3. Перед зміною бази показати конкретний SQL-план: зміни схеми виконуються
+   окремо й не повинні переписувати наявні замовлення.
+4. Перевірити нову поведінку тестами, включно з одночасними запитами.
+5. Узгодити з власницею порядок push та redeploy. Вона виконує їх самостійно.
+6. Оновити навчальний текст після наступної роботи.

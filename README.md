@@ -5,7 +5,7 @@ It started as the author's first online business project and is also used for
 DCI Web Development coursework and preparation for the IHK Frontend assessment.
 
 The first target market is Ukraine. The catalogue currently presents products
-from the Ukrainian brand Презентвіль, referred to as Presentwill on the website.
+from the Ukrainian brand Presentwill.
 The longer-term idea is to support more Ukrainian manufacturers. Expansion to
 Germany is a future possibility, not an implemented localisation feature.
 
