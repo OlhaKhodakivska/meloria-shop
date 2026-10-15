@@ -1,275 +1,313 @@
-MELORIA SHOP — PREPARATION FOR THE GROUP DISCUSSION
-Friday, 16 October 2026 | Trainer: Aretas
-English speaking practice + Ukrainian explanations
-Prepared from IHK_Frontend_Scrum_Handout_EN.pdf and the existing project.
+1. WHY DID YOU CHOOSE REACT INSTEAD OF VANILLA JAVASCRIPT?
+Чому ти обрала React замість звичайного JavaScript?
 
-МЕТА НА ЗАВТРА
-Звірити мінімальні вимоги та обговорити власні відповіді на 10 запитань.
-Це підготовка до технічної розмови, а не повний текст 10-хвилинної презентації.
-Англійські відповіді нижче — чернетки для навчання: перевір, що вони передають
-твої рішення. Якщо певне рішення з'явилося під час роботи з AI, не представляй
-його як самостійно знайдене. Важливо зрозуміти й пояснити його своїми словами.
+Answer in English:
+I chose React because my shop has reusable components and interactive features.
+For example, I can reuse a product card for many products.
+React helps me manage the cart, filters and forms through state.
+I describe what the interface should show, and React updates it when state changes.
+For a small static website, plain HTML, CSS and JavaScript could be simpler
+and would not require the extra React library.
 
-IMPORTANT QUESTION FOR THE TRAINER
-My project uses React and CSS Modules. The participant guide allows modern
-CSS, but this handout mentions Tailwind. Can I keep CSS Modules for the assessment?
+Повний переклад українською:
+Я обрала React, тому що мій магазин має компоненти, які можна використовувати
+повторно, та інтерактивні функції.
+Наприклад, я можу використовувати одну картку товару для багатьох товарів.
+React допомагає мені керувати кошиком, фільтрами та формами через стан.
+Я описую, що має показувати інтерфейс, і React оновлює його, коли стан змінюється.
+Для невеликого статичного сайту звичайні HTML, CSS і JavaScript могли б бути
+простішим рішенням і не потребували б додаткової бібліотеки React.
 
-Українською: у новому handout Tailwind прямо названий у мінімальних вимогах.
-У попередньому Participant Guide описано сучасний адаптивний CSS загалом.
-Потрібно уточнити в Аретаса, чи CSS Modules прийнятні саме для твого іспиту.
-Поки немає підтвердження, не стверджуємо повну відповідність цьому пункту.
-Не потрібно поспішно переписувати стилі перед розмовою з викладачем.
+Що реалізовано і для чого:
+Магазин поділено на компоненти, зокрема Header, Footer, ProductCard і CartDrawer.
+ProductCard отримує дані товару через props, тому розмітку картки не потрібно
+писати заново для кожного товару. Стан визначає, які товари видно і що є в кошику.
+Такий поділ допомагає знаходити потрібний код і змінювати окрему частину сайту.
+Приклад у коді: src/components/ProductCard/ProductCard.tsx.
 
-MINIMUM SCOPE — PROJECT CHECKLIST
-[x] React components: Header, Footer, Hero, PromoBanner, ProductCard, CartDrawer.
-[x] Interactive state: search, filters, cart, forms and dialogs.
-[x] Async catalogue: fetch products.json; loading, results, error and empty states.
-[x] Responsive layouts: mobile and desktop checks are recorded in the QA report.
-[x] Semantic elements, form labels, native buttons and keyboard improvements exist.
-[x] Live application on Vercel and a traceable GitHub history.
-[?] Tailwind requirement: project uses CSS Modules; trainer confirmation needed.
-[~] Accessibility verification is partial: no complete contrast or screen reader audit.
-[~] Dedicated tablet verification is not established by the final QA summary.
 
-Пояснення: [x] означає наявність реалізації або записаної перевірки, а не
-гарантію відсутності будь-яких дефектів. [?] — вимога потребує уточнення.
-[~] — перевірку ще не завершено повністю. Не заявляй про повну WCAG-відповідність.
-Докладні результати: docs/qa/final-verification-2026-10-15.txt.
+2. WHY DID YOU CHOOSE CSS MODULES, AND WHAT ARE THE TRADE-OFFS COMPARED WITH TAILWIND?
+Чому ти обрала CSS Modules і які переваги та недоліки бачиш порівняно з Tailwind?
 
-SHORT PROJECT INTRODUCTION
-Meloria Shop is my personal online shop for home products and gifts.
-I want to start in Ukraine and support Ukrainian manufacturers.
-The current catalogue presents products from Presentwill.
-I use React and TypeScript for the interface, Supabase for order storage,
-and Vercel to host the website and the order API.
+Answer in English:
+I prefer CSS Modules because separate style files are easier for me to read and edit.
+Personally, I find long lists of Tailwind utility classes in JSX harder to read.
+With CSS Modules, my markup stays shorter, and my styles are clearly organized.
+I can quickly find the part I need to change.
+CSS Modules also help prevent class name conflicts.
+Tailwind can be useful for fast styling, but CSS Modules suit my workflow better.
+The trade-off is that I write and maintain separate CSS files and class names.
 
-Українською: Supabase зберігає замовлення. Каталог зараз завантажується з
-products.json, а не із Supabase. Vercel обслуговує і сайт, і серверний API.
-Правильне написання: Vercel. Детальну історію натхнення залишаємо для презентації.
+Повний переклад українською:
+Я віддаю перевагу CSS Modules, тому що окремі файли стилів мені легше читати
+та редагувати.
+Особисто мені складніше читати довгі списки допоміжних класів Tailwind у JSX.
+З CSS Modules моя розмітка залишається коротшою, а стилі мають чітку структуру.
+Я можу швидко знайти частину, яку потрібно змінити.
+CSS Modules також допомагають уникати конфліктів назв класів.
+Tailwind може бути корисним для швидкого оформлення, але CSS Modules краще
+підходять до мого способу роботи.
+Компроміс полягає в тому, що я пишу й підтримую окремі CSS-файли та назви класів.
 
-1. WHY REACT INSTEAD OF VANILLA JAVASCRIPT?
+Що реалізовано і для чого:
+У проєкті збережено CSS Modules: стилі компонента розміщені в його .module.css.
+Під час збірки локальні назви класів перетворюються, щоб однойменні класи
+різних модулів не конфліктували. Спільні CSS-змінні допомагають підтримувати
+однакове оформлення сайту; глобальні стилі також залишаються в проєкті.
+Під час покращень ми зберегли цей підхід і візуальний стиль магазину.
+Tailwind не використовуємо. Довгі списки класів — питання твоєї зручності читання,
+а не твердження, що Tailwind обов'язково створює поганий код.
+Приклад у коді: src/components/ProductCard/ProductCard.module.css.
 
-SAY:
-React helps me build reusable components, such as product cards and the cart.
-I describe what the interface should show for the current state.
-When the state changes, React updates the interface.
-For a small static page, plain HTML, CSS and JavaScript could be simpler
-and would avoid the extra React library.
 
-Опорні слова: reusable components — state — declarative UI — static page.
-Пояснення: декларативний підхід означає описувати результат для певного стану.
-Не потрібно вручну шукати кожен DOM-елемент і змінювати його після кожного кліку.
-React не гарантує, що будь-який сайт буде швидшим за звичайний JavaScript.
-Приклад: src/components/ProductCard/ProductCard.tsx.
+3. HOW DID YOU DECIDE BETWEEN LOCAL STATE AND SHARED STATE?
+Як ти вирішувала, де використовувати локальний стан, а де спільний?
 
-2. WHY THIS STYLING APPROACH?
+Answer in English:
+I use local state for form values and filters where they are needed.
+I use React Context for the cart because several components need the same cart data.
+For example, the cart drawer and checkout both use it.
+The provider stores the cart state, and Context makes it available to other components.
+I also save the cart in localStorage so it survives a page refresh.
+Redux would add complexity that I do not need for the current project.
 
-SAY:
-My project uses CSS Modules, not Tailwind.
-They keep component styles separate and help prevent class name conflicts.
-I also use shared CSS variables for consistent styling.
-Tailwind can make styling faster with utility classes, but it can make JSX longer.
-I kept the existing styling approach to preserve the design and avoid a large rewrite.
+Повний переклад українською:
+Я використовую локальний стан для значень форм і фільтрів там, де вони потрібні.
+Я використовую React Context для кошика, тому що кільком компонентам потрібні
+ті самі дані кошика.
+Наприклад, їх використовують і панель кошика, і сторінка оформлення замовлення.
+Провайдер зберігає стан кошика, а Context робить його доступним іншим компонентам.
+Я також зберігаю кошик у localStorage, щоб він залишався після оновлення сторінки.
+Redux додав би складності, яка мені не потрібна в поточному проєкті.
 
-Опорні слова: CSS Modules — local class names — shared variables — consistency.
-Пояснення: стилі компонента імпортуються з його .module.css-файлу.
-Під час збірки імена локальних класів перетворюються, що зменшує конфлікти.
-CSS Modules не забороняють глобальні стилі: вони також є в проєкті.
-Обов'язково постав викладачу запитання про вимогу Tailwind на початку зустрічі.
-Приклад: src/components/ProductCard/ProductCard.module.css.
+Що реалізовано і для чого:
+CartProvider використовує useState для кошика та передає дані й функції через Context.
+Це дозволяє різним частинам магазину працювати з одним актуальним кошиком.
+Під час покращень ми також забезпечили збереження змін, зроблених під час
+оформлення: після успішного замовлення віднімаються замовлені кількості,
+а товари, додані пізніше, залишаються. Це захищає нові дії покупця від втрати.
+Context передає стан; localStorage зберігає його між завантаженнями сторінки.
+Приклад у коді: src/context/CartContext.tsx; src/pages/Checkout/Checkout.tsx.
 
-3. LOCAL STATE OR GLOBAL STATE?
 
-SAY:
-I use both local state and shared state.
-Form values and filters stay close to the components that use them.
-The cart uses React Context because several parts of the shop need the same data.
-For example, the cart drawer and checkout both use the cart.
-I do not need Redux for the current scope.
+4. HOW DOES YOUR INTERFACE HANDLE FAILED, SLOW OR EMPTY DATA REQUESTS?
+Як інтерфейс обробляє невдалі, повільні запити або порожні результати?
 
-Опорні слова: local state — shared cart — Context — common parent.
-Пояснення: useState зберігає стан; Context передає спільні дані нащадкам.
-У Meloria кошик зберігається через useState у провайдері та передається Context.
-localStorage допомагає зберегти кошик після оновлення сторінки.
-Якщо двом сусіднім компонентам потрібен стан, його можна підняти до спільного
-батьківського компонента. Не потрібно переносити всі змінні у глобальний стан.
-Приклад: src/context/CartContext.tsx; src/pages/Checkout/Checkout.tsx.
+Answer in English:
+The catalogue loads data from a JSON file and has loading, success, error and empty states.
+While the request is pending, the user sees a loading message.
+If it fails, the interface shows an error instead of silently showing nothing.
+If no products match the filters, it shows an empty result message.
+A failed checkout keeps the cart so the customer can try again.
+There is no custom catalogue request timeout yet, so a very slow request may keep loading.
 
-4. WHAT IF THE DATA REQUEST FAILS OR RETURNS NOTHING?
+Повний переклад українською:
+Каталог завантажує дані з JSON-файлу й має стани завантаження, успіху, помилки
+та порожнього результату.
+Поки запит очікує завершення, користувач бачить повідомлення про завантаження.
+Якщо запит не вдається, інтерфейс показує помилку, а не просто нічого не відображає.
+Якщо жоден товар не відповідає фільтрам, він показує повідомлення про порожній результат.
+Невдала спроба оформлення зберігає кошик, щоб покупець міг спробувати ще раз.
+Власного обмеження часу запиту каталогу поки немає, тому дуже повільний запит
+може залишатися у стані завантаження.
 
-SAY:
-The catalogue has loading, success, error and empty states.
-While products are loading, the interface shows a loading message.
-If the request fails, it shows an error. If there are no matching products,
-it shows an empty result message.
-There is no custom catalogue request timeout yet. This is a possible improvement.
+Що реалізовано і для чого:
+У Home окремо зберігаються товари, стан завантаження та повідомлення про помилку.
+Це дозволяє відрізняти очікування від збою та від відсутності результатів.
+Замовлення надсилаються до серверного /api/orders; сервер записує їх у Supabase.
+Повторна спроба тієї самої операції використовує той самий request_id,
+а сервер перевіряє його, щоб не створювати дубль уже збереженого замовлення.
+Кошик змінюється після підтвердженого успіху. Власний таймер скасування
+запиту каталогу не реалізований — це можливе майбутнє покращення.
+Приклад у коді: src/pages/Home.tsx; src/pages/Checkout/Checkout.tsx; api/orders.ts.
 
-Опорні слова: loading — success — error — empty — timeout.
-Пояснення: loading — очікуємо; error — запит не виконався або дані некоректні;
-empty — дані отримано, але показувати нічого, наприклад пошук не дав збігів.
-Ці ситуації потребують різних повідомлень, щоб користувач розумів, що сталося.
-Дуже повільний запит може залишатися в loading до завершення або помилки мережі:
-не кажи, що вже реалізований власний таймер скасування запиту.
-Додатковий приклад: помилка оформлення залишає кошик для повторної спроби.
-Приклад: src/pages/Home.tsx; src/pages/Checkout/Checkout.tsx.
 
-5. WHAT DOES REACT DO, AND WHY DO LIST ITEMS NEED KEYS?
+5. WHAT HAPPENS WHEN STATE CHANGES, AND WHY DO LIST ITEMS NEED KEYS?
+Що відбувається, коли стан змінюється, і навіщо елементам списку потрібні ключі?
 
-SAY:
+Answer in English:
 When I change a filter, the component state changes.
-React calculates the next interface and compares it with the previous one.
-It then updates the necessary parts of the DOM.
+React calculates the next interface, compares it with the previous one,
+and updates the necessary parts of the DOM.
 I use product.id as the key so React can identify each product across updates.
-An array index can identify the wrong item when the list order changes.
+Using an array index can cause problems when items are reordered or removed.
+Stable keys help React preserve the correct identity and state of list items.
 
-Опорні слова: state update — compare — DOM — stable identity — product.id.
-Пояснення: key має бути стабільним і унікальним серед елементів одного списку.
-Його основна роль — правильно зіставити елементи між оновленнями, зберігаючи
-потрібний стан. Це не просто «прискорювач» і не звичайний prop компонента.
-Окрема деталь Meloria: key у ProductResults навмисно змінюється з фільтрами,
-щоб створити компонент заново і скинути показ до перших 24 товарів.
-Не плутай це зі стабільними product.id у картках товарів.
-Приклад: src/pages/Home.tsx, компонент ProductResults.
+Повний переклад українською:
+Коли я змінюю фільтр, змінюється стан компонента.
+React обчислює наступний вигляд інтерфейсу, порівнює його з попереднім
+і оновлює необхідні частини DOM.
+Я використовую product.id як ключ, щоб React міг розпізнавати кожен товар
+між оновленнями.
+Використання індексу масиву може спричинити проблеми, коли елементи змінюють
+порядок або видаляються.
+Стабільні ключі допомагають React зберігати правильну ідентичність і стан елементів списку.
 
-6. HOW DO YOU OPTIMIZE THE PRODUCTION BUILD?
+Що реалізовано і для чого:
+У списку карток використовується key={product.id}. Ключ має бути стабільним
+і унікальним серед сусідніх елементів; випадкові значення для цього не підходять.
+Окремо у ProductResults ключ навмисно залежить від пошуку та фільтрів.
+Його зміна створює компонент заново й скидає показ до перших 24 товарів,
+щоб новий пошук не успадковував кількість карток від попереднього.
+Це інше призначення ключа, ніж збереження ідентичності окремої картки товару.
+Приклад у коді: src/pages/Home.tsx.
 
-SAY:
+
+6. HOW DO YOU OPTIMIZE THE PRODUCTION BUILD AND PERFORMANCE?
+Як ти оптимізуєш виробничу збірку та продуктивність?
+
+Answer in English:
 Vite bundles and minifies the production code and can remove unused code.
 My routes use lazy loading, so page code can load when it is needed.
-I also optimized large background images and show products in batches of 24.
-This reduces the initial rendering work.
-The catalogue still loads as one large JSON file, so there is room to improve.
+During the improvements, we converted large background images to WebP
+and changed the catalogue to show products in batches of 24.
+This reduces image download size and the number of cards rendered at once.
+The catalogue still downloads as one large JSON file, so this can be improved later.
 
-Опорні слова: production build — minification — lazy loading — batches.
-Пояснення: minification скорочує представлення коду; tree shaking видаляє
-невикористані частини, які збирач може безпечно визначити.
-Порційний показ карток зменшує кількість DOM-елементів, але не розмір JSON-запиту.
-Tailwind у нас немає, тому його очищення CSS не є частиною нашої конфігурації.
-Не стверджуй, що Vite автоматично видаляє всі console.log: це не налаштовано.
-TypeScript перевіряється окремою командою перед Vite у нашому build script.
-Приклад: src/App.tsx; src/pages/Home.tsx; package.json.
+Повний переклад українською:
+Vite збирає та мінімізує виробничий код і може видаляти невикористаний код.
+Мої маршрути використовують відкладене завантаження, тому код сторінки
+може завантажуватися тоді, коли він потрібен.
+Під час покращень ми перетворили великі фонові зображення у WebP
+і змінили каталог, щоб він показував товари порціями по 24.
+Це зменшує обсяг завантаження зображень і кількість карток, які відображаються одночасно.
+Каталог усе ще завантажується одним великим JSON-файлом, тому це можна покращити пізніше.
 
-7. WHY USE A BUTTON INSTEAD OF A CLICKABLE DIV?
+Що реалізовано і для чого:
+Сторінки підключаються через React.lazy та Suspense. Для зображень товарів
+використовується відкладене завантаження, а великі фони оптимізовано без зміни пікселів.
+Кнопка показу наступних товарів додає ще 24 картки: браузер не створює одразу
+тисячі елементів. Це обмеження відображення, а не серверна пагінація.
+Команда build спочатку перевіряє TypeScript, потім виконує виробничу збірку.
+Автоматичне видалення всіх console.log не налаштоване; очищення Tailwind CSS
+не застосовується, оскільки Tailwind у проєкті немає.
+Приклад у коді: src/App.tsx; src/pages/Home.tsx; package.json.
 
-SAY:
+
+7. WHY USE A NATIVE BUTTON INSTEAD OF A CLICKABLE DIV?
+Чому варто використовувати звичайну HTML-кнопку замість div з обробником кліку?
+
+Answer in English:
 A native button already supports keyboard focus and activation.
 Users can reach it with Tab and activate it with Enter or Space.
-Screen readers recognize it as a button.
+Screen readers recognize its button role.
 A clickable div needs extra keyboard handling and accessibility information.
-An icon button also needs a clear accessible name.
+I also give icon buttons accessible names and keep focus visible.
+This makes the controls easier to use without a mouse.
 
-Опорні слова: native button — keyboard — focus — accessible name.
-Пояснення: зовнішній вигляд не додає HTML-елементу потрібної поведінки.
-Для дії використовуємо button, для переходу за адресою — посилання.
-У формі type="button" потрібен для дій, які не повинні надсилати форму.
-Видимий фокус допомагає зрозуміти, на якому елементі зараз користувач клавіатури.
+Повний переклад українською:
+Звичайна HTML-кнопка вже підтримує фокус і активацію з клавіатури.
+Користувачі можуть перейти до неї клавішею Tab та активувати через Enter або пробіл.
+Програми читання з екрана розпізнають її роль кнопки.
+Div з обробником кліку потребує додаткової обробки клавіатури та інформації
+для допоміжних технологій.
+Я також додаю доступні назви кнопкам з іконками та зберігаю видимий фокус.
+Це робить елементи керування зручнішими для використання без миші.
 
-8. HOW DID YOU PRIORITIZE YOUR TIME?
+Що реалізовано і для чого:
+Під час покращень додано доступні назви й стани інтерактивних елементів,
+видимі індикатори фокуса та покращення клавіатурної роботи з інтерфейсом.
+Для дій використовуються button, для переходів — посилання.
+Кнопкам у формі, які не надсилають її, потрібен type="button",
+щоб випадково не запустити оформлення замовлення.
+Ці зміни допомагають користувачам клавіатури й допоміжних технологій.
+Повного аудиту контрасту та перевірки зі скринрідером ще не виконано.
+Приклад у коді: src/components/Header/Header.tsx; src/pages/Checkout/Checkout.tsx.
 
-SAY:
+
+8. HOW DID YOU PRIORITIZE YOUR WORK, AND WHAT DID YOU POSTPONE?
+Як ти визначала пріоритети роботи та що відклала?
+
+Answer in English:
 The shop existed before this assessment preparation.
-For the assessment, I focused on a working catalogue, cart and checkout.
-I also prioritized security, error handling, accessibility and testing.
+I focused on the main customer journey: finding a product, using the cart
+and placing an order.
+During the improvements, I prioritized security, error handling, accessibility and testing.
 I postponed German localization, more brands and online payment integration.
-These features belong to future business development.
+These features are important for future business development, but they are outside the current scope.
 
-Опорні слова: existing project — core journey — quality — future scope.
-Пояснення: не кажи, що весь сайт створено за 10 днів, якщо це не так.
-Авторизація вже є через Clerk, тож не використовуй приклад «я відклала auth».
-Поточний банківський переказ не є інтегрованим платіжним шлюзом:
-сайт не списує гроші з картки й не підтверджує оплату автоматично.
-Пріоритет: зрозумілий і перевірений шлях покупця, який ти можеш пояснити.
+Повний переклад українською:
+Магазин існував ще до цієї підготовки до оцінювання.
+Я зосередилася на основному шляху покупця: пошуку товару, використанні кошика
+та оформленні замовлення.
+Під час покращень я надала пріоритет безпеці, обробці помилок, доступності та тестуванню.
+Я відклала німецьку локалізацію, додавання інших брендів та інтеграцію онлайн-оплати.
+Ці можливості важливі для майбутнього розвитку бізнесу, але вони виходять
+за межі поточного обсягу робіт.
 
-9. DESCRIBE ONE REAL BUG AND HOW IT WAS DIAGNOSED
+Що реалізовано і для чого:
+Покращення виконувалися поступово зі збереженням наявного дизайну й архітектури.
+Зокрема, ми перенесли запис замовлень на сервер і підготували обмеження доступу
+до таблиці orders; ти застосувала SQL та підтвердила права доступу в Supabase.
+Для anon і authenticated закрито пряме читання та зміну замовлень,
+а приватний серверний ключ використовується на сервері.
+У підсумковому звіті записано 73 успішні автоматизовані тести, перевірки lint,
+TypeScript і виробничої збірки. Це попередні результати, а не новий запуск тут.
+Авторизація через Clerk уже існує; її не слід називати відкладеною функцією.
+Банківський переказ не означає автоматичне списання коштів або підтвердження оплати.
+Приклад у коді: api/orders.ts; scripts/secure-order-access.sql.
 
-SAY:
+
+9. DESCRIBE ONE REAL BUG AND YOUR STEP-BY-STEP DEBUGGING PROCESS
+Опиши одну реальну помилку та послідовність її діагностики.
+
+Answer in English:
 Checkout failed on the old GitHub Pages address, but it worked on the main site.
-With AI assistance, I compared the two hosting setups.
-GitHub Pages serves static files and cannot run our server-side order API.
-The main site on Vercel supports that API.
+First, I compared the results on the two addresses.
+I confirmed that an order from the main site appeared in Supabase
+and that the Telegram notification arrived.
+With AI assistance, I identified the difference between the hosting setups:
+GitHub Pages cannot run our server-side order API, while Vercel can.
 We redirected the old address to the main site, and I checked that it worked.
 
-Опорні слова: reproduce — compare addresses — static hosting — server API — verify.
-Пояснення крок за кроком:
-1) Ти помітила помилку оформлення та порівняла дві адреси.
-2) На основному сайті ти підтвердила замовлення в Supabase і повідомлення Telegram.
-3) Причина: стара статична версія не мала серверного /api/orders.
-4) Для старої адреси підготували перенаправлення на основний сайт Vercel.
-5) Ти виконала публікацію й підтвердила роботу переходу.
-Не вигадуй перегляд конкретного POST-запиту в Logs: тоді логів не було видно.
-Точність і розуміння причини важливіші за красиву історію про DevTools.
-Приклад: scripts/build-github-redirect.js; api/orders.ts.
+Повний переклад українською:
+Оформлення замовлення не працювало за старою адресою GitHub Pages,
+але працювало на основному сайті.
+Спочатку я порівняла результати за двома адресами.
+Я підтвердила, що замовлення з основного сайту з'явилося в Supabase
+та що повідомлення в Telegram надійшло.
+За допомогою AI я визначила різницю між налаштуваннями хостингу:
+GitHub Pages не може виконувати наш серверний API замовлень, а Vercel може.
+Ми перенаправили стару адресу на основний сайт, і я перевірила, що це працює.
 
-10. WHAT WOULD YOU CHANGE FOR 50,000 DAILY USERS AND MORE LANGUAGES?
+Що реалізовано і для чого:
+Стара GitHub Pages-версія тепер слугує перенаправленням на основний сайт.
+Основний сайт на Vercel обслуговує інтерфейс і /api/orders, який записує
+замовлення в Supabase та надсилає повідомлення Telegram.
+Це прибирає ситуацію, коли покупець бачить магазин, але не може оформити замовлення
+через відсутній на старому хостингу серверний обробник.
+Ти самостійно виконувала коміти, публікацію та перевірку результату.
+Тоді у Vercel Logs не було видно потрібного запиту — не потрібно вигадувати,
+що причина була знайдена через конкретний POST-запис у логах.
+Приклад у коді: scripts/build-github-redirect.js; api/orders.ts.
 
-SAY:
+
+10. HOW WOULD YOU SUPPORT 50,000 DAILY USERS AND MULTIPLE LANGUAGES?
+Як би ти підготувала застосунок до 50 000 користувачів на день і кількох мов?
+
+Answer in English:
 First, I would measure traffic and find the main bottlenecks.
 I would replace the large catalogue download with paginated API requests.
 I would consider caching and add monitoring and protection against too many requests.
-For more languages, I would move interface text into translation files.
-These are future changes. The current version is not verified for that traffic.
+For multiple languages, I would move interface text into translation files.
+The project already uses lazy loading and shared CSS variables.
+The other changes are future plans; the current version has not been tested for that traffic.
 
-Опорні слова: measure — pagination — caching — monitoring — translations.
-Пояснення: 50 000 відвідувачів за день не означає 50 000 одночасних запитів.
-Потрібно виміряти піки й навантаження. Серверна пагінація зменшує обсяг даних,
-на відміну від нинішнього slice, який лише обмежує відображення вже отриманих даних.
-React lazy/Suspense і CSS variables у проєкті вже є — не представляй їх як відсутні.
-React Query можна розглянути пізніше, але зараз цієї бібліотеки немає.
-Переклад інтерфейсу — лише частина виходу на інший ринок; валюта, доставка,
-оплата та бізнес-вимоги також потребуватимуть окремої підготовки.
+Повний переклад українською:
+Спочатку я виміряла б трафік і знайшла основні місця, які обмежують продуктивність.
+Я замінила б завантаження великого каталогу запитами до API з пагінацією.
+Я розглянула б кешування та додала моніторинг і захист від надмірної кількості запитів.
+Для кількох мов я перенесла б тексти інтерфейсу у файли перекладів.
+У проєкті вже використовуються відкладене завантаження та спільні CSS-змінні.
+Інші зміни — це плани на майбутнє; поточну версію не тестували на такий трафік.
 
-HONEST QUALITY AND AI STATEMENTS
-I used AI assistance for code review, debugging and preparation.
-I am responsible for checking the changes and understanding the code.
-The latest recorded verification includes 73 passing automated tests,
-lint, TypeScript checks and a production build.
-I also checked the main user journey, but some checks used local synthetic data.
-I do not have a Lighthouse score or a complete accessibility audit.
-
-Українською: це записані результати попереднього етапу перевірки, а не новий
-запуск тестів під час створення цього навчального файлу. Повний обсяг і межі
-перевірок дивись у фінальному QA-звіті. Не кажи «усі можливі сценарії перевірені».
-
-USEFUL PHRASES WHEN SPEAKING
-Could you repeat the question more slowly, please?
-Could you explain what you mean by that?
-Let me explain with an example from my project.
-I use a different approach in my project.
-I have not implemented that yet. It is a possible next step.
-I need to check the code before I can answer that precisely.
-
-VOCABULARY
-reusable component — компонент, який можна використовувати повторно
-state — стан
-shared state — спільний стан
-request / response — запит / відповідь
-loading / empty / error — завантаження / порожній результат / помилка
-timeout — перевищення часу очікування
-stable key — стабільний ключ
-render — обчислити відображення інтерфейсу
-bundle — зібраний пакет коду
-lazy loading — завантаження за потреби
-keyboard focus — фокус клавіатури
-deployment — публікація застосунку
-trade-off — компроміс між перевагами й недоліками
-root cause — першопричина
-bottleneck — місце, яке обмежує продуктивність
-pagination — отримання або показ даних окремими сторінками
-
-HOW TO PRACTICE
-1) 10 minutes: read the Ukrainian explanations and clarify unfamiliar concepts.
-2) 15 minutes: practise questions 2, 3, 4 and 9 aloud. They need project-specific answers.
-3) 15 minutes: practise the other answers. Start with 2–3 sentences per question.
-4) 10 minutes: answer without reading, using only the anchor words.
-5) Tomorrow: repeat the introduction and the question about CSS Modules.
-Не потрібно вивчати всі пояснення дослівно. Мета — зрозумілі короткі відповіді
-й готовність пояснити приклад. Після розмови з Аретасом скоригуємо матеріал.
-
-SOURCES
-Provided handout: IHK_Frontend_Scrum_Handout_EN.pdf, pages 1–2.
-Earlier guide: IHK_Frontend_Exam_Participant_Guide_EN.pdf.
-Project source and docs/qa/final-verification-2026-10-15.txt.
-React list keys: https://react.dev/learn/rendering-lists
-React state reset: https://react.dev/learn/preserving-and-resetting-state
-Vite production build: https://vite.dev/guide/build
-Vite features: https://vite.dev/guide/features.html
+Що реалізовано і для чого:
+Наразі сторінки завантажуються за потреби, частина зображень — відкладено,
+а картки показуються порціями. Це зменшує початкову роботу браузера.
+Повноцінного API каталогу з пагінацією, багатомовності та перевіреного
+масштабування на зазначену аудиторію ще немає. React Query також не використовується.
+Майбутня серверна пагінація дозволила б отримувати лише потрібну частину каталогу,
+а переклади в окремих файлах — змінювати мову без дублювання компонентів.
+50 000 користувачів за день не дорівнюють 50 000 одночасних користувачів:
+для планування потрібно знати пікове навантаження та результати вимірювань.
+Приклад уже реалізованого: src/App.tsx; src/pages/Home.tsx.
