@@ -253,7 +253,7 @@ export const Checkout: React.FC = () => {
 
       thankYouParams.set('order', orderNumber);
 
-      clearOrderedItems();
+      clearOrderedItems(orderItems);
       navigate(`/thank-you?${thankYouParams.toString()}`);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Не вдалося оформити замовлення.');

@@ -1,8 +1,9 @@
 // src/context/CartContext.tsx
 import React, { useState, useEffect } from 'react';
 import type { Product } from '../types/product';
-import type { CartItem } from '../types/cart';
+import type { CartItem, OrderedCartItem } from '../types/cart';
 import { CartContext } from './cartContextValue';
+import { removeOrderedItems } from '../lib/removeOrderedItems';
 
 const CART_STORAGE_KEY = 'meloria_cart';
 const LEGACY_CART_STORAGE_KEY = 'veloria_cart';
@@ -89,9 +90,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
-  // Видаляємо з кошика ТІЛЬКИ ті товари, які були куплені (де стояла галочка)
-  const clearOrderedItems = () => {
-    setCartItems((prevItems) => prevItems.filter((item) => !item.selected));
+  // Subtract the submitted quantities from the latest cart, preserving later additions.
+  const clearOrderedItems = (orderedItems: readonly OrderedCartItem[]) => {
+    setCartItems((prevItems) => removeOrderedItems(prevItems, orderedItems));
   };
 
   // Повне очищення кошика

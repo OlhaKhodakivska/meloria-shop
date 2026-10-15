@@ -6,3 +6,8 @@ export interface CartItem {
   quantity: number;
   selected: boolean; // Додано для вибору товарів
 }
+
+export type OrderedCartItem = {
+  product_id: string;
+  quantity: number;
+};
