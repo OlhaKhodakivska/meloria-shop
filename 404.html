@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://www.meloria.pp.ua/" />
+    <title>MELORIA — перехід до магазину</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 48px 20px;
+        background: #fff;
+        color: #102346;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        text-align: center;
+      }
+      h1 { font-weight: 400; letter-spacing: 1.4px; }
+      a { color: inherit; text-underline-offset: 4px; }
+      a:focus-visible { outline: 2px solid #102346; outline-offset: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>MELORIA</h1>
+    <p>Переходимо до магазину за основною адресою.</p>
+    <p><a id="shop-link" href="https://www.meloria.pp.ua/">Перейти на meloria.pp.ua</a></p>
+    <noscript><p>Для переходу натисніть посилання вище.</p></noscript>
+    <script>
+      const legacyBase = '/meloria-shop';
+      const sourcePath = window.location.pathname;
+      let path = sourcePath === legacyBase ? '/' : sourcePath;
+      if (sourcePath.startsWith(legacyBase + '/')) {
+        path = sourcePath.slice(legacyBase.length);
+      }
+      if (path === '/index.html') path = '/';
+
+      // Set the pathname on a fixed origin; a path cannot change the destination host.
+      const target = new URL('https://www.meloria.pp.ua/');
+      target.pathname = path;
+      target.search = window.location.search;
+      target.hash = window.location.hash;
+      document.getElementById('shop-link').href = target.href;
+      window.location.replace(target.href);
+    </script>
+  </body>
+</html>
