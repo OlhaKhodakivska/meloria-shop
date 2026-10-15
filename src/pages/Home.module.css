@@ -544,3 +544,29 @@
     gap: 10px;
   }
 }
+
+.loadMore {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  color: var(--color-gray);
+  font-size: 14px;
+}
+
+.loadMore button {
+  min-height: 44px;
+  padding: 10px 24px;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--color-bg-deep);
+  color: var(--color-white);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.loadMore button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

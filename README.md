@@ -18,6 +18,7 @@ is now intended only to redirect visitors to the main website.
 
 - Product catalogue loaded asynchronously from `public/products.json`.
 - Category browsing, text search and express/made-to-order filters.
+- Large product lists displayed in batches of 24 with a load-more control.
 - Product details with image navigation and a fallback for failed product images.
 - Separate catalogue loading, empty, no-results and error states.
 - Shopping cart with quantities, item selection and `localStorage` persistence.
@@ -248,6 +249,11 @@ Dated QA records describe the evidence available when they were written.
 
 ## Accessibility and responsive design
 
+Product and category thumbnails use native lazy loading and asynchronous decoding.
+The two background images use lossless WebP copies; the original PNG source files
+are retained. Large result lists initially mount at most 24 product cards. Filters
+and search reset the visible batch, while cart updates preserve it.
+
 The interface uses semantic page landmarks, heading levels, associated form labels,
 field-specific error descriptions and status/alert messages. Shared dialog handling
 moves focus inside, supports Tab/Escape and restores focus when a dialog closes.
@@ -280,7 +286,8 @@ the GitHub Pages redirect. The project owner performs commits, pushes and deploy
 
 ## Known limitations and next steps
 
-- The large JSON catalogue and images still need performance work.
+- The full JSON catalogue is still downloaded. Server pagination and responsive
+  image resizing are not implemented; further performance work remains possible.
 - Retry continuity depends on the same payload and the same tab's sessionStorage;
   closing the tab or clearing browser storage can lose an unresolved request ID.
 - Authentication components are present, but a complete sign-in/sign-up/sign-out

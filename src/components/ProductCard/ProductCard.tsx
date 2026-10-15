@@ -64,6 +64,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               src={currentImage}
               alt={product.title}
               className={styles.image}
+              loading="lazy"
+              decoding="async"
               onError={() => markImageAsFailed(currentImage)}
             />
           </button>
@@ -148,6 +150,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                       src={currentImage}
                       alt={product.title}
                       className={styles.galleryImage}
+                      decoding="async"
                       onError={() => markImageAsFailed(currentImage)}
                     />
 
@@ -173,7 +176,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                           type="button"
                           aria-label={`Фото ${imageIndex + 1}`}
                         >
-                          <img src={imageUrl} alt="" onError={() => markImageAsFailed(imageUrl)} />
+                          <img src={imageUrl} alt="" loading="lazy" decoding="async" onError={() => markImageAsFailed(imageUrl)} />
                         </button>
                       ))}
                     </div>

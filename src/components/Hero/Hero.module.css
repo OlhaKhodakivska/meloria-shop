@@ -9,7 +9,7 @@
   max-width: 100%;
   margin: 0;
   padding: 0 20px;
-  background: url('../../images/hero.png');
+  background: url('../../images/hero.webp');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -146,7 +146,7 @@
     display: block;
     grid-row: 1;
     min-height: 210px;
-    background-image: url('../../images/hero.png');
+    background-image: url('../../images/hero.webp');
     background-size: cover;
     background-position: 68% center;
     background-repeat: no-repeat;

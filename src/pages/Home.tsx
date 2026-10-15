@@ -11,6 +11,7 @@ import styles from './Home.module.css';
 type CatalogView = 'featured' | 'all' | 'new';
 type DeliveryGroupFilter = 'all' | 'express' | 'made_to_order';
 
+const PRODUCTS_PER_BATCH = 24;
 const NEW_PRODUCTS_LIMIT = 48;
 const FEATURED_PRODUCTS_LIMIT = 12;
 const deliveryGroups: Array<{
@@ -57,6 +58,36 @@ const getFeaturedProducts = (products: Product[], limit: number) => {
     .slice(0, limit - 1);
 
   return [mostExpensiveProduct, ...randomProducts];
+};
+
+const ProductResults: React.FC<{ products: Product[] }> = ({ products }) => {
+  const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_BATCH);
+  const visibleProducts = products.slice(0, visibleCount);
+  const hasMore = visibleCount < products.length;
+
+  return (
+    <>
+      <div className={styles.productGrid} id="product-results-grid">
+        {visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)}
+      </div>
+      {products.length > PRODUCTS_PER_BATCH && (
+        <div className={styles.loadMore}>
+          <p id="product-results-count" role="status">
+            Показано {visibleProducts.length} із {products.length} товарів
+          </p>
+          <button
+            type="button"
+            aria-controls="product-results-grid"
+            aria-describedby="product-results-count"
+            disabled={!hasMore}
+            onClick={() => setVisibleCount((count) => Math.min(count + PRODUCTS_PER_BATCH, products.length))}
+          >
+            {hasMore ? 'Показати ще' : 'Усі товари показано'}
+          </button>
+        </div>
+      )}
+    </>
+  );
 };
 
 export const Home: React.FC = () => {
@@ -380,6 +411,8 @@ export const Home: React.FC = () => {
                       src={coverProduct.imageUrl}
                       alt={category}
                       className={styles.catalogCategoryImage}
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <span className={styles.catalogCategoryFallback}>Фото скоро буде</span>
@@ -393,19 +426,18 @@ export const Home: React.FC = () => {
               </button>
             ))}
           </div>
+        ) : filteredProducts.length > 0 ? (
+          <ProductResults
+            key={JSON.stringify([catalogView, activeCategory, selectedCatalogCategory, searchQuery, activeDeliveryGroup])}
+            products={filteredProducts}
+          />
         ) : (
           <div className={styles.productGrid}>
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))
-            ) : (
-              <div className={styles.emptySearch}>
-                <h3>Нічого не знайдено</h3>
-                <p>Спробуйте інший запит або перегляньте весь каталог.</p>
-                <button onClick={clearSearch} type="button">До каталогу</button>
-              </div>
-            )}
+            <div className={styles.emptySearch}>
+              <h3>Нічого не знайдено</h3>
+              <p>Спробуйте інший запит або перегляньте весь каталог.</p>
+              <button onClick={clearSearch} type="button">До каталогу</button>
+            </div>
           </div>
         )}
       </section>

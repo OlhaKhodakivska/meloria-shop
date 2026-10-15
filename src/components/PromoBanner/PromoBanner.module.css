@@ -7,7 +7,7 @@
 .bannerContainer {
   width: 100%;
   margin: 0;
-  background: url('../../images/banner.png'); /* Темно-синій градієнт поверх фото подарунка */
+  background: url('../../images/banner.webp'); /* Темно-синій градієнт поверх фото подарунка */
   background-size: cover;
   background-position: center;
   padding: 60px;

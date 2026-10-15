@@ -1,0 +1,43 @@
+Meloria Shop — performance work, 15 October 2026
+
+Scope
+Incremental frontend changes only: batch rendering, native image loading hints,
+and lossless encoding of two existing background assets. No new runtime packages.
+
+Measured asset sizes (bytes)
+- hero.png: 1,169,125; hero.webp: 695,276.
+- banner.png: 825,640; banner.webp: 508,024.
+- Combined: 1,994,765 -> 1,203,300 bytes, approximately 39.7% smaller.
+- The decoded RGBA pixels and dimensions were checked with Pillow and match
+  exactly for each PNG/WebP pair. PNG source files are retained.
+- These figures describe the two asset files, not overall page load time.
+
+Catalogue
+- public/products.json: 15,360,020 bytes, 9,838 products; source data unchanged.
+- Largest category: 2,645 products before applying delivery filters.
+- Browser DOM: 24 initial cards, then 48 after load more, rather than mounting
+  every category result at once.
+- A delivery-filter change reset the list to 24 of 2,361 results.
+- A search change reset the list to 24 of 2,125 matching results in that filter.
+- The new-products view loaded 24 then all 48; its completed button was disabled.
+- Product images in the grid have loading=lazy and decoding=async.
+- The open dialog's main image stays eager; thumbnails use lazy loading.
+
+Browser checks on an isolated production build
+- Desktop: expand list, add to cart without losing the batch, open/close the cart,
+  change delivery filter, search, and open/close a product dialog with Escape.
+- Mobile (390px): empty search, return to category cards, enter a category,
+  load 24 then 48 cards, and check for horizontal overflow.
+- Compiled background styles point to WebP assets.
+- No production order was submitted during these checks.
+
+Verification
+- 73 automated tests passed; frontend type checks and lint passed.
+- Production build passed in an isolated copy with synthetic environment values.
+- The final diff was reviewed; original catalogue data and PNG sources were kept.
+
+Limits
+The browser still downloads the full catalogue. Showing more batches gradually
+increases the mounted card count. This is not server pagination or virtualisation.
+Browser checks are manual/agent-assisted. No Lighthouse score, network timing
+improvement or complete accessibility conformance is claimed.
