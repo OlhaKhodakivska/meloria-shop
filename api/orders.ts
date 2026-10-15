@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import fs from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import type { Product } from '../src/types/product.js';
 
@@ -15,6 +16,7 @@ type ApiResponse = {
 };
 
 type OrderPayload = {
+  request_id: string;
   customer_name: string;
   customer_email: string;
   customer_phone: string;
@@ -30,7 +32,7 @@ type OrderPayload = {
   status: string;
 };
 
-type SavedOrder = Omit<OrderPayload, 'payment_details'> & {
+type SavedOrder = Omit<OrderPayload, 'payment_details' | 'request_id'> & {
   payment_details: string;
   id: string;
   order_number?: number | null;
@@ -62,6 +64,7 @@ const ukrainianNameRegex = /^[А-ЩЬЮЯЄІЇҐа-щьюяєіїґ]+(?:[ '\u20
 const ukrainianTextRegex = /^[0-9А-ЩЬЮЯЄІЇҐа-щьюяєіїґ№.,!?():;"'`\u2019\-\s/]+$/;
 const ukrainianPhoneRegex = /^\+380\d{9}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const requestIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const branchRegex = /^(відділення|поштомат|пункт|№|[0-9])/i;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -74,6 +77,9 @@ function readText(value: unknown) {
 
 function validateOrderPayload(payload: Partial<OrderPayload>) {
   const errors: string[] = [];
+  if (typeof payload.request_id !== 'string' || !requestIdRegex.test(payload.request_id)) {
+    errors.push('Оновіть сторінку та спробуйте оформити заявку ще раз.');
+  }
   const customerName = readText(payload.customer_name);
   const customerEmail = readText(payload.customer_email);
   const customerPhone = readText(payload.customer_phone);
@@ -200,6 +206,40 @@ async function buildOrderFromCatalogue(requestedItems: RequestedItem[]) {
   return { items, totalAmount: totalCents / 100 };
 }
 
+// Compare only the fields that define the purchase, in a fixed order.
+// Catalogue titles, client statuses and payment display details do not define it.
+function orderFingerprint(order: Partial<OrderPayload> | SavedOrder) {
+  const comment = typeof order.comment === 'string'
+    ? order.comment.trim()
+    : isRecord(order.payment_details) ? readText(order.payment_details.customer_comment) : '';
+  const items = (order.items as RequestedItem[]).map((item) => ({
+    product_id: item.product_id, price: item.price, quantity: item.quantity,
+  })).sort((a, b) => a.product_id.localeCompare(b.product_id));
+  return createHash('sha256').update(JSON.stringify({
+    customer_name: readText(order.customer_name),
+    customer_email: readText(order.customer_email).toLowerCase(),
+    customer_phone: readText(order.customer_phone),
+    delivery_method: order.delivery_method,
+    delivery_city: readText(order.delivery_city),
+    delivery_branch: readText(order.delivery_branch),
+    payment_method: order.payment_method,
+    comment,
+    items,
+    total_cents: Math.round((order.total_amount as number) * 100),
+  })).digest('hex');
+}
+
+function orderReceipt(order: SavedOrder) {
+  return { id: order.id, ...(order.order_number != null ? { order_number: order.order_number } : {}) };
+}
+
+function respondToRetry(order: SavedOrder, payload: Partial<OrderPayload>, response: ApiResponse) {
+  if (orderFingerprint(order) !== orderFingerprint(payload)) {
+    return response.status(409).json({ error: 'Дані цієї заявки відрізняються від збережених. Звʼяжіться з нами.' });
+  }
+  return response.status(200).json({ order: orderReceipt(order) });
+}
+
 async function sendTelegramOrderNotification(order: SavedOrder) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -266,6 +306,16 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       return response.status(400).json({ error: validationErrors.join(' ') });
     }
 
+    // The existing UUID primary key also prevents concurrent duplicate inserts.
+    const requestId = payload.request_id!.toLowerCase();
+    const { data: existingOrder, error: lookupError } = await supabase
+      .from('orders').select('*').eq('id', requestId).maybeSingle();
+    if (lookupError) {
+      return response.status(503).json({ error: 'Не вдалося перевірити заявку. Спробуйте пізніше.' });
+    }
+    // Check before reading today's catalogue: prices may have changed since saving.
+    if (existingOrder) return respondToRetry(existingOrder as SavedOrder, payload, response);
+
     const catalogueOrder = await buildOrderFromCatalogue(payload.items as RequestedItem[]);
     if ('error' in catalogueOrder) {
       return response.status(409).json({ error: catalogueOrder.error });
@@ -285,6 +335,7 @@ export default async function handler(request: ApiRequest, response: ApiResponse
     const { data: order, error } = await supabase
       .from('orders')
       .insert({
+        id: requestId,
         customer_name: payload.customer_name?.trim(),
         customer_email: payload.customer_email?.trim().toLowerCase(),
         customer_phone: payload.customer_phone?.trim(),
@@ -303,6 +354,12 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       .single();
 
     if (error) {
+      if (error.code === '23505') {
+        // Another request may have saved this ID after our initial lookup.
+        const { data: saved, error: retryError } = await supabase
+          .from('orders').select('*').eq('id', requestId).maybeSingle();
+        if (!retryError && saved) return respondToRetry(saved as SavedOrder, payload, response);
+      }
       return response.status(500).json({ error: 'Не вдалося зберегти замовлення. Спробуйте пізніше.' });
     }
 
@@ -313,9 +370,9 @@ export default async function handler(request: ApiRequest, response: ApiResponse
       console.error('Telegram order notification could not be sent.');
     }
 
-    return response.status(201).json({ order });
-  } catch (error) {
-    console.error('Order API error:', error);
-    return response.status(500).json({ error: 'Failed to create order' });
+    return response.status(201).json({ order: orderReceipt(order as SavedOrder) });
+  } catch {
+    console.error('Order API request failed.');
+    return response.status(500).json({ error: 'Не вдалося обробити заявку. Спробуйте пізніше.' });
   }
 }

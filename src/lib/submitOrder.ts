@@ -4,7 +4,7 @@ export type SubmittedOrder = {
 };
 
 const unconfirmedOrderMessage =
-  'Не вдалося підтвердити результат оформлення. Кошик збережено. Звʼяжіться з нами перед повторним надсиланням заявки.';
+  'Не вдалося підтвердити результат оформлення. Кошик збережено. Повторіть надсилання з тими самими даними в цій вкладці або звʼяжіться з нами.';
 
 function readSavedOrder(value: unknown): SubmittedOrder {
   if (typeof value !== 'object' || value === null ||
@@ -21,13 +21,28 @@ function readSavedOrder(value: unknown): SubmittedOrder {
   };
 }
 
-export async function submitOrder(payload: unknown): Promise<SubmittedOrder> {
+export async function submitOrder(payload: Record<string, unknown>): Promise<SubmittedOrder> {
+  // Keep an ID for each unresolved payload, including after a reload in this tab.
+  // Only the hash and UUID are stored, never the customer's contact details.
+  const serialized = JSON.stringify(payload);
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(serialized));
+  const fingerprint = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+  const storageKey = `meloria_order_request:${fingerprint}`;
+  let requestId: string;
+  try {
+    requestId = sessionStorage.getItem(storageKey) || crypto.randomUUID();
+    sessionStorage.setItem(storageKey, requestId);
+  } catch {
+    // Do not send a request if its ID cannot survive a reload.
+    throw new Error('Для безпечного оформлення дозвольте збереження даних у браузері та спробуйте ще раз.');
+  }
+
   let response: Response;
   try {
     response = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ ...payload, request_id: requestId }),
     });
   } catch {
     // A lost response does not prove that the server failed to save the order.
@@ -52,7 +67,10 @@ export async function submitOrder(payload: unknown): Promise<SubmittedOrder> {
   }
 
   const result: unknown = await response.json().catch(() => null);
-  return readSavedOrder(
+  const order = readSavedOrder(
     typeof result === 'object' && result !== null && 'order' in result ? result.order : null,
   );
+  // A confirmed purchase can be followed by a new, identical purchase.
+  try { sessionStorage.removeItem(storageKey); } catch { /* Retaining the ID is safer than another write. */ }
+  return order;
 }
