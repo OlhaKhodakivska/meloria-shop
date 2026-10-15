@@ -246,6 +246,8 @@ Local PostgreSQL checks were also performed against the reported column types.
 The owner has confirmed a saved production order and a received Telegram message.
 This is evidence for that checked flow, not a claim that every scenario is tested.
 Dated QA records describe the evidence available when they were written.
+See the [final verification report](docs/qa/final-verification-2026-10-15.txt) for
+the latest results, production evidence and remaining limitations.
 
 ## Accessibility and responsive design
 
@@ -296,7 +298,12 @@ the GitHub Pages redirect. The project owner performs commits, pushes and deploy
 - Automated browser E2E tests, notification delivery retries and abuse/rate-limit
   protection are not implemented.
 - Support for more Ukrainian manufacturers and German localisation are future ideas.
-- Final assessment checks and documentation updates are still required after changes.
+- The 15 October 2026 production dependency audit reports two high entries for
+  one [React Router RSC advisory](https://github.com/advisories/GHSA-qwww-vcr4-c8h2).
+  No unstable RSC API use was found in this BrowserRouter application. A targeted
+  patch update remains separate maintenance requiring the owner's approval.
+- Repeat checks after future changes and complete the remaining manual assessment
+  preparation described in the final verification report.
 
 ## AI assistance disclosure
 

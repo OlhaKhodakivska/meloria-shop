@@ -1,0 +1,313 @@
+Meloria Shop — final maintenance verification
+Date: 15 October 2026
+Reviewed application commit: 5f33883
+Comparison baseline: 23b261c
+
+1. Result and scope
+
+The ten planned maintenance stages have been carried out, with the limits and
+follow-up work below. The existing React/TypeScript/Vite architecture, Ukrainian
+shop content and brand assets were preserved. No runtime dependencies were added
+or upgraded. The owner performed commits, pushes, deployment and production SQL.
+The assistant did not submit a successful production order or read customer rows.
+
+Completed stages
+[done] 1. Explicit TypeScript checks and existing type errors.
+[done] 2. Isolate Telegram failure from order persistence.
+[done] 3. Catalogue loading, empty, no-results and error states.
+[done] 4. Mobile search and benefit text wrapping.
+[done] 5. Planned keyboard, form and landmark accessibility improvements.
+[done] 6. Order validation, private server access, retry handling and deployment checks.
+[done] 7. Additional tests for the critical purchase flows.
+[done] 8. Project README and environment example.
+[done] 9. Incremental image and catalogue rendering performance work.
+[done] 10. Final checks and this report.
+
+Added as circumstances required
+[done] Close the verified public orders-table exposure (owner-run SQL).
+[done] Align inserts with the reported production column types.
+[done] Protect unresolved retries and simultaneous client/API requests.
+[done] Preserve cart edits made while submission is pending.
+[done] Keep the desktop account entry visible while Clerk loads.
+[done] Fix direct Vercel route 404s and redirect legacy GitHub Pages links.
+[follow-up] Review the React Router dependency advisory described below.
+
+Assessment preparation continues separately: the author needs presentation
+practice, independent code explanation and a manual authentication check.
+No full accessibility conformance or independent IHK certification is claimed.
+
+2. Checks performed and actual results
+
+Automated and build checks
+- npm test: 73 passed, 0 failed.
+- npm run typecheck: passed (application and Vite configurations).
+- npm run lint: passed.
+- Separate API TypeScript check: passed.
+- npm run build: passed in an isolated copy of the reviewed code using synthetic
+  environment values; generated eight static SEO pages.
+- Redirect build and URL mapping: covered by automated tests and browser checks.
+- git diff --check: passed; working tree was clean before writing the final report.
+- Existing lockfile and dependency versions were preserved.
+
+Published site
+- The owner reported Vercel Ready for the performance deployment; commit 5f33883
+  is pushed to origin/main.
+- GET on /, /checkout, /auth, /about, /delivery, /contacts, /free-delivery,
+  /returns-exchange, /privacy-policy, /terms-of-use and /thank-you returned 200
+  and Ukrainian-language HTML documents.
+- Direct route content was checked in the browser at desktop (1366px) and mobile
+  (390px) widths. No horizontal overflow was observed in those checks.
+- GET /api/orders returned JSON with 405 and Allow: POST, confirming that the SPA
+  fallback did not consume the API route.
+- Earlier negative production checks returned 400 for an empty request and 409
+  for a deliberately nonexistent product, without inserting orders.
+- The deployed category initially showed 24 of 2,645 cards, then 48 after load more.
+  Lazy-loading attributes, the product dialog/Escape behaviour, mobile search
+  and the account entry route were checked.
+- GitHub Pages home and old /checkout links settled on the main domain and its
+  /checkout route. The published redirect HTML matched the local template.
+- Production hero/banner WebP bytes matched the local files by SHA-256.
+
+Local isolated browser flows
+- Product -> cart -> increase quantity -> checkout.
+- Invalid name: inline errors displayed, aria-invalid set and focus moved to name.
+- Synthetic API failure: error displayed and two cart units retained.
+- Synthetic API success: receipt/thank-you route displayed and ordered items cleared.
+- Held catalogue request, empty array and HTTP failure each produced the correct
+  loading, empty and error UI. The local test server had no Supabase or Telegram
+  connection. These are simulated-service UI checks, not production database tests.
+- Prior PostgreSQL checks used only a separate local fixture and synthetic rows.
+
+Owner-provided production evidence
+- RLS enabled; anon/authenticated table privileges revoked; open policies removed.
+- The id primary key has a valid unique index (orders_pkey).
+- A production order from meloria.pp.ua appeared in Supabase and its Telegram
+  message arrived. This evidence comes from the owner, not an assistant submission.
+
+Secret/configuration review
+- No tracked environment files other than .env.example were found.
+- .env, .env.local and .env.production are ignored by Git.
+- Current tracked text files had no matches for the checked private-key, Supabase
+  secret, JWT-literal and Telegram-token patterns. No matched values were printed.
+- 18 discovered public production JavaScript assets were scanned for selected
+  private-key/secret/token formats; no matches were found and the scan queue ended.
+- This was a bounded format scan of current files/assets, not a full historical
+  or forensic security audit. Public payment details are intentionally displayed.
+- Server secrets remained outside the VITE_ configuration. Deployment settings
+  and database access were not mutated during final verification.
+
+Production order confirmation restriction
+Automatic approval review rejected a production confirmation-button check because
+it could create a real order. No attempt was made to bypass that restriction.
+Validation/error/success UI checks were completed on the isolated local server.
+No additional assistant-created production order or Telegram message was sent.
+
+3. Performance evidence
+
+- Catalogue source is unchanged: 9,838 products, 15,360,020 bytes.
+- Large categories initially mount at most 24 cards, instead of thousands.
+- Filters/search start a new batch; cart updates preserve the current batch.
+- Native lazy loading applies to product/category thumbnails. The dialog's main
+  image stays eager and uses asynchronous decoding.
+- hero: 1,169,125 -> 695,276 bytes; banner: 825,640 -> 508,024 bytes.
+- Combined background asset reduction: approximately 39.7%.
+- Dimensions and decoded RGBA pixels match the original PNGs exactly; originals
+  are retained. The PNGs had no ICC profile to lose during conversion.
+- The full JSON still downloads; rendering batches is not server pagination or
+  virtualisation. No network timing or Lighthouse score is claimed.
+- Lighthouse is not installed in this project.
+
+4. Remaining findings, recommendations and limits
+
+P2 — Dependency maintenance (registry advisory severity: high)
+- npm audit --omit=dev exited 1: 2 high entries, 0 critical entries.
+- react-router 7.18.0 and react-router-dom 7.18.0 refer to one underlying advisory:
+  GHSA-qwww-vcr4-c8h2, RSC-mode CSRF handling.
+- The advisory states that unstable RSC APIs are required for applicability. This
+  project uses BrowserRouter; no RSC imports, RSC Vite plugin or server RSC handler
+  were found. No affected application path was identified; that is a code-review
+  assessment, not a general guarantee of security.
+- The advisory lists 7.18.2 as a patched 7.x release. A targeted patch update is
+  recommended as separate maintenance, followed by tests/build/navigation checks.
+- Dependencies were not changed because the owner's prompt prohibits unapproved
+  upgrades. No npm audit fix command was run.
+- Source: https://github.com/advisories/GHSA-qwww-vcr4-c8h2
+
+P2 — Authentication verification and localisation
+- Sign-in/sign-up/profile components exist and their route opens. A real complete
+  sign-in/sign-up/sign-out journey has not been independently checked.
+- Clerk is in development mode and embedded forms include English text.
+- The order flow is guest checkout; no Clerk-linked order history is implemented.
+
+P2 — Accessibility verification
+- Manual keyboard/dialog checks were performed. Screen-reader testing and a full
+  contrast audit remain open; native datalist/title appearance depends on browser.
+- Styling the city popup or replacing the title tooltip was discussed but deferred.
+
+P2 — Reliability and scaling limits
+- An unresolved retry marker depends on the same payload and tab sessionStorage.
+  Closing the tab or clearing data can lose it; different tabs are not deduplicated
+  unless they send the same request ID.
+- Telegram delivery has no durable queue or delivery retry. An order can remain
+  saved even if a notification fails. Notification fetch has no explicit timeout.
+- Rate limiting/abuse protection and a committed automated browser E2E suite are
+  not implemented. Existing automated order tests use intercepted network calls.
+- The full supplier catalogue is downloaded. The importer appends new IDs but
+  does not refresh prices or stock for existing IDs.
+
+Current business scope
+- Payments, stock confirmation and fulfilment are manual. There is no payment
+  gateway, live postal integration or admin dashboard.
+- More manufacturers and German localisation are future ideas.
+
+5. Prioritised next steps
+
+1. Manually verify the existing Clerk journey with the owner's own test account;
+   use no real payment or unnecessary customer data for demonstrations.
+2. Approve/prepare the targeted React Router patch update as separate work.
+3. Practise the presentation and technical questions with code the author can
+   explain independently; prepare a local demonstration backup.
+4. Check screen-reader behaviour, contrast and notification timeout/reliability.
+5. Consider server pagination, catalogue refresh logic, rate limiting and browser
+   E2E automation when the project scope and business usage require them.
+
+6. Decisions to understand for the Fachgespraech
+
+- Components and props: Header receives callbacks; ProductCard receives a product.
+- Context: one cart state is shared across header, drawer and checkout.
+- useState versus useRef: state renders the UI; a ref blocks immediate repeat clicks.
+- React keys: a new filter combination remounts ProductResults and resets its batch.
+- Browser storage: localStorage persists the cart; sessionStorage retains pending
+  request IDs within a tab. Different website origins have separate storage.
+- Async requests: show loading/error/success explicitly; do not assume a lost
+  response proves that a write failed.
+- Server validation: browser values can be edited; verify products/prices and set
+  initial statuses on the server. Calculate currency in integer kopiykas.
+- Idempotency: one purchase attempt keeps one UUID; the unique primary key also
+  handles concurrent inserts. Check matching purchase details before returning a receipt.
+- Security: a private server key and RLS/table privileges serve different purposes.
+  A VITE_ variable is public configuration, never a place for a server secret.
+- Notifications: saving the order and delivering a notification are separate steps.
+- Hosting: GitHub stores source, Vercel runs frontend/API, Pages serves a redirect.
+  SPA direct routes need a host fallback that does not intercept API requests.
+- Performance: mount fewer cards, defer off-screen images, and use a smaller
+  lossless encoding. These changes do not reduce the full JSON download.
+- Testing: mocks check logic, local PostgreSQL checks constraints, browser checks
+  verify UI wiring, and owner evidence confirms the checked production purchase.
+- AI assistance: describe the help transparently and take responsibility for code
+  review, verification and independent understanding.
+
+7. Exact changed-file inventory
+
+The following 54 paths differ between the comparison baseline and the reviewed
+application commit. This inventory includes owner-made documentation edits. The
+final report itself and its README reference are added after that reviewed commit.
+
+.env.example
+  Document public/server settings with placeholders and identify unused legacy browser settings.
+.gitignore
+  Exclude the generated redirect-only Pages output.
+README.md
+  Replace Vite boilerplate with actual features, setup, architecture, limits and AI disclosure; retain owner edits.
+api/orders.ts
+  Validate requests and catalogue prices, use server credentials, store compatible values, handle retries and isolate notification failures.
+docs/ihk/daily-practice-2026-10-14.txt
+  Record earlier English practice and the checkpoint available at the end of that day.
+docs/qa/performance-2026-10-15.txt
+  Record exact asset sizes, batch-rendering evidence and performance test limits.
+docs/qa/verification-2026-10-15.txt
+  Record a dated verification snapshot; later evidence is recorded in this report.
+package.json
+  Run real frontend type checks before building; add tests; separate Pages redirect publication from the main build.
+scripts/build-github-redirect.js
+  Build separate home and 404 redirect pages.
+scripts/check-order-id-constraint.sql
+  Verify that a valid unique index guarantees order ID uniqueness.
+scripts/check-order-permissions.sql
+  Inspect RLS, role privileges and policies without reading customer rows.
+scripts/check-order-schema.sql
+  Inspect column metadata without reading customer rows.
+scripts/github-pages-redirect.html
+  Redirect legacy paths to a fixed main origin; preserve query/fragment and provide a manual link.
+scripts/secure-order-access.sql
+  Prepare an owner-run transaction to enable RLS and revoke public access.
+src/App.tsx
+  Provide one shared main landmark and remove an unused import.
+src/components/CartDrawer/CartDrawer.module.css
+  Support the accessible cart dialog and control layout.
+src/components/CartDrawer/CartDrawer.tsx
+  Improve dialog names, keyboard handling and item control labels.
+src/components/Footer/Footer.tsx
+  Use an accessible link for the logo.
+src/components/Header/Header.module.css
+  Restore mobile search and avoid header overlap with responsive controls.
+src/components/Header/Header.tsx
+  Improve navigation/search access and keep a labelled desktop account entry available during Clerk loading.
+src/components/Hero/Hero.module.css
+  Reference the lossless WebP background.
+src/components/ProductCard/ProductCard.tsx
+  Improve dialog accessibility and native image loading/decoding.
+src/components/PromoBanner/PromoBanner.module.css
+  Reference the lossless WebP background.
+src/context/CartContext.tsx
+  Subtract submitted quantities from the latest cart state.
+src/context/cartContextValue.ts
+  Type the submitted item snapshot accepted by cart cleanup.
+src/hooks/useModalFocus.ts
+  Share focus placement/trapping, Escape handling, scroll lock and focus restoration.
+src/images/banner.webp
+  Add a smaller lossless copy; preserve the PNG source and decoded pixels.
+src/images/hero.webp
+  Add a smaller lossless copy; preserve the PNG source and decoded pixels.
+src/lib/removeOrderedItems.ts
+  Remove only purchased quantities without mutating cart input.
+src/lib/submitOrder.ts
+  Submit only through the API, validate receipts, retain retry IDs and share in-flight calls.
+src/pages/Auth/Auth.module.css
+  Use a page-level heading and keep its existing Clerk layout styles aligned.
+src/pages/Auth/Auth.tsx
+  Use a page-level heading and keep its existing Clerk layout styles aligned.
+src/pages/Checkout/Checkout.module.css
+  Style accessible field errors and form states.
+src/pages/Checkout/Checkout.tsx
+  Show field-specific errors, focus invalid fields, block repeated form submissions and clean up the submitted cart snapshot.
+src/pages/Contacts.tsx
+  Correct page landmarks/heading hierarchy and keep associated styles aligned.
+src/pages/Delivery.tsx
+  Correct page landmarks/heading hierarchy and keep associated styles aligned.
+src/pages/FreeDelivery.tsx
+  Correct page landmarks/heading hierarchy and keep associated styles aligned.
+src/pages/Home.module.css
+  Fix benefit text wrapping and style batch controls with existing colours.
+src/pages/Home.tsx
+  Separate catalogue states, retain search/filter behaviour, render batches and lazy-load category images.
+src/pages/InfoPages.module.css
+  Correct page landmarks/heading hierarchy and keep associated styles aligned.
+src/pages/PrivacyPolicy.tsx
+  Correct page landmarks/heading hierarchy and keep associated styles aligned.
+src/pages/ReturnsExchange.tsx
+  Correct page landmarks/heading hierarchy and keep associated styles aligned.
+src/pages/TermsOfUse.tsx
+  Correct page landmarks/heading hierarchy and keep associated styles aligned.
+src/pages/ThankYou.tsx
+  Correct page landmarks/heading hierarchy and keep associated styles aligned.
+src/types/cart.ts
+  Define the order item ID/quantity snapshot type.
+src/types/product.ts
+  Allow the optional previous price already used by catalogue data.
+supabase-orders.sql
+  Align reference SQL with server-only access and text payment details; retain the existing bootstrap/backfill operations.
+tests/cart.test.mjs
+  Check cart cleanup after quantity/selection changes and input immutability.
+tests/checkout-flow.test.mjs
+  Connect the real client helper and API to synthetic services for retry/concurrency checks.
+tests/fixtures/orders-production-schema.sql
+  Provide a synthetic local schema fixture matching the reported production column types.
+tests/github-redirect.test.mjs
+  Check safe destination mapping, query/fragment preservation and generated fallback pages.
+tests/orders.test.mjs
+  Check server validation, pricing, statuses, database errors, notifications and duplicate handling.
+tests/submitOrder.test.mjs
+  Check response failures, receipt validation, persistent retry IDs and blocked storage.
+vercel.json
+  Bundle the catalogue in the function and fix direct SPA routes while excluding the orders API.
