@@ -294,7 +294,7 @@ the GitHub Pages redirect. The project owner performs commits, pushes and deploy
 ## AI assistance disclosure
 
 AI assistance was used for technical review, debugging, incremental code changes,
-test preparation, documentation and English presentation practice. The author
+test preparation and documentation. The author
 remains responsible for reviewing changes, checking their behaviour and learning
 to explain the implementation independently. Assistance does not replace the
 author's own understanding or the assessment's disclosure requirements.
