@@ -12,8 +12,8 @@ export const Contacts: React.FC = () => (
 
       <p>
         <strong>Телефон: </strong>
-        <a href="tel:+380997064090" className={styles.link}>
-          +38 (099) 706-40-90
+        <a href="tel:+380957064090" className={styles.link}>
+          +38 (095) 706-40-90
         </a>{' '}
         (Пн-Пт: 09:00 - 18:00)
       </p>

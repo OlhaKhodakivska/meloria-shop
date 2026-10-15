@@ -58,7 +58,7 @@ const pages: Record<string, SeoPage> = {
   '/contacts': {
     title: 'Контакти MELORIA - телефон, email та Instagram',
     description:
-      'Звʼяжіться з MELORIA: телефон +38 (099) 706-40-90, email info@meloria.pp.ua, Instagram @meloria.shop.',
+      'Звʼяжіться з MELORIA: телефон +38 (095) 706-40-90, email info@meloria.pp.ua, Instagram @meloria.shop.',
     keywords: 'контакти MELORIA, meloria shop телефон, info@meloria.pp.ua, instagram meloria.shop',
     path: '/contacts'
   },
@@ -166,7 +166,7 @@ const buildHomeStructuredData = (): StructuredData[] => [
       image: DEFAULT_IMAGE,
       description: DEFAULT_DESCRIPTION,
       email: 'info@meloria.pp.ua',
-      telephone: '+380997064090',
+      telephone: '+380957064090',
       sameAs: ['https://instagram.com/meloria.shop'],
       areaServed: {
         '@type': 'Country',
@@ -176,7 +176,7 @@ const buildHomeStructuredData = (): StructuredData[] => [
       paymentAccepted: ['Card', 'IBAN'],
       contactPoint: {
         '@type': 'ContactPoint',
-        telephone: '+380997064090',
+        telephone: '+380957064090',
         contactType: 'customer support',
         email: 'info@meloria.pp.ua',
         availableLanguage: ['uk', 'ru']
