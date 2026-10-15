@@ -1,0 +1,275 @@
+MELORIA SHOP — PREPARATION FOR THE GROUP DISCUSSION
+Friday, 16 October 2026 | Trainer: Aretas
+English speaking practice + Ukrainian explanations
+Prepared from IHK_Frontend_Scrum_Handout_EN.pdf and the existing project.
+
+МЕТА НА ЗАВТРА
+Звірити мінімальні вимоги та обговорити власні відповіді на 10 запитань.
+Це підготовка до технічної розмови, а не повний текст 10-хвилинної презентації.
+Англійські відповіді нижче — чернетки для навчання: перевір, що вони передають
+твої рішення. Якщо певне рішення з'явилося під час роботи з AI, не представляй
+його як самостійно знайдене. Важливо зрозуміти й пояснити його своїми словами.
+
+IMPORTANT QUESTION FOR THE TRAINER
+My project uses React and CSS Modules. The participant guide allows modern
+CSS, but this handout mentions Tailwind. Can I keep CSS Modules for the assessment?
+
+Українською: у новому handout Tailwind прямо названий у мінімальних вимогах.
+У попередньому Participant Guide описано сучасний адаптивний CSS загалом.
+Потрібно уточнити в Аретаса, чи CSS Modules прийнятні саме для твого іспиту.
+Поки немає підтвердження, не стверджуємо повну відповідність цьому пункту.
+Не потрібно поспішно переписувати стилі перед розмовою з викладачем.
+
+MINIMUM SCOPE — PROJECT CHECKLIST
+[x] React components: Header, Footer, Hero, PromoBanner, ProductCard, CartDrawer.
+[x] Interactive state: search, filters, cart, forms and dialogs.
+[x] Async catalogue: fetch products.json; loading, results, error and empty states.
+[x] Responsive layouts: mobile and desktop checks are recorded in the QA report.
+[x] Semantic elements, form labels, native buttons and keyboard improvements exist.
+[x] Live application on Vercel and a traceable GitHub history.
+[?] Tailwind requirement: project uses CSS Modules; trainer confirmation needed.
+[~] Accessibility verification is partial: no complete contrast or screen reader audit.
+[~] Dedicated tablet verification is not established by the final QA summary.
+
+Пояснення: [x] означає наявність реалізації або записаної перевірки, а не
+гарантію відсутності будь-яких дефектів. [?] — вимога потребує уточнення.
+[~] — перевірку ще не завершено повністю. Не заявляй про повну WCAG-відповідність.
+Докладні результати: docs/qa/final-verification-2026-10-15.txt.
+
+SHORT PROJECT INTRODUCTION
+Meloria Shop is my personal online shop for home products and gifts.
+I want to start in Ukraine and support Ukrainian manufacturers.
+The current catalogue presents products from Presentwill.
+I use React and TypeScript for the interface, Supabase for order storage,
+and Vercel to host the website and the order API.
+
+Українською: Supabase зберігає замовлення. Каталог зараз завантажується з
+products.json, а не із Supabase. Vercel обслуговує і сайт, і серверний API.
+Правильне написання: Vercel. Детальну історію натхнення залишаємо для презентації.
+
+1. WHY REACT INSTEAD OF VANILLA JAVASCRIPT?
+
+SAY:
+React helps me build reusable components, such as product cards and the cart.
+I describe what the interface should show for the current state.
+When the state changes, React updates the interface.
+For a small static page, plain HTML, CSS and JavaScript could be simpler
+and would avoid the extra React library.
+
+Опорні слова: reusable components — state — declarative UI — static page.
+Пояснення: декларативний підхід означає описувати результат для певного стану.
+Не потрібно вручну шукати кожен DOM-елемент і змінювати його після кожного кліку.
+React не гарантує, що будь-який сайт буде швидшим за звичайний JavaScript.
+Приклад: src/components/ProductCard/ProductCard.tsx.
+
+2. WHY THIS STYLING APPROACH?
+
+SAY:
+My project uses CSS Modules, not Tailwind.
+They keep component styles separate and help prevent class name conflicts.
+I also use shared CSS variables for consistent styling.
+Tailwind can make styling faster with utility classes, but it can make JSX longer.
+I kept the existing styling approach to preserve the design and avoid a large rewrite.
+
+Опорні слова: CSS Modules — local class names — shared variables — consistency.
+Пояснення: стилі компонента імпортуються з його .module.css-файлу.
+Під час збірки імена локальних класів перетворюються, що зменшує конфлікти.
+CSS Modules не забороняють глобальні стилі: вони також є в проєкті.
+Обов'язково постав викладачу запитання про вимогу Tailwind на початку зустрічі.
+Приклад: src/components/ProductCard/ProductCard.module.css.
+
+3. LOCAL STATE OR GLOBAL STATE?
+
+SAY:
+I use both local state and shared state.
+Form values and filters stay close to the components that use them.
+The cart uses React Context because several parts of the shop need the same data.
+For example, the cart drawer and checkout both use the cart.
+I do not need Redux for the current scope.
+
+Опорні слова: local state — shared cart — Context — common parent.
+Пояснення: useState зберігає стан; Context передає спільні дані нащадкам.
+У Meloria кошик зберігається через useState у провайдері та передається Context.
+localStorage допомагає зберегти кошик після оновлення сторінки.
+Якщо двом сусіднім компонентам потрібен стан, його можна підняти до спільного
+батьківського компонента. Не потрібно переносити всі змінні у глобальний стан.
+Приклад: src/context/CartContext.tsx; src/pages/Checkout/Checkout.tsx.
+
+4. WHAT IF THE DATA REQUEST FAILS OR RETURNS NOTHING?
+
+SAY:
+The catalogue has loading, success, error and empty states.
+While products are loading, the interface shows a loading message.
+If the request fails, it shows an error. If there are no matching products,
+it shows an empty result message.
+There is no custom catalogue request timeout yet. This is a possible improvement.
+
+Опорні слова: loading — success — error — empty — timeout.
+Пояснення: loading — очікуємо; error — запит не виконався або дані некоректні;
+empty — дані отримано, але показувати нічого, наприклад пошук не дав збігів.
+Ці ситуації потребують різних повідомлень, щоб користувач розумів, що сталося.
+Дуже повільний запит може залишатися в loading до завершення або помилки мережі:
+не кажи, що вже реалізований власний таймер скасування запиту.
+Додатковий приклад: помилка оформлення залишає кошик для повторної спроби.
+Приклад: src/pages/Home.tsx; src/pages/Checkout/Checkout.tsx.
+
+5. WHAT DOES REACT DO, AND WHY DO LIST ITEMS NEED KEYS?
+
+SAY:
+When I change a filter, the component state changes.
+React calculates the next interface and compares it with the previous one.
+It then updates the necessary parts of the DOM.
+I use product.id as the key so React can identify each product across updates.
+An array index can identify the wrong item when the list order changes.
+
+Опорні слова: state update — compare — DOM — stable identity — product.id.
+Пояснення: key має бути стабільним і унікальним серед елементів одного списку.
+Його основна роль — правильно зіставити елементи між оновленнями, зберігаючи
+потрібний стан. Це не просто «прискорювач» і не звичайний prop компонента.
+Окрема деталь Meloria: key у ProductResults навмисно змінюється з фільтрами,
+щоб створити компонент заново і скинути показ до перших 24 товарів.
+Не плутай це зі стабільними product.id у картках товарів.
+Приклад: src/pages/Home.tsx, компонент ProductResults.
+
+6. HOW DO YOU OPTIMIZE THE PRODUCTION BUILD?
+
+SAY:
+Vite bundles and minifies the production code and can remove unused code.
+My routes use lazy loading, so page code can load when it is needed.
+I also optimized large background images and show products in batches of 24.
+This reduces the initial rendering work.
+The catalogue still loads as one large JSON file, so there is room to improve.
+
+Опорні слова: production build — minification — lazy loading — batches.
+Пояснення: minification скорочує представлення коду; tree shaking видаляє
+невикористані частини, які збирач може безпечно визначити.
+Порційний показ карток зменшує кількість DOM-елементів, але не розмір JSON-запиту.
+Tailwind у нас немає, тому його очищення CSS не є частиною нашої конфігурації.
+Не стверджуй, що Vite автоматично видаляє всі console.log: це не налаштовано.
+TypeScript перевіряється окремою командою перед Vite у нашому build script.
+Приклад: src/App.tsx; src/pages/Home.tsx; package.json.
+
+7. WHY USE A BUTTON INSTEAD OF A CLICKABLE DIV?
+
+SAY:
+A native button already supports keyboard focus and activation.
+Users can reach it with Tab and activate it with Enter or Space.
+Screen readers recognize it as a button.
+A clickable div needs extra keyboard handling and accessibility information.
+An icon button also needs a clear accessible name.
+
+Опорні слова: native button — keyboard — focus — accessible name.
+Пояснення: зовнішній вигляд не додає HTML-елементу потрібної поведінки.
+Для дії використовуємо button, для переходу за адресою — посилання.
+У формі type="button" потрібен для дій, які не повинні надсилати форму.
+Видимий фокус допомагає зрозуміти, на якому елементі зараз користувач клавіатури.
+
+8. HOW DID YOU PRIORITIZE YOUR TIME?
+
+SAY:
+The shop existed before this assessment preparation.
+For the assessment, I focused on a working catalogue, cart and checkout.
+I also prioritized security, error handling, accessibility and testing.
+I postponed German localization, more brands and online payment integration.
+These features belong to future business development.
+
+Опорні слова: existing project — core journey — quality — future scope.
+Пояснення: не кажи, що весь сайт створено за 10 днів, якщо це не так.
+Авторизація вже є через Clerk, тож не використовуй приклад «я відклала auth».
+Поточний банківський переказ не є інтегрованим платіжним шлюзом:
+сайт не списує гроші з картки й не підтверджує оплату автоматично.
+Пріоритет: зрозумілий і перевірений шлях покупця, який ти можеш пояснити.
+
+9. DESCRIBE ONE REAL BUG AND HOW IT WAS DIAGNOSED
+
+SAY:
+Checkout failed on the old GitHub Pages address, but it worked on the main site.
+With AI assistance, I compared the two hosting setups.
+GitHub Pages serves static files and cannot run our server-side order API.
+The main site on Vercel supports that API.
+We redirected the old address to the main site, and I checked that it worked.
+
+Опорні слова: reproduce — compare addresses — static hosting — server API — verify.
+Пояснення крок за кроком:
+1) Ти помітила помилку оформлення та порівняла дві адреси.
+2) На основному сайті ти підтвердила замовлення в Supabase і повідомлення Telegram.
+3) Причина: стара статична версія не мала серверного /api/orders.
+4) Для старої адреси підготували перенаправлення на основний сайт Vercel.
+5) Ти виконала публікацію й підтвердила роботу переходу.
+Не вигадуй перегляд конкретного POST-запиту в Logs: тоді логів не було видно.
+Точність і розуміння причини важливіші за красиву історію про DevTools.
+Приклад: scripts/build-github-redirect.js; api/orders.ts.
+
+10. WHAT WOULD YOU CHANGE FOR 50,000 DAILY USERS AND MORE LANGUAGES?
+
+SAY:
+First, I would measure traffic and find the main bottlenecks.
+I would replace the large catalogue download with paginated API requests.
+I would consider caching and add monitoring and protection against too many requests.
+For more languages, I would move interface text into translation files.
+These are future changes. The current version is not verified for that traffic.
+
+Опорні слова: measure — pagination — caching — monitoring — translations.
+Пояснення: 50 000 відвідувачів за день не означає 50 000 одночасних запитів.
+Потрібно виміряти піки й навантаження. Серверна пагінація зменшує обсяг даних,
+на відміну від нинішнього slice, який лише обмежує відображення вже отриманих даних.
+React lazy/Suspense і CSS variables у проєкті вже є — не представляй їх як відсутні.
+React Query можна розглянути пізніше, але зараз цієї бібліотеки немає.
+Переклад інтерфейсу — лише частина виходу на інший ринок; валюта, доставка,
+оплата та бізнес-вимоги також потребуватимуть окремої підготовки.
+
+HONEST QUALITY AND AI STATEMENTS
+I used AI assistance for code review, debugging and preparation.
+I am responsible for checking the changes and understanding the code.
+The latest recorded verification includes 73 passing automated tests,
+lint, TypeScript checks and a production build.
+I also checked the main user journey, but some checks used local synthetic data.
+I do not have a Lighthouse score or a complete accessibility audit.
+
+Українською: це записані результати попереднього етапу перевірки, а не новий
+запуск тестів під час створення цього навчального файлу. Повний обсяг і межі
+перевірок дивись у фінальному QA-звіті. Не кажи «усі можливі сценарії перевірені».
+
+USEFUL PHRASES WHEN SPEAKING
+Could you repeat the question more slowly, please?
+Could you explain what you mean by that?
+Let me explain with an example from my project.
+I use a different approach in my project.
+I have not implemented that yet. It is a possible next step.
+I need to check the code before I can answer that precisely.
+
+VOCABULARY
+reusable component — компонент, який можна використовувати повторно
+state — стан
+shared state — спільний стан
+request / response — запит / відповідь
+loading / empty / error — завантаження / порожній результат / помилка
+timeout — перевищення часу очікування
+stable key — стабільний ключ
+render — обчислити відображення інтерфейсу
+bundle — зібраний пакет коду
+lazy loading — завантаження за потреби
+keyboard focus — фокус клавіатури
+deployment — публікація застосунку
+trade-off — компроміс між перевагами й недоліками
+root cause — першопричина
+bottleneck — місце, яке обмежує продуктивність
+pagination — отримання або показ даних окремими сторінками
+
+HOW TO PRACTICE
+1) 10 minutes: read the Ukrainian explanations and clarify unfamiliar concepts.
+2) 15 minutes: practise questions 2, 3, 4 and 9 aloud. They need project-specific answers.
+3) 15 minutes: practise the other answers. Start with 2–3 sentences per question.
+4) 10 minutes: answer without reading, using only the anchor words.
+5) Tomorrow: repeat the introduction and the question about CSS Modules.
+Не потрібно вивчати всі пояснення дослівно. Мета — зрозумілі короткі відповіді
+й готовність пояснити приклад. Після розмови з Аретасом скоригуємо матеріал.
+
+SOURCES
+Provided handout: IHK_Frontend_Scrum_Handout_EN.pdf, pages 1–2.
+Earlier guide: IHK_Frontend_Exam_Participant_Guide_EN.pdf.
+Project source and docs/qa/final-verification-2026-10-15.txt.
+React list keys: https://react.dev/learn/rendering-lists
+React state reset: https://react.dev/learn/preserving-and-resetting-state
+Vite production build: https://vite.dev/guide/build
+Vite features: https://vite.dev/guide/features.html
