@@ -1,3 +1,4 @@
+
 MELORIA SHOP — PRESENTATION SCRIPT
 English speech with a full Ukrainian translation
 Target duration: 10 minutes, including a 3-minute live demonstration
@@ -309,12 +310,14 @@ ENGLISH SPEECH:
 I learned to manage shared state, understand hosting differences
 and check changes carefully.
 
-I would like to add more Ukrainian manufacturers,
-German localization and online payments.
+In the future, I plan to add Ukrainian brands of clothing, shoes,
+bedding and other products.
+After testing the shop in Ukraine, I plan to add German localization
+to expand sales to Germany, as well as online payments.
 A paginated catalogue API would help reduce the initial data download.
 
-I want to develop Meloria step by step, with a clear focus
-on useful features and support for Ukrainian producers.
+I want to develop Meloria step by step, focusing on useful features
+and supporting Ukrainian manufacturers of quality products.
 
 Thank you for your attention. I am happy to answer your questions.
 
@@ -322,12 +325,14 @@ Thank you for your attention. I am happy to answer your questions.
 Я навчилася керувати спільним станом, розуміти відмінності хостингів
 і ретельно перевіряти зміни.
 
-Я хотіла б додати інших українських виробників,
-німецьку локалізацію та онлайн-оплату.
+У майбутньому я планую додати українські бренди одягу, взуття,
+постільної білизни та інших товарів.
+Після тестування магазину в Україні я планую додати німецьку локалізацію
+для розширення продажів на Німеччину, а також онлайн-оплату.
 API каталогу з пагінацією допоміг би зменшити початкове завантаження даних.
 
 Я хочу розвивати Meloria поступово, з чіткою увагою до корисних можливостей
-і підтримки українських виробників.
+і підтримки українських виробників якісних товарів.
 
 Дякую за увагу. Я із задоволенням відповім на ваші запитання.
 
