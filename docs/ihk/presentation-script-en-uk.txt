@@ -1,0 +1,345 @@
+MELORIA SHOP — PRESENTATION SCRIPT
+English speech with a full Ukrainian translation
+Target duration: 10 minutes, including a 3-minute live demonstration
+
+РОЗПОДІЛ ЧАСУ
+Слайд 1: 00:00–01:00 — 1 хвилина
+Слайд 2: 01:00–02:00 — 1 хвилина
+Слайд 3: 02:00–04:00 — 2 хвилини
+Слайд 4: 04:00–07:00 — 3 хвилини, включно з діями в браузері
+Слайд 5: 07:00–08:30 — 1 хвилина 30 секунд
+Слайд 6: 08:30–09:15 — 45 секунд
+Слайд 7: 09:15–10:00 — 45 секунд
+
+Це цільові часові межі, а не результат вимірювання твого виступу.
+Текст розрахований на спокійне мовлення з короткими паузами та показом схем.
+Український переклад і вказівки в дужках не потрібно говорити на презентації.
+Не читай заголовки, номери слайдів або всі технологічні назви поспіль.
+Дату перевірок на шостому слайді озвучувати не потрібно.
+
+
+SLIDE 1 — TITLE & PROBLEM STATEMENT
+Час: 00:00–01:00 | 1 хвилина
+Дія: покажи перший слайд. Наприкінці коротко вкажи на скріншот магазину.
+
+ENGLISH SPEECH:
+Hello, my name is Olha Khodakivska. Today I will present Meloria Shop,
+my personal online shop for Ukrainian home products and gifts.
+
+I wanted to try my first online business and support Ukrainian manufacturers.
+My target users are shoppers in Ukraine who want to find a gift or something
+for their home. The current catalogue presents products from Presentwill.
+
+Large marketplaces, such as Amazon and Temu, inspired the shopping idea.
+My project starts with a smaller goal: helping a customer find a product,
+add it to a cart and place an order easily.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Привіт, мене звати Ольга Ходаківська. Сьогодні я представлю Meloria Shop —
+мій власний інтернет-магазин українських товарів для дому та подарунків.
+
+Я хотіла спробувати свій перший онлайн-бізнес і підтримати українських виробників.
+Мої цільові користувачі — покупці в Україні, які хочуть знайти подарунок
+або щось для свого дому. У поточному каталозі представлено продукцію Presentwill.
+
+Великі торговельні майданчики, такі як Amazon і Temu, надихнули мене на ідею магазину.
+Мій проєкт починається з меншої мети: допомогти покупцеві легко знайти товар,
+додати його до кошика та оформити замовлення.
+
+
+SLIDE 2 — CORE OBJECTIVES & SCOPE
+Час: 01:00–02:00 | 1 хвилина
+Дія: під час пояснення покажи список функцій і блок Current limits.
+
+ENGLISH SPEECH:
+The main goal was to build a complete shopping journey.
+Customers can search and filter products, change quantities in the cart
+and complete a checkout form.
+
+The server stores orders in Supabase and sends a Telegram notification
+about each new order.
+
+I kept the interface in Ukrainian because the shop initially targets Ukraine.
+The warm colours suit gifts and home products. Clear product cards
+and a responsive layout help customers browse on different screen sizes.
+
+The current version uses a JSON catalogue and manual bank transfer.
+Online payment integration is a future feature.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Основною метою було створити повний шлях покупки.
+Покупці можуть шукати й фільтрувати товари, змінювати кількість у кошику
+та заповнювати форму оформлення замовлення.
+
+Сервер зберігає замовлення в Supabase і надсилає повідомлення в Telegram
+про кожне нове замовлення.
+
+Я залишила інтерфейс українською, тому що магазин спочатку орієнтований на Україну.
+Теплі кольори підходять для подарунків і товарів для дому. Зрозумілі картки товарів
+та адаптивний макет допомагають покупцям переглядати магазин на різних екранах.
+
+Поточна версія використовує JSON-каталог і ручний банківський переказ.
+Інтеграція онлайн-оплати — це майбутня функція.
+
+
+SLIDE 3 — TECHNICAL ARCHITECTURE
+Час: 02:00–04:00 | 2 хвилини
+Дія: перша хвилина — компоненти та стан зліва; друга — рух даних і папки справа.
+Показуй відповідний блок схеми, а не просто перелічуй назви.
+
+ENGLISH SPEECH:
+I built the interface with React and TypeScript.
+React lets me divide the shop into reusable components.
+TypeScript helps me check data types during development.
+
+On the left, you can see the main component structure.
+App brings together the header, pages, cart drawer and footer.
+Home displays product cards. Each card receives its product data through props.
+
+Form values and filters use local state.
+The cart uses React Context because several components need the same cart data.
+I also save the cart in localStorage, so it stays after a page refresh.
+
+On the right, you can see the data flow.
+The catalogue loads products from a JSON file.
+Checkout sends an order to the server endpoint, called API orders.
+The server validates the request and saves the order in Supabase.
+After saving it, the server attempts to send a Telegram notification.
+A notification failure does not undo the saved order.
+
+I use CSS Modules because separate style files are easier for me to read and edit.
+Clerk handles authentication, and Vercel hosts the website and the order API.
+The folders separate reusable components, pages, shared state and server code.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Я створила інтерфейс за допомогою React і TypeScript.
+React дозволяє поділити магазин на компоненти, які можна використовувати повторно.
+TypeScript допомагає мені перевіряти типи даних під час розробки.
+
+Ліворуч ви бачите основну структуру компонентів.
+App об'єднує шапку сайту, сторінки, панель кошика та підвал.
+Home показує картки товарів. Кожна картка отримує дані свого товару через props.
+
+Значення форм і фільтри використовують локальний стан.
+Кошик використовує React Context, тому що кільком компонентам потрібні
+ті самі дані кошика.
+Я також зберігаю кошик у localStorage, тому він залишається після оновлення сторінки.
+
+Праворуч ви бачите рух даних.
+Каталог завантажує товари з JSON-файлу.
+Сторінка оформлення надсилає замовлення до серверної кінцевої точки API orders.
+Сервер перевіряє запит і зберігає замовлення в Supabase.
+Після збереження сервер намагається надіслати повідомлення в Telegram.
+Помилка повідомлення не скасовує збережене замовлення.
+
+Я використовую CSS Modules, тому що окремі файли стилів мені легше читати й редагувати.
+Clerk відповідає за авторизацію, а Vercel розміщує сайт і API замовлень.
+Папки відокремлюють компоненти для повторного використання, сторінки,
+спільний стан і серверний код.
+
+
+SLIDE 4 — LIVE APPLICATION DEMO
+Час: 04:00–07:00 | 3 хвилини, включно з діями
+Дія: залиш презентацію відкритою та перейди в заздалегідь підготовлену вкладку магазину.
+Говори наступний фрагмент одночасно з відповідною дією. Не читай всі фрагменти підряд.
+
+04:00–04:20 — ВІДКРИТИ МАГАЗИН
+ENGLISH SPEECH:
+Now I will show the main customer journey in the live shop.
+The customer interface is in Ukrainian.
+I will browse products, update the cart and show the checkout form.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Зараз я покажу основний шлях покупця в опублікованому магазині.
+Інтерфейс для покупців українською мовою.
+Я перегляну товари, зміню кошик і покажу форму оформлення замовлення.
+
+04:20–05:00 — ЗНАЙТИ ТОВАР
+Дія: введи «подушка» в пошук, виконай пошук і відкрий один товар.
+Заздалегідь обери товар для репетиції. Не витрачай час на читання його опису.
+ENGLISH SPEECH:
+First, I search for a product.
+The catalogue shows matching results.
+I can also use category and delivery filters.
+Here I can open a product and review its details before adding it to the cart.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Спочатку я шукаю товар.
+Каталог показує відповідні результати.
+Я також можу використовувати фільтри категорії та строку відправки.
+Тут я можу відкрити товар і переглянути його деталі перед додаванням до кошика.
+
+05:00–05:40 — КОШИК
+Дія: додай одну одиницю до кошика, відкрий кошик і збільш кількість до двох.
+Покажи зміну суми. Під час репетиції уточни шлях додавання з відкритого товару.
+ENGLISH SPEECH:
+I add this product to the cart and increase the quantity.
+The total updates immediately.
+The cart drawer and checkout use the same shared cart state.
+This keeps the quantities and totals consistent across the shop.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Я додаю цей товар до кошика та збільшую кількість.
+Загальна сума оновлюється одразу.
+Панель кошика й сторінка оформлення використовують той самий спільний стан кошика.
+Це забезпечує узгодженість кількості та сум у різних частинах магазину.
+
+05:40–06:25 — ОФОРМЛЕННЯ ТА ВАЛІДАЦІЯ
+Дія: перейди до оформлення. Залиш обов'язкові поля порожніми й натисни
+підтвердження, щоб показати вбудовану перевірку required.
+Не заповнюй усю форму й не створюй реальне замовлення під час цього показу.
+ENGLISH SPEECH:
+Next, I open checkout.
+The form asks for contact and delivery information.
+If I leave required fields empty, the browser asks me to complete them.
+The application also checks the data before sending an order.
+I will stop here without placing a real order.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Далі я відкриваю оформлення замовлення.
+Форма запитує контактні дані та інформацію для доставки.
+Якщо я залишаю обов'язкові поля порожніми, браузер просить їх заповнити.
+Застосунок також перевіряє дані перед надсиланням замовлення.
+Я зупинюся тут, не створюючи реального замовлення.
+
+06:25–07:00 — МОБІЛЬНИЙ ВИГЛЯД І ПОВЕРНЕННЯ ДО СЛАЙДІВ
+Дія: відкрий головну сторінку в підготовленому мобільному режимі,
+покажи меню й доступ до кошика. Повернися до презентації та перейди на слайд 5.
+ENGLISH SPEECH:
+Finally, this is the mobile layout.
+The navigation adapts to the smaller screen, and the cart stays accessible.
+Now I will return to the slides and explain one technical challenge.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Нарешті, це мобільний вигляд.
+Навігація пристосовується до меншого екрана, а кошик залишається доступним.
+Зараз я повернуся до слайдів і поясню одну технічну проблему.
+
+Якщо сайт не відкривається: використовуй скріншоти на слайді 4 і локальний
+каталог та кошик. Не обіцяй успішне офлайн-замовлення: звичайний Vite dev server
+не виконує production API замовлень. Цю резервну послідовність потрібно
+підготувати й відрепетирувати заздалегідь.
+
+Резервна фраза англійською:
+The live site is not available right now. I will use the screenshots
+and the local version to explain the same journey.
+Переклад:
+Опублікований сайт зараз недоступний. Я використаю скріншоти
+та локальну версію, щоб пояснити той самий шлях покупця.
+
+
+SLIDE 5 — TECHNICAL CHALLENGE & SOLUTION
+Час: 07:00–08:30 | 1 хвилина 30 секунд
+Дія: розповідай послідовно — симптом, перевірка, причина, виправлення, результат.
+
+ENGLISH SPEECH:
+One real problem was a checkout failure on the old GitHub Pages address.
+The same shop worked on the main Vercel site.
+
+First, I compared the two addresses.
+On the main site, I confirmed that the order appeared in Supabase
+and that the Telegram notification arrived.
+This showed that the order flow worked on Vercel.
+
+With AI assistance, I compared the hosting setups.
+GitHub Pages serves static files. It cannot run our server-side order API.
+Vercel can host both the frontend and this API.
+The old address still opened a shop interface, but it could not process the order.
+
+The solution was to redirect old GitHub Pages links to the main site.
+I published the changes and checked the redirect.
+Customers now reach the working checkout.
+
+This taught me to check the deployment environment as well as the frontend code.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Однією реальною проблемою була помилка оформлення за старою адресою GitHub Pages.
+Той самий магазин працював на основному сайті Vercel.
+
+Спочатку я порівняла дві адреси.
+На основному сайті я підтвердила, що замовлення з'явилося в Supabase
+та що повідомлення в Telegram надійшло.
+Це показало, що процес оформлення працює на Vercel.
+
+За допомогою AI я порівняла налаштування хостингу.
+GitHub Pages обслуговує статичні файли. Він не може виконувати наш серверний API замовлень.
+Vercel може розміщувати і фронтенд, і цей API.
+За старою адресою все ще відкривався інтерфейс магазину, але він не міг обробити замовлення.
+
+Рішенням було перенаправити старі посилання GitHub Pages на основний сайт.
+Я опублікувала зміни та перевірила перенаправлення.
+Тепер покупці потрапляють на робоче оформлення замовлення.
+
+Це навчило мене перевіряти середовище розміщення разом із кодом фронтенду.
+
+
+SLIDE 6 — QA, ACCESSIBILITY & ETHICS
+Час: 08:30–09:15 | 45 секунд
+Дія: покажи число тестів. Не перелічуй усі пункти слайда дослівно.
+
+ENGLISH SPEECH:
+The recorded checks include seventy-three passing automated tests,
+a production build, lint and TypeScript checks.
+Browser checks covered responsive layouts and data states.
+
+Accessibility improvements include labels, native buttons and visible focus.
+There is no Lighthouse score or complete accessibility audit yet.
+
+Tests use synthetic data, and private credentials stay on the server.
+I used AI for review and debugging. I remain responsible for the code.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Зафіксовані перевірки включають сімдесят три успішні автоматизовані тести,
+виробничу збірку, lint і перевірки TypeScript.
+Перевірки в браузері охоплювали адаптивний вигляд та стани даних.
+
+Покращення доступності включають підписи полів, звичайні HTML-кнопки та видимий фокус.
+Оцінки Lighthouse або повного аудиту доступності поки немає.
+
+Тести використовують штучні дані, а приватні облікові дані залишаються на сервері.
+Я використовувала AI для перевірки коду та пошуку помилок.
+Я залишаюся відповідальною за код.
+
+
+SLIDE 7 — REFLECTION & FUTURE OUTLOOK
+Час: 09:15–10:00 | 45 секунд
+Дія: спокійно заверши виступ. Після Thank you зроби паузу.
+
+ENGLISH SPEECH:
+I learned to manage shared state, understand hosting differences
+and check changes carefully.
+
+I would like to add more Ukrainian manufacturers,
+German localization and online payments.
+A paginated catalogue API would help reduce the initial data download.
+
+I want to develop Meloria step by step, with a clear focus
+on useful features and support for Ukrainian producers.
+
+Thank you for your attention. I am happy to answer your questions.
+
+ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
+Я навчилася керувати спільним станом, розуміти відмінності хостингів
+і ретельно перевіряти зміни.
+
+Я хотіла б додати інших українських виробників,
+німецьку локалізацію та онлайн-оплату.
+API каталогу з пагінацією допоміг би зменшити початкове завантаження даних.
+
+Я хочу розвивати Meloria поступово, з чіткою увагою до корисних можливостей
+і підтримки українських виробників.
+
+Дякую за увагу. Я із задоволенням відповім на ваші запитання.
+
+
+ПЕРЕД ПЕРШОЮ РЕПЕТИЦІЄЮ
+1. Відкрий презентацію, магазин і підготуй мобільний режим.
+2. Почни з порожнього демонстраційного кошика й обраного товару.
+3. Підготуй локальний запуск і скріншоти для резервного показу.
+4. Проговори лише англійські блоки вголос з усіма діями та секундоміром.
+5. Запиши фактичний час кожного слайда. Якщо перевищуєш межу, скоротимо текст,
+   а не прискорюватимемо мовлення. Якщо завершуєш раніше, поясни приклад на схемі
+   або зроби природну паузу. Не потрібно заповнювати кожну секунду словами.
+
+Контрольні моменти: початок демо — 04:00; повернення до слайдів — 07:00;
+початок завершального слайда — 09:15.
