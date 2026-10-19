@@ -50,37 +50,52 @@ add it to a cart and place an order easily.
 
 SLIDE 2 — CORE OBJECTIVES & SCOPE
 Час: 01:00–02:00 | 1 хвилина
-Дія: під час пояснення покажи список функцій і блок Current limits.
+Дія: коротко покажи список функцій, потім зверни увагу на палітру, кнопки
+та заголовки на скріншоті. Не потрібно читати всі пункти слайда.
 
 ENGLISH SPEECH:
-The main goal was to build a complete shopping journey.
-Customers can search and filter products, change quantities in the cart
-and complete a checkout form.
+The goal is a complete shopping journey: search, filters, cart and checkout.
 
-The server stores orders in Supabase and sends a Telegram notification
-about each new order.
+Meloria is light and calm by design.
+I get tired of busy screens and wanted less visual noise.
+White backgrounds and warm beige tones give products space.
+Dark blue text and buttons make important actions stand out.
+Rounded corners soften the design.
+Simple sans-serif text supports reading, while serif headings add warmth.
 
-I kept the interface in Ukrainian because the shop initially targets Ukraine.
-The warm colours suit gifts and home products. Clear product cards
-and a responsive layout help customers browse on different screen sizes.
+I avoided flashing effects and automatic movement.
+Subtle hover effects give feedback.
+My aim is a comfortable place to browse without feeling rushed.
 
-The current version uses a JSON catalogue and manual bank transfer.
-Online payment integration is a future feature.
+The shop uses Ukrainian text, a JSON catalogue and manual bank transfer.
 
 ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
-Основною метою було створити повний шлях покупки.
-Покупці можуть шукати й фільтрувати товари, змінювати кількість у кошику
-та заповнювати форму оформлення замовлення.
+Мета — повний шлях покупки: пошук, фільтри, кошик і оформлення замовлення.
 
-Сервер зберігає замовлення в Supabase і надсилає повідомлення в Telegram
-про кожне нове замовлення.
+Світлий і спокійний дизайн Meloria — свідомий вибір.
+Я втомлююся від перевантажених екранів і хотіла менше візуального шуму.
+Білі фони й теплі бежеві відтінки дають товарам простір.
+Темно-синій текст і кнопки виділяють важливі дії.
+Заокруглені кути пом'якшують дизайн.
+Простий текст шрифтом без засічок допомагає читанню,
+а заголовки із засічками додають тепла.
 
-Я залишила інтерфейс українською, тому що магазин спочатку орієнтований на Україну.
-Теплі кольори підходять для подарунків і товарів для дому. Зрозумілі картки товарів
-та адаптивний макет допомагають покупцям переглядати магазин на різних екранах.
+Я уникала миготливих ефектів і автоматичного руху.
+Невеликі ефекти при наведенні дають зворотний зв'язок.
+Моя мета — комфортне місце для перегляду товарів без відчуття поспіху.
 
-Поточна версія використовує JSON-каталог і ручний банківський переказ.
-Інтеграція онлайн-оплати — це майбутня функція.
+Магазин використовує український текст, JSON-каталог і ручний банківський переказ.
+
+Пояснення для тебе, не для озвучення:
+Це твоя дизайнерська мета та особиста мотивація.
+У магазині є невеликі переходи при наведенні, збільшення зображень товарів
+і відкриття панелей. Вони реагують на дії користувача.
+Точне формулювання для задуму — «без зайвого руху та візуального шуму».
+У CSS основний стек починається з Inter і має системні sans-serif заміни;
+для частини заголовків використовується serif. Тому у виступі описуємо типи
+шрифтів, не обіцяючи, що на кожному пристрої відображається саме Inter.
+Якщо цей фрагмент займає понад хвилину, можна пропустити речення
+про заокруглені кути: решта пояснення залишиться послідовною.
 
 
 SLIDE 3 — TECHNICAL ARCHITECTURE
