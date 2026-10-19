@@ -13,7 +13,6 @@ type DeliveryGroupFilter = 'all' | 'express' | 'made_to_order';
 
 const PRODUCTS_PER_BATCH = 24;
 const NEW_PRODUCTS_LIMIT = 48;
-const FEATURED_PRODUCTS_LIMIT = 12;
 const deliveryGroups: Array<{
   value: DeliveryGroupFilter;
   label: string;
@@ -46,7 +45,7 @@ const getProductIdNumber = (productId: string) => {
 const getMostExpensiveProduct = (products: Product[]) =>
   [...products].sort((firstProduct, secondProduct) => secondProduct.price - firstProduct.price)[0];
 
-const getFeaturedProducts = (products: Product[], limit: number) => {
+const getFeaturedProducts = (products: Product[]) => {
   if (products.length === 0) {
     return [];
   }
@@ -54,9 +53,9 @@ const getFeaturedProducts = (products: Product[], limit: number) => {
   const mostExpensiveProduct = getMostExpensiveProduct(products);
   const randomProducts = [...products]
     .filter((product) => product.id !== mostExpensiveProduct.id)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, limit - 1);
+    .sort(() => Math.random() - 0.5);
 
+  // ProductResults needs the full list to reveal further batches.
   return [mostExpensiveProduct, ...randomProducts];
 };
 
@@ -182,7 +181,7 @@ export const Home: React.FC = () => {
     [deliveryFilteredProducts]
   );
   const featuredProducts = useMemo(
-    () => getFeaturedProducts(deliveryFilteredProducts, FEATURED_PRODUCTS_LIMIT),
+    () => getFeaturedProducts(deliveryFilteredProducts),
     [deliveryFilteredProducts]
   );
 
@@ -266,11 +265,9 @@ export const Home: React.FC = () => {
       ? deliveryFilteredProducts
       : deliveryFilteredProducts.filter((product) => product.category === selectedCategory);
 
-    return catalogView === 'all'
+    return catalogView === 'all' || activeCategory !== 'Всі'
       ? categoryProducts
-      : activeCategory === 'Всі'
-        ? featuredProducts
-        : categoryProducts.slice(0, FEATURED_PRODUCTS_LIMIT);
+      : featuredProducts;
   }, [activeCategory, catalogView, deliveryFilteredProducts, featuredProducts, newProducts, searchQuery, selectedCatalogCategory]);
 
   const showCategoryCards = catalogView === 'all' && !selectedCatalogCategory && !searchQuery;

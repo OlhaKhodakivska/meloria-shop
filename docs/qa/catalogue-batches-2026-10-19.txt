@@ -1,0 +1,50 @@
+Meloria Shop — catalogue batch verification
+Date: 19 October 2026
+
+Change
+The home-page product lists were truncated to 12 items before reaching the
+existing ProductResults component. Removed that truncation for category tabs
+and the featured home list. ProductResults now receives the full matching list
+and retains its existing 24-item initial batch and load-more behaviour.
+Existing category overview cards, new-products limit, styling and API are unchanged.
+This reveals products already downloaded in products.json; it is not server pagination.
+
+Baseline before editing
+- npm test: 73 passed, 0 failed.
+- npm run lint: passed.
+- npm run build: passed, including the application/configuration TypeScript checks.
+
+Checks after editing
+- npm test: 73 passed, 0 failed.
+- npm run lint: passed.
+- npm run build: passed, including TypeScript and eight SEO pages.
+- git diff --check: passed.
+
+Local browser checks
+Desktop: 1280px. Mobile: 390px.
+- All 16 category tabs checked at both widths with the all-delivery filter.
+- Lists with more than 24 products initially showed 24; clicking Show more
+  revealed 48, preserving the same category and delivery filter.
+- Coupons/checkbooks (9) and gift certificates (11) showed all their products
+  without an unnecessary load-more button.
+- Express: All, Pillows and Key holders checked at both widths.
+- Made to order: All and Sleep masks checked at both widths.
+- Express key holders: 24 -> 48 -> 66; the final button was disabled and labelled
+  that all products were shown.
+- Made-to-order sleep masks: one item, with no load-more button.
+- Switching a category or delivery filter reset the batch to up to 24 items.
+- No horizontal overflow was detected in these checks.
+- Total: 42 category/filter/viewport cases, plus final partial-batch checks.
+  This is not an exhaustive test of every category/delivery combination.
+- Desktop and mobile screenshots inspected; existing button styling preserved.
+
+Verification limitation
+Automated Enter/Space attempts focused the native button but did not increase
+its count. A subsequent click did increase it. The cause of the keyboard result
+was not established; manual keyboard activation remains to be checked.
+No custom keyboard behaviour was added or disabled to hide this result.
+
+Scope and working tree
+Only src/pages/Home.tsx and this QA note belong to this change.
+The pre-existing presentation-script edit was preserved.
+No commit, push, deployment, database mutation or order submission was performed.
