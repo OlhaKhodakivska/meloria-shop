@@ -305,34 +305,32 @@ I used AI for review and debugging. I remain responsible for the code.
 SLIDE 7 — REFLECTION & FUTURE OUTLOOK
 Час: 09:15–10:00 | 45 секунд
 Дія: спокійно заверши виступ. Після Thank you зроби паузу.
+Банер доставки й футер можуть бути фоном для завершення: не потрібно читати
+умови акції. Поясни власні висновки та наступні кроки розвитку магазину.
 
 ENGLISH SPEECH:
-I learned to manage shared state, understand hosting differences
-and check changes carefully.
+I learned to manage shared state, understand hosting and check changes carefully.
 
-In the future, I plan to add Ukrainian brands of clothing, shoes,
-bedding and other products.
+I plan to add Ukrainian brands of clothing, shoes and bedding.
 After testing the shop in Ukraine, I plan to add German localization
-to expand sales to Germany, as well as online payments.
-A paginated catalogue API would help reduce the initial data download.
+for sales in Germany, and online payments.
+A paginated catalogue API would reduce the initial download.
 
-I want to develop Meloria step by step, focusing on useful features
-and supporting Ukrainian manufacturers of quality products.
+I want to grow Meloria gradually, with useful features
+and support for Ukrainian manufacturers of quality products.
 
 Thank you for your attention. I am happy to answer your questions.
 
 ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
-Я навчилася керувати спільним станом, розуміти відмінності хостингів
-і ретельно перевіряти зміни.
+Я навчилася керувати спільним станом, розуміти хостинг і ретельно перевіряти зміни.
 
-У майбутньому я планую додати українські бренди одягу, взуття,
-постільної білизни та інших товарів.
+Я планую додати українські бренди одягу, взуття та постільної білизни.
 Після тестування магазину в Україні я планую додати німецьку локалізацію
-для розширення продажів на Німеччину, а також онлайн-оплату.
-API каталогу з пагінацією допоміг би зменшити початкове завантаження даних.
+для продажів у Німеччині та онлайн-оплату.
+API каталогу з пагінацією зменшив би початкове завантаження.
 
-Я хочу розвивати Meloria поступово, з чіткою увагою до корисних можливостей
-і підтримки українських виробників якісних товарів.
+Я хочу розвивати Meloria поступово, з корисними можливостями
+та підтримкою українських виробників якісних товарів.
 
 Дякую за увагу. Я із задоволенням відповім на ваші запитання.
 
