@@ -1,0 +1,36 @@
+Meloria Shop — search relevance verification
+Date: 20 October 2026
+
+Verified cause
+The old search combined title, category and description and preserved catalogue
+order. Lounger descriptions contain the word pillow, so those products appeared
+before products whose titles actually contained pillow.
+
+Implementation
+- src/lib/searchProducts.ts: stable priorities for title, category and description.
+  Each product appears once. Matching ignores case and surrounding whitespace.
+- src/pages/Home.tsx: uses the helper after the existing delivery filter.
+- tests/searchProducts.test.mjs: five regression tests, including the real catalogue.
+
+Baseline
+73 tests passed; lint and build (including TypeScript) passed before changes.
+
+After changes
+78 tests passed; lint and build (including TypeScript) passed.
+The real-catalogue regression confirms that the first 24 pillow results match
+in their titles, and loungers with description-only matches appear later.
+Additional data checks covered pillow, cup and shopper queries across all,
+express and made-to-order delivery groups (nine combinations). These checks
+confirmed priority ordering and the same matching product IDs as before.
+The existing 24-item display component and styling were not changed.
+The input catalogue is not mutated. Empty and description-only searches are tested.
+Diff and whitespace reviewed.
+
+Browser limitation
+The local dev server started, but the browser tool blocked the local page action
+under its URL access policy. No workaround was attempted.
+Desktop/mobile visual search checks and live deployment checks remain unverified
+for this change. No screenshot or browser success is claimed.
+
+No dependency, environment, database or deployment changes.
+The owner performs commits, pushes and publication.

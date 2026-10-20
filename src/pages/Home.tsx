@@ -5,6 +5,7 @@ import { ProductCard } from '../components/ProductCard/ProductCard';
 import { Hero } from '../components/Hero/Hero';
 import { PromoBanner } from '../components/PromoBanner/PromoBanner';
 import type { Product } from '../types/product';
+import { normalizeSearchText, searchProducts } from '../lib/searchProducts';
 import { Gift, Truck, ShieldCheck, Heart } from 'lucide-react';
 import styles from './Home.module.css';
 
@@ -34,8 +35,6 @@ const deliveryGroups: Array<{
     description: 'Виробник виготовляє на замовлення. Зазвичай потрібно від 2 до 5 робочих днів після оплати.'
   }
 ];
-
-const normalizeSearchText = (value: string) => value.trim().toLocaleLowerCase('uk');
 
 const getProductIdNumber = (productId: string) => {
   const parsedId = Number(productId);
@@ -245,13 +244,7 @@ export const Home: React.FC = () => {
 
   const filteredProducts = useMemo(() => {
     if (searchQuery) {
-      return deliveryFilteredProducts.filter((product) => {
-        const searchableText = normalizeSearchText(
-          `${product.title} ${product.category} ${product.description}`
-        );
-
-        return searchableText.includes(searchQuery);
-      });
+      return searchProducts(deliveryFilteredProducts, searchQuery);
     }
 
     if (catalogView === 'new') {
