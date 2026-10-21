@@ -311,3 +311,560 @@ The other changes are future plans; the current version has not been tested for 
 50 000 користувачів за день не дорівнюють 50 000 одночасних користувачів:
 для планування потрібно знати пікове навантаження та результати вимірювань.
 Приклад уже реалізованого: src/App.tsx; src/pages/Home.tsx.
+
+11. CAN YOU EXPLAIN WHAT HAPPENS WHEN A CUSTOMER PLACES AN ORDER?
+Чи можеш пояснити, що відбувається, коли покупець оформлює замовлення?
+
+Answer in English:
+Checkout collects the selected products and customer details.
+The browser sends a POST request to /api/orders.
+The server validates the request, checks catalogue prices and saves the order in Supabase.
+It then attempts a Telegram notification and returns an order receipt.
+After confirmation, the frontend removes the ordered quantities and opens the thank-you page.
+
+Повний переклад українською:
+Сторінка оформлення збирає вибрані товари й дані покупця.
+Браузер надсилає POST-запит до /api/orders.
+Сервер перевіряє запит, звіряє ціни з каталогом і зберігає замовлення в Supabase.
+Потім він намагається надіслати повідомлення в Telegram і повертає підтвердження замовлення.
+Після підтвердження фронтенд прибирає замовлену кількість товарів і відкриває сторінку подяки.
+
+Що реалізовано і для чого:
+Це найпряміше уточнення до схеми архітектури та демонстрації покупки.
+Вмій простежити шлях: Checkout → submitOrder → API → Supabase → відповідь → ThankYou.
+Клієнт отримує id та необов'язковий order_number, а не весь запис із контактами.
+Кошик змінюється лише після підтвердженої відповіді. Якщо під час надсилання
+додати інший товар, він залишається: віднімаються лише вже замовлені кількості.
+Можливе уточнення: «What happens if saving fails?» — кошик зберігається, показується помилка.
+Приклад у коді: src/pages/Checkout/Checkout.tsx; src/lib/submitOrder.ts; api/orders.ts.
+
+
+12. WHY DO YOU VALIDATE ON BOTH THE CLIENT AND THE SERVER? CAN A CUSTOMER CHANGE THE PRICE?
+Навіщо перевірки і на клієнті, і на сервері? Чи може покупець підмінити ціну?
+
+Answer in English:
+Client validation gives quick feedback, but a user can bypass it.
+The server must check the request independently.
+It looks up product IDs, availability and prices in its catalogue and calculates the total.
+If the submitted price or total is different, it rejects the order.
+I calculate money in integer kopiykas to reduce floating-point errors.
+
+Повний переклад українською:
+Перевірка на клієнті дає швидкий зворотний зв'язок, але користувач може її обійти.
+Сервер повинен перевіряти запит незалежно.
+Він знаходить ідентифікатори товарів, наявність і ціни у своєму каталозі та обчислює суму.
+Якщо надіслана ціна або сума відрізняються, він відхиляє замовлення.
+Я обчислюю гроші в цілих копійках, щоб зменшити похибки чисел із рухомою комою.
+
+Що реалізовано і для чого:
+У Checkout перевіряються поля для зручності покупця; в API ті самі дані
+перевіряються повторно, бо запит можна надіслати без інтерфейсу магазину.
+buildOrderFromCatalogue бере інформацію із серверного products.json і не довіряє
+назві, статусу або сумі, переданим браузером. Кількість має бути додатним цілим числом.
+Наприклад, 12,50 грн обчислюються як 1250 копійок. Сервер сам задає статус new.
+Можливе уточнення: «Does required make the API secure?» — ні, це лише браузерна перевірка.
+Приклад у коді: api/orders.ts, validateOrderPayload та buildOrderFromCatalogue.
+
+
+13. WHAT PREVENTS DUPLICATE ORDERS IF THE USER CLICKS TWICE OR LOSES THE RESPONSE?
+Що запобігає дублям при подвійному натисканні або втраті відповіді сервера?
+
+Answer in English:
+The form blocks repeated submission while a request is pending.
+For the same unresolved purchase, the client reuses a request UUID stored in sessionStorage.
+The server uses that UUID as the order ID and checks for an existing order.
+A matching retry returns the existing receipt instead of saving another order.
+This continuity depends on the same data and browser tab.
+
+Повний переклад українською:
+Форма блокує повторне надсилання, поки запит очікує завершення.
+Для тієї самої покупки без підтвердженого результату клієнт повторно використовує
+UUID запиту, збережений у sessionStorage.
+Сервер використовує цей UUID як ідентифікатор замовлення та перевіряє наявний запис.
+Повторний запит із тими самими даними повертає наявне підтвердження замість нового запису.
+Збереження цієї послідовності залежить від тих самих даних і вкладки браузера.
+
+Що реалізовано і для чого:
+Сервер міг зберегти замовлення, навіть якщо браузер не отримав відповідь.
+Тому повторна спроба використовує той самий request_id. Унікальний первинний ключ
+у базі також захищає від одночасного запису двох замовлень з одним ID.
+Це приклад ідемпотентності: повторення тієї самої операції не створює нової покупки.
+Для ID з іншими даними сервер повертає 409. Після підтвердженого успіху маркер
+видаляється, щоб наступна свідома покупка могла мати новий ID.
+Можливе уточнення: «What if the tab is closed?» — маркер може втратитися;
+це не гарантія захисту від усіх можливих дублів між вкладками та пристроями.
+Приклад у коді: src/lib/submitOrder.ts; api/orders.ts; tests/checkout-flow.test.mjs.
+
+
+14. WHAT HAPPENS IF TELEGRAM IS UNAVAILABLE AFTER THE ORDER IS SAVED?
+Що станеться, якщо Telegram недоступний після збереження замовлення?
+
+Answer in English:
+Supabase stores the order before the server attempts the notification.
+A Telegram failure does not delete the order or turn it into a failed database save.
+The customer can still receive a successful order receipt.
+There is no automatic notification retry queue yet.
+The owner can check orders in Supabase if a notification is missing.
+
+Повний переклад українською:
+Supabase зберігає замовлення до спроби сервера надіслати повідомлення.
+Збій Telegram не видаляє замовлення й не перетворює його на невдале збереження в базі.
+Покупець усе одно може отримати успішне підтвердження замовлення.
+Автоматичної черги повторного надсилання повідомлень поки немає.
+Власниця може перевірити замовлення в Supabase, якщо повідомлення відсутнє.
+
+Що реалізовано і для чого:
+Повідомлення — додаткова дія після основної операції збереження.
+Окрема обробка помилки не змушує покупця створювати повторне замовлення через збій бота.
+Важлива точність: виклик Telegram усе ще очікується через await, окремого тайм-ауту
+немає. Дуже повільний Telegram може затримати відповідь API. Не кажи, що повідомлення
+вже надсилаються незалежною фоновою чергою або гарантовано доставляються.
+Приклад у коді: api/orders.ts, sendTelegramOrderNotification і вкладений try/catch.
+
+
+15. WHY USE A JSON CATALOGUE AND SUPABASE? IS THE PRODUCT DATA LIVE?
+Чому використовуються JSON-каталог і Supabase? Чи оновлюються товари в реальному часі?
+
+Answer in English:
+The product catalogue and order storage have different roles.
+Products come from a JSON file, while Supabase stores customer orders.
+The JSON file keeps the current catalogue setup simple, but it is not live stock data.
+The import script adds new product IDs and does not update existing prices or stock.
+A live catalogue API is a future improvement.
+
+Повний переклад українською:
+Каталог товарів і зберігання замовлень виконують різні завдання.
+Товари надходять із JSON-файлу, а Supabase зберігає замовлення покупців.
+JSON-файл робить поточну організацію каталогу простою, але це не дані про залишки в реальному часі.
+Скрипт імпорту додає нові ідентифікатори товарів і не оновлює наявні ціни або залишки.
+API з актуальним каталогом — майбутнє покращення.
+
+Що реалізовано і для чого:
+Не відповідай, що всі товари завантажуються із Supabase або через API виробника
+при кожному відкритті сайту. Home робить fetch products.json, а API замовлень
+звіряється із серверною копією цього каталогу. Імпорт XML — окрема підготовча дія.
+JSON — формат даних; REST API — спосіб взаємодії через HTTP. Це різні поняття.
+Можливе уточнення: «Can a product become unavailable at the supplier?» — так,
+поточна перевірка бачить лише значення в нашому каталозі, а не актуальний склад виробника.
+Приклад у коді: src/pages/Home.tsx; scripts/import-prom-feed.js; api/orders.ts.
+
+
+16. WHAT DO THE FRONTEND, VERCEL API AND DATABASE EACH DO? WHY POST?
+Що окремо роблять фронтенд, API на Vercel і база даних? Чому використовується POST?
+
+Answer in English:
+The frontend runs in the browser and handles the interface.
+A Vercel serverless function handles the order request on the server.
+Supabase stores the resulting order in PostgreSQL.
+The browser sends JSON with POST because it is submitting a new order.
+The API returns an HTTP status and a JSON receipt or error.
+
+Повний переклад українською:
+Фронтенд працює в браузері й відповідає за інтерфейс.
+Серверна функція Vercel обробляє запит замовлення на сервері.
+Supabase зберігає отримане замовлення в PostgreSQL.
+Браузер надсилає JSON через POST, тому що передає нове замовлення.
+API повертає HTTP-статус і підтвердження або помилку у форматі JSON.
+
+Що реалізовано і для чого:
+Serverless означає, що хостинг запускає серверну функцію за запитом;
+це не означає відсутність серверного коду. Браузер не виконує api/orders.ts.
+POST /api/orders приймає заявку. GET цього endpoint повертає 405 — метод не підтримується.
+201 означає новий збережений запис; 200 — підтверджений повторний запит;
+400 — некоректні поля; 409 — конфлікт ціни, суми або даних; 500 — помилку обробки.
+Для fetch потрібно перевіряти response.ok: статус 400 сам собою не є мережевим винятком.
+Приклад у коді: src/lib/submitOrder.ts; api/orders.ts; vercel.json.
+
+
+17. HOW DO YOU PROTECT SECRET KEYS AND CUSTOMER ORDERS?
+Як ти захищаєш секретні ключі та замовлення з даними покупців?
+
+Answer in English:
+Private Supabase and Telegram credentials stay on the server.
+I do not put private keys in VITE variables because those values can reach the browser.
+Public browser roles cannot directly read or change the orders table.
+The API validates incoming data and returns only a small receipt.
+The public order endpoint still needs future protection against spam and excessive requests.
+
+Повний переклад українською:
+Приватні облікові дані Supabase і Telegram залишаються на сервері.
+Я не додаю приватні ключі до VITE-змінних, тому що ці значення можуть потрапити в браузер.
+Публічні браузерні ролі не можуть напряму читати або змінювати таблицю замовлень.
+API перевіряє вхідні дані й повертає лише невелике підтвердження.
+Публічний endpoint замовлень усе ще потребує майбутнього захисту від спаму
+та надмірної кількості запитів.
+
+Що реалізовано і для чого:
+Приватний ключ має доступ до даних, тому його не можна включати у клієнтський код.
+У Supabase увімкнено RLS, а права anon/authenticated на orders відкликані.
+RLS — Row Level Security, правила доступу до рядків. Серверний привілейований
+ключ може обходити RLS, тому серверна валідація все одно потрібна.
+Публічний Clerk publishable key має інше призначення й може бути у фронтенді.
+API не повертає контакти покупця. Для демонстрацій використовуй вигадані дані
+та не показуй чужі замовлення або приватні чати. Rate limiting поки не реалізований.
+Приклад у коді: api/orders.ts; scripts/secure-order-access.sql; .env.example.
+
+
+18. WHAT DOES CLERK HANDLE? DOES LOGIN GIVE ACCESS TO CUSTOMER ORDERS?
+За що відповідає Clerk? Чи дає вхід доступ до замовлень покупця?
+
+Answer in English:
+Clerk provides sign-in, sign-up and profile components.
+Customers can also place guest orders without logging in.
+The current checkout does not link orders to Clerk user IDs.
+There is no customer order-history page or admin dashboard yet.
+Authentication identifies a user; authorization decides which data that user may access.
+
+Повний переклад українською:
+Clerk надає компоненти входу, реєстрації та профілю.
+Покупці також можуть оформлювати гостьові замовлення без входу.
+Поточне оформлення не пов'язує замовлення з ідентифікаторами користувачів Clerk.
+Сторінки історії замовлень покупця або адміністративної панелі поки немає.
+Автентифікація визначає користувача; авторизація визначає, до яких даних він має доступ.
+
+Що реалізовано і для чого:
+Наявність кнопки входу не означає, що магазин має готовий особистий кабінет
+з історією покупок. Auth показує SignIn, SignUp або UserProfile.
+Не потрібно пояснювати, ніби ти самостійно реалізувала зберігання паролів:
+ці механізми надає Clerk. Повний цикл реєстрації/входу/виходу незалежно не перевірений.
+Можливе уточнення: «Could one customer see another customer's order?» — наразі
+немає клієнтського читання orders; майбутня історія потребуватиме серверної
+перевірки сесії та прав доступу, а не лише приховування кнопки в React.
+Приклад у коді: src/main.tsx; src/pages/Auth/Auth.tsx; api/orders.ts.
+
+
+19. DOES A SUCCESSFUL ORDER MEAN THE CUSTOMER HAS PAID? IS DELIVERY AUTOMATED?
+Чи означає успішне замовлення, що покупець заплатив? Чи автоматизована доставка?
+
+Answer in English:
+No. A successful order means the shop received and stored the request.
+Payment is a manual transfer using the displayed card or IBAN details.
+The server sets the payment status to awaiting prepayment.
+There is no payment gateway or automatic payment confirmation.
+Delivery details are form fields, and fulfilment is handled manually.
+
+Повний переклад українською:
+Ні. Успішне замовлення означає, що магазин отримав і зберіг заявку.
+Оплата — ручний переказ за показаними реквізитами картки або IBAN.
+Сервер задає статус оплати «очікується передоплата».
+Платіжного шлюзу або автоматичного підтвердження оплати немає.
+Дані доставки — це поля форми, а виконання замовлення відбувається вручну.
+
+Що реалізовано і для чого:
+Це особливо ймовірне запитання після сторінки подяки та повідомлення Telegram.
+Не кажи «payment completed», коли показуєш лише збережене замовлення.
+payment_status задається сервером як awaiting_prepayment, а не приймається на віру від клієнта.
+Вибір Нової пошти або Укрпошти не означає інтеграцію з API перевізника,
+автоматичне створення накладної чи перевірку всіх відділень у реальному часі.
+Майбутня онлайн-оплата потребуватиме підтвердження від платіжного сервісу.
+Приклад у коді: api/orders.ts; src/pages/Checkout/Checkout.tsx.
+
+
+20. WHAT DID YOU TEST, AND WHAT HAVE YOU NOT VERIFIED?
+Що ти перевірила тестами, а що ще не підтверджено?
+
+Answer in English:
+The latest recorded automated run has seventy-eight passing tests.
+They cover order validation, retries, cart updates, redirects and search ranking.
+Integration tests connect the order client and API with simulated services.
+Lint, TypeScript checks and the build also passed.
+I do not have a complete automated browser test suite or a full accessibility audit.
+
+Повний переклад українською:
+Останній зафіксований автоматизований запуск має сімдесят вісім успішних тестів.
+Вони охоплюють валідацію замовлень, повторні спроби, зміни кошика,
+перенаправлення та порядок результатів пошуку.
+Інтеграційні тести поєднують клієнт замовлень і API з імітованими сервісами.
+Lint, перевірки TypeScript і збірка також пройшли успішно.
+Повного набору автоматизованих браузерних тестів або повного аудиту доступності немає.
+
+Що реалізовано і для чого:
+Умій розрізнити unit-тест окремої функції та integration-тест взаємодії частин.
+Наприклад, searchProducts перевіряється окремо; checkout-flow поєднує submitOrder
+та API. У тестах запити перехоплюються, справжні замовлення й повідомлення не створюються.
+Перевірки в браузері — окремий вид доказу: вони не замінюються успішним build.
+У пункті 8 число 73 стосується звіту від 15 жовтня. Після п'яти пошукових тестів
+20 жовтня зафіксовано 78. Нову браузерну перевірку пошуку тоді заблокував інструмент.
+Можливе уточнення: «Does a successful build mean the app is bug-free?» — ні.
+Приклад у коді: tests/searchProducts.test.mjs; tests/checkout-flow.test.mjs;
+докази: docs/qa/search-ranking-2026-10-20.txt.
+
+
+21. WHY TYPESCRIPT? DOES IT VALIDATE JSON FROM THE NETWORK?
+Навіщо TypeScript? Чи перевіряє він JSON, отриманий із мережі?
+
+Answer in English:
+TypeScript helps me catch incorrect types and component props during development.
+For example, Product defines the fields a product should have.
+Types do not automatically validate data at runtime.
+An API request still needs explicit checks for values and structure.
+A type assertion tells TypeScript what I expect; it does not prove the data is valid.
+
+Повний переклад українською:
+TypeScript допомагає мені знаходити неправильні типи та props компонентів під час розробки.
+Наприклад, Product визначає поля, які має містити товар.
+Типи не перевіряють дані автоматично під час виконання програми.
+Запит до API все одно потребує явних перевірок значень і структури.
+Приведення типу повідомляє TypeScript, чого я очікую, але не доводить коректність даних.
+
+Що реалізовано і для чого:
+Product.price має тип number; CartItem містить product, quantity і selected.
+У request.body використовується unknown, бо зовнішні дані ще потрібно перевірити.
+unknown вимагає перевірки перед використанням; any дозволяв би пропускати перевірки типів.
+Напис as Product[] сам по собі не перевіряє JSON. У Home поки немає повної
+поштучної runtime-валідації всіх полів каталогу — не приписуй її TypeScript.
+Можливе уточнення: «Can TypeScript prevent a negative quantity?» — тип number
+допускає від'ємні значення; сервер перевіряє додатне ціле число окремо.
+Приклад у коді: src/types/product.ts; src/types/cart.ts; api/orders.ts.
+
+
+22. HOW DO PROPS AND STATE DIFFER, AND WHY USE FUNCTIONAL STATE UPDATES?
+Чим props відрізняються від state і навіщо функціональне оновлення стану?
+
+Answer in English:
+Props pass data into a component, while state stores data that can change.
+ProductCard receives a product through props and keeps its dialog state locally.
+Cart updates use the previous state to calculate the next state.
+I create new arrays and objects instead of changing the existing state directly.
+This makes updates predictable and avoids using an outdated cart value.
+
+Повний переклад українською:
+Props передають дані в компонент, а state зберігає дані, які можуть змінюватися.
+ProductCard отримує товар через props і локально зберігає стан діалогу.
+Оновлення кошика використовують попередній стан для обчислення наступного.
+Я створюю нові масиви й об'єкти замість прямої зміни наявного стану.
+Це робить оновлення передбачуваними й допомагає не використати застаріле значення кошика.
+
+Що реалізовано і для чого:
+Приклад props: <ProductCard product={product} />. Приклад state: isDetailOpen.
+setCartItems(prevItems => ...) бере актуальний попередній стан із React.
+map, filter і spread створюють нові структури для додавання, видалення та зміни кількості.
+Якщо просто змінити вкладений об'єкт без коректного setState, React не отримає
+очікуваного сигналу про оновлення, а спільні посилання можуть дати помилки.
+Приклад у коді: src/components/ProductCard/ProductCard.tsx; src/context/CartContext.tsx.
+
+
+23. WHAT IS useEffect USED FOR? WHY DO DEPENDENCIES AND CLEANUP MATTER?
+Для чого використовується useEffect? Навіщо залежності та очищення?
+
+Answer in English:
+I use effects to synchronize React with things outside rendering.
+Home loads the catalogue, and CartProvider saves cart changes to localStorage.
+Dependencies tell React when an effect needs to run again.
+Cleanup removes event listeners or prevents an old request from updating an inactive component.
+This avoids stale updates and duplicated behaviour.
+
+Повний переклад українською:
+Я використовую ефекти для синхронізації React із речами поза обчисленням інтерфейсу.
+Home завантажує каталог, а CartProvider зберігає зміни кошика в localStorage.
+Залежності вказують React, коли ефект потрібно виконати знову.
+Очищення прибирає обробники подій або не дає старому запиту оновлювати неактивний компонент.
+Це допомагає уникати застарілих оновлень і дублювання поведінки.
+
+Що реалізовано і для чого:
+Ефект завантаження в Home залежить від baseUrl. Під час cleanup прапорець ignore
+стає true: запит не скасовується, але його результат більше не змінює стан.
+Ефект збереження кошика залежить від cartItems. useModalFocus прибирає свій
+keydown-обробник і повертає фокус під час закриття діалогу.
+Можливе уточнення: «Why can an effect run again in development?» — StrictMode
+може додатково перевіряти цикл запуску й cleanup; ефекти мають коректно очищатися.
+Приклад у коді: src/pages/Home.tsx; src/context/CartContext.tsx; src/hooks/useModalFocus.ts.
+
+
+24. WHY USE useMemo AND useRef? HOW ARE THEY DIFFERENT FROM useState?
+Навіщо useMemo та useRef? Чим вони відрізняються від useState?
+
+Answer in English:
+useState stores values that affect the interface and schedules a render when updated.
+useMemo can reuse a calculated value while its dependencies stay the same.
+I use it for filtered product lists.
+useRef keeps a value between renders without triggering a render when it changes.
+In checkout, a ref guards submission, while state controls the visible submitting status.
+
+Повний переклад українською:
+useState зберігає значення, які впливають на інтерфейс, і планує рендер при оновленні.
+useMemo може повторно використовувати обчислене значення, поки його залежності не змінюються.
+Я використовую його для відфільтрованих списків товарів.
+useRef зберігає значення між рендерами й не запускає рендер при його зміні.
+В оформленні ref захищає від повторного надсилання, а state керує видимим станом надсилання.
+
+Що реалізовано і для чого:
+useMemo не є глобальним кешем і не робить API-запит. Він допомагає уникати
+повторних обчислень у компоненті. Програма має бути правильною і без цієї оптимізації.
+submissionInProgress.current можна перевірити й змінити одразу, а isSubmitting
+потрібен для оновлення кнопки та інтерфейсу. Ref також може посилатися на DOM:
+dialogRef у useModalFocus знаходить елементи діалогу для роботи з фокусом.
+Можливе уточнення: «What about useCallback?» — він може зберігати посилання
+на функцію між рендерами. У ProductCard так стабілізується closeDetails;
+useMemo зберігає результат обчислення, а useCallback — саму функцію.
+Приклад у коді: src/pages/Home.tsx; src/pages/Checkout/Checkout.tsx; src/hooks/useModalFocus.ts.
+
+
+25. DOES SHOW MORE DOWNLOAD THE NEXT 24 PRODUCTS FROM THE SERVER?
+Чи завантажує «Показати ще» наступні 24 товари із сервера?
+
+Answer in English:
+No. The current version downloads the full JSON catalogue first.
+The button increases how many matching product cards React displays, in batches of twenty-four.
+This reduces the number of elements rendered initially, but not the catalogue download size.
+Changing a filter resets the visible batch.
+Server pagination would require an API that returns only the requested page.
+
+Повний переклад українською:
+Ні. Поточна версія спочатку завантажує повний JSON-каталог.
+Кнопка збільшує кількість відповідних карток, які React показує порціями по двадцять чотири.
+Це зменшує початкову кількість відображених елементів, але не розмір завантаження каталогу.
+Зміна фільтра скидає видиму порцію.
+Серверна пагінація потребувала б API, який повертає лише запитану сторінку.
+
+Що реалізовано і для чого:
+ProductResults використовує visibleCount і products.slice(0, visibleCount).
+Повний список надходить у компонент після пошуку та фільтрації. Кнопка додає до 24,
+а в останній порції може бути менше. Для списку не більш ніж із 24 товарів її немає.
+Коли всі товари показано, кнопка неактивна. Для нового пошуку або фільтра key
+скидає локальний лічильник. Раніше батьківський компонент обрізав частину списків
+до 12, тому кнопці бракувало наступних товарів; це обмеження прибрали.
+Приклад у коді: src/pages/Home.tsx; docs/qa/catalogue-batches-2026-10-19.txt.
+
+
+26. WHY DID SEARCH SHOW LOUNGERS BEFORE PILLOWS, AND HOW DID YOU FIX IT?
+Чому пошук показував шезлонги перед подушками та як це виправлено?
+
+Answer in English:
+Some lounger descriptions mention a pillow.
+The old search treated title, category and description matches equally and kept catalogue order.
+The new search puts title matches first, category matches second and description-only matches last.
+It ignores case and surrounding spaces.
+Regression tests confirm that pillow titles now appear before those loungers.
+
+Повний переклад українською:
+В описах деяких шезлонгів згадується подушка.
+Старий пошук однаково враховував збіги в назві, категорії та описі й зберігав порядок каталогу.
+Новий пошук ставить збіги в назві першими, у категорії — другими,
+а збіги лише в описі — останніми.
+Він не враховує регістр і пробіли на початку та в кінці.
+Регресійні тести підтверджують, що назви подушок тепер з'являються перед цими шезлонгами.
+
+Що реалізовано і для чого:
+searchProducts збирає три групи результатів і поєднує їх за пріоритетом.
+Ланцюжок if / else if не додає товар кілька разів, навіть якщо слово є в усіх полях.
+У межах групи зберігається порядок каталогу; вхідний масив не змінюється.
+Пошук отримує вже відфільтровані за доставкою товари. Це просте ранжування,
+а не AI-пошук, виправлення помилок чи розпізнавання всіх відмінків слів.
+Можливе уточнення: «Did you remove description search?» — ні, ці збіги залишилися нижче.
+Приклад у коді: src/lib/searchProducts.ts; tests/searchProducts.test.mjs.
+
+
+27. WHY DOES A DIRECT PAGE REFRESH NEED HOSTING CONFIGURATION? CAN YOU TEST CHECKOUT LOCALLY?
+Чому пряме оновлення сторінки залежить від хостингу? Чи можна перевірити оформлення локально?
+
+Answer in English:
+React Router handles navigation after the application loads.
+A direct URL first reaches the hosting server, so the host must serve the application for that route.
+The Vercel configuration keeps API requests separate from frontend routes.
+The local Vite server runs the frontend only.
+I test the order API separately with isolated tests and simulated services.
+
+Повний переклад українською:
+React Router керує переходами після завантаження застосунку.
+Пряме посилання спочатку потрапляє на сервер хостингу,
+тому хостинг повинен віддати застосунок для цього маршруту.
+Конфігурація Vercel відокремлює API-запити від маршрутів фронтенду.
+Локальний сервер Vite запускає лише фронтенд.
+API замовлень я перевіряю окремо ізольованими тестами з імітованими сервісами.
+
+Що реалізовано і для чого:
+Наприклад, /checkout має відкриватися не лише після кліку з головної сторінки,
+а й через пряме посилання. Rewrite у vercel.json повертає застосунок для сторінок,
+не перехоплюючи /api/orders. npm run dev і preview не запускають цю серверну функцію.
+GitHub зберігає код; Vercel розміщує основний сайт; GitHub Pages — окрема статична
+публікація перенаправлення. Push у main сам по собі не публікує gh-pages.
+Приклад у коді: src/App.tsx; vercel.json; package.json; scripts/build-github-redirect.js.
+
+
+28. HOW DID YOU IMPLEMENT RESPONSIVE LAYOUTS AND KEYBOARD ACCESSIBLE DIALOGS?
+Як реалізовано адаптивний вигляд і роботу діалогів із клавіатури?
+
+Answer in English:
+I use CSS Grid, flexible layouts and media queries in the existing styles.
+The header switches to a compact menu on smaller screens, and product cards use fewer columns.
+A shared dialog hook moves focus inside, handles Tab and Escape, and restores focus on close.
+Desktop and mobile browser checks are recorded, but a full accessibility audit is still open.
+
+Повний переклад українською:
+Я використовую CSS Grid, гнучкі макети й медіазапити в наявних стилях.
+На менших екранах шапка переходить до компактного меню,
+а картки товарів використовують меншу кількість колонок.
+Спільний хук діалогів переносить фокус усередину, обробляє Tab і Escape
+та повертає фокус після закриття.
+Перевірки в браузері на десктопі й мобільному зафіксовані,
+але повний аудит доступності ще не завершений.
+
+Що реалізовано і для чого:
+Покажи приклад сітки: на мобільному дві колонки з minmax(0, 1fr),
+щоб довгий вміст не розширював сторінку. Меню змінюється за шириною екрана.
+useModalFocus працює з діалогом товару й кошиком: фокус не має випадково
+переходити на прихований позаду вміст, а після закриття повертається до попереднього елемента.
+aria-label дає назву кнопці-іконці; aria-invalid позначає некоректне поле.
+Повної перевірки скринрідером немає. У перевірці кнопки «Показати ще» 19 жовтня
+автоматичну активацію Enter/Space не підтверджено — ручна перевірка залишається відкритою.
+Приклад у коді: src/pages/Home.module.css; src/hooks/useModalFocus.ts;
+src/components/Header/Header.module.css; src/pages/Checkout/Checkout.tsx.
+
+
+29. WHY DID YOU CHOOSE THIS QUIET VISUAL DESIGN, COLOURS AND FONTS?
+Чому ти обрала такий спокійний дизайн, кольори та шрифти?
+
+Answer in English:
+I get tired of busy screens, so I wanted a calm shopping experience.
+Light backgrounds and warm beige tones give the products space.
+Dark blue text and buttons highlight important information and actions.
+Simple body text supports reading, while serif headings add warmth.
+I avoided flashing effects and automatic movement, while keeping subtle feedback on interaction.
+
+Повний переклад українською:
+Я втомлююся від перевантажених екранів, тому хотіла спокійного досвіду покупки.
+Світлі фони й теплі бежеві відтінки дають товарам простір.
+Темно-сині текст і кнопки виділяють важливу інформацію та дії.
+Простий основний текст допомагає читанню, а заголовки із засічками додають тепла.
+Я уникала миготливих ефектів і автоматичного руху, зберігши невеликий зворотний
+зв'язок при взаємодії.
+
+Що реалізовано і для чого:
+Це твоя особиста мотивація та дизайнерська мета. Вона пояснює рішення,
+а не лише називає кольори. Основний темно-синій — #102346; основа сторінки біла.
+Стек основного шрифту починається з Inter та має системні sans-serif заміни;
+частина заголовків використовує serif. Невеликі hover-переходи та відкриття панелей є.
+Можливе уточнення: «How do users know a button is interactive?» — через зрозумілий
+підпис, візуальне виділення, hover і видимий фокус, а не через миготіння.
+Контраст не оголошуємо повністю перевіреним без відповідних вимірювань.
+Приклад у коді: src/index.css; src/components/Hero/Hero.module.css; src/pages/Home.module.css.
+
+
+30. WHICH PARTS ARE YOUR WORK, AND HOW DID YOU USE AI ASSISTANCE?
+Які частини є твоєю роботою та як ти використовувала допомогу AI?
+
+Answer in English:
+I created the original shop for my own business idea.
+I used AI assistance for review, debugging, incremental changes, tests and documentation.
+I reviewed the results and performed commits and deployments myself.
+I am responsible for understanding the implementation and explaining its limits.
+If I cannot explain a detail precisely, I would check the code rather than invent an answer.
+
+Повний переклад українською:
+Я створила початковий магазин для власної бізнес-ідеї.
+Я використовувала допомогу AI для перевірки, пошуку помилок, поступових змін,
+тестів і документації.
+Я переглядала результати та самостійно виконувала коміти й публікацію.
+Я відповідаю за розуміння реалізації та пояснення її обмежень.
+Якщо я не можу точно пояснити деталь, я перевірю код, а не вигадуватиму відповідь.
+
+Що реалізовано і для чого:
+Відповідай за фактичною участю: не називай AI-запропоноване рішення виключно
+власною знахідкою. Водночас бізнес-ідея, початковий магазин і твої рішення щодо
+аудиторії та дизайну мають власну історію, яку ти можеш пояснити.
+Будь готова самостійно розібрати конкретний приклад: чому пошук має три групи,
+чому секретний ключ на сервері або як зберігається кошик після оновлення.
+Не потрібно знати напам'ять кожен рядок. Потрібно розуміти поведінку та причину рішення.
+Прозоре пояснення AI-допомоги вже є в README та матеріалах презентації.
+Приклад: README.md, розділ AI assistance disclosure; Git-історія проєкту.
