@@ -868,3 +868,353 @@ If I cannot explain a detail precisely, I would check the code rather than inven
 Не потрібно знати напам'ять кожен рядок. Потрібно розуміти поведінку та причину рішення.
 Прозоре пояснення AI-допомоги вже є в README та матеріалах презентації.
 Приклад: README.md, розділ AI assistance disclosure; Git-історія проєкту.
+
+31. WHAT DOES useState RETURN, AND WHY NOT USE A NORMAL VARIABLE?
+Що повертає useState і чому не використати звичайну змінну?
+
+Answer in English:
+useState returns the current state value and a setter function.
+For example, isMenuOpen describes whether the mobile menu is open,
+and setIsMenuOpen requests an update.
+React keeps state between renders.
+Changing a normal local variable does not tell React to update the interface.
+The initial value is used when that component instance first initializes.
+
+Повний переклад українською:
+useState повертає поточне значення стану та функцію для його оновлення.
+Наприклад, isMenuOpen описує, чи відкрите мобільне меню,
+а setIsMenuOpen запитує оновлення.
+React зберігає стан між рендерами.
+Зміна звичайної локальної змінної не повідомляє React, що потрібно оновити інтерфейс.
+Початкове значення використовується при першій ініціалізації цього екземпляра компонента.
+
+Що реалізовано і для чого:
+const [isMenuOpen, setIsMenuOpen] = useState(false);
+Квадратні дужки тут — деструктуризація масиву з двох значень.
+false означає, що меню спочатку закрите. setIsMenuOpen(true) задає наступний стан.
+Компонент виконується знову, а React зіставляє результат із попереднім інтерфейсом.
+Якщо наступне значення дорівнює попередньому за Object.is, React може пропустити оновлення.
+У CartProvider використано useState(() => ...): функція ліниво обчислює
+початковий кошик із localStorage, а не перечитує його при кожному рендері.
+Можливе уточнення: «Does the setter return the new state?» — ні, використовуємо
+значення стану під час наступного рендера.
+Приклад у коді: src/components/Header/Header.tsx; src/context/CartContext.tsx.
+
+
+32. DOES STATE CHANGE IMMEDIATELY AFTER THE SETTER? WHEN DO YOU USE THE PREVIOUS VALUE?
+Чи змінюється state одразу після setter? Коли використовують попереднє значення?
+
+Answer in English:
+The setter queues an update for a later render.
+The current event handler still sees the state snapshot from its render.
+If the next value depends on the previous one, I use a functional update.
+For example, the load-more button calculates the next count from the previous count.
+React can group several updates together.
+
+Повний переклад українською:
+Setter ставить оновлення в чергу для наступного рендера.
+Поточний обробник події все ще бачить знімок стану зі свого рендера.
+Якщо наступне значення залежить від попереднього, я використовую функціональне оновлення.
+Наприклад, кнопка показу наступних товарів обчислює нову кількість із попередньої.
+React може об'єднувати кілька оновлень.
+
+Що реалізовано і для чого:
+У ProductResults використовується setVisibleCount(count => Math.min(count + 24, products.length)).
+count у цій функції — актуальний стан із черги оновлень. Той самий підхід
+використовується в setCartItems(prevItems => ...).
+Навчальний приклад, не фрагмент магазину: якщо count = 0, два виклики
+setCount(count + 1) в одному обробнику зазвичай задають 1 і 1, а не послідовні 1 і 2.
+Два виклики setCount(c => c + 1) послідовно обчислять 1 і 2.
+Не пояснюй setter як Promise, який можна просто await для отримання нового стану.
+Приклад у коді: src/pages/Home.tsx; src/context/CartContext.tsx.
+
+
+33. WHAT IS A CONTROLLED INPUT, AND HOW DOES onChange WORK IN YOUR FORM?
+Що таке контрольоване поле та як onChange працює у твоїй формі?
+
+Answer in English:
+A controlled input receives its value from React state.
+When the user types, onChange reads the input value and updates that state.
+The next render displays the updated value.
+In checkout, formData stores the fields together.
+When I update one field, I copy the other fields so they are preserved.
+
+Повний переклад українською:
+Контрольоване поле отримує своє значення зі стану React.
+Коли користувач вводить текст, onChange читає значення поля та оновлює цей стан.
+Наступний рендер показує оновлене значення.
+У формі оформлення formData зберігає поля разом.
+Коли я оновлюю одне поле, я копіюю інші, щоб зберегти їх.
+
+Що реалізовано і для чого:
+value={formData.name}
+onChange={(e) => setFormData({...formData, name: e.target.value})}
+value визначає показаний текст. e.target.value — новий текст із поля.
+Spread ...formData зберігає email, phone та інші поля, а name замінюється.
+Setter useState не зливає об'єкти автоматично: переданий об'єкт стає новим значенням.
+Якщо залишити value, але не оновлювати стан в onChange, поле не працюватиме
+як звичайне редаговане поле. Для неконтрольованого поля браузер зберігає
+поточне значення сам; defaultValue задає лише початкове значення.
+Приклад у коді: src/pages/Checkout/Checkout.tsx; пошукове поле в Header.tsx.
+
+
+34. HOW DO YOU HANDLE A CLICK? WHY PASS A FUNCTION INSTEAD OF CALLING IT IN JSX?
+Як ти обробляєш клік? Чому в JSX передають функцію, а не викликають її одразу?
+
+Answer in English:
+I pass an event handler to onClick so React can call it when the user clicks.
+onClick={openDetails} passes a function.
+onClick={openDetails()} would call it during rendering.
+If I need to pass a product, I use a wrapper such as an arrow function.
+The event object gives information about the interaction.
+
+Повний переклад українською:
+Я передаю обробник події в onClick, щоб React міг викликати його після кліку користувача.
+onClick={openDetails} передає функцію.
+onClick={openDetails()} викликав би її під час рендера.
+Якщо потрібно передати товар, я використовую обгортку, наприклад стрілкову функцію.
+Об'єкт події надає інформацію про взаємодію.
+
+Що реалізовано і для чого:
+Кнопка зображення товару використовує onClick={openDetails}.
+onClick={() => addToCart(product)} викликає додавання саме потрібного товару
+після кліку. Arrow function тут потрібна для передавання аргументу, а не для
+автоматичного покращення продуктивності.
+Виклик setter прямо під час кожного рендера може спричинити нескінченні рендери.
+У React назви подій пишуться camelCase: onClick, onChange, onSubmit.
+e.target — елемент, де виникла подія; e.currentTarget — елемент поточного обробника.
+Наприклад, клік може потрапити на іконку всередині кнопки, але currentTarget
+обробника кнопки все одно означатиме цю кнопку.
+Приклад у коді: src/components/ProductCard/ProductCard.tsx.
+
+
+35. WHAT IS THE DIFFERENCE BETWEEN preventDefault AND stopPropagation?
+Чим відрізняються preventDefault і stopPropagation?
+
+Answer in English:
+preventDefault cancels the browser's default action for an event.
+In a form, it prevents normal submission and page navigation so my handler can send the request.
+stopPropagation stops the event from continuing to other handlers along its propagation path.
+These methods solve different problems.
+One does not automatically perform the other's job.
+
+Повний переклад українською:
+preventDefault скасовує стандартну дію браузера для події.
+У формі він запобігає звичайному надсиланню й переходу сторінки,
+щоб мій обробник міг надіслати запит.
+stopPropagation зупиняє подальше поширення події до інших обробників на її шляху.
+Ці методи вирішують різні завдання.
+Один не виконує автоматично роботу іншого.
+
+Що реалізовано і для чого:
+Checkout.handleSubmit викликає e.preventDefault(), після чого виконує
+перевірки й submitOrder. Форма пошуку в Header робить так само перед navigate.
+У useModalFocus для Escape використано обидва методи: закривається діалог,
+а подія не повинна додатково запускати зовнішній обробник закриття.
+Спливання події означає, що батьківський обробник може також отримати подію дитини.
+Можливе уточнення: «Does preventDefault disable validation?» — ні,
+це не вимикання перевірок required, email або нашої серверної валідації.
+Обробник onSubmit має тип React.FormEvent; поля введення мають події зміни.
+Приклад у коді: src/pages/Checkout/Checkout.tsx; src/components/Header/Header.tsx;
+src/hooks/useModalFocus.ts.
+
+
+36. HOW CAN A CHILD COMPONENT ASK ITS PARENT TO CHANGE STATE?
+Як дочірній компонент може попросити батьківський змінити стан?
+
+Answer in English:
+The parent owns the state and passes a callback through props.
+The child calls that callback when an event happens.
+In Meloria, App owns isCartOpen and passes onCartOpen to Header.
+Header calls it after a click, and App updates its state.
+The child does not directly change the parent's state or rewrite its props.
+
+Повний переклад українською:
+Батьківський компонент володіє станом і передає callback через props.
+Дочірній компонент викликає цей callback, коли відбувається подія.
+У Meloria App володіє isCartOpen і передає onCartOpen до Header.
+Header викликає його після кліку, а App оновлює свій стан.
+Дочірній компонент не змінює стан батьківського напряму й не переписує свої props.
+
+Що реалізовано і для чого:
+App передає <Header onCartOpen={() => setIsCartOpen(true)} />.
+Header приймає onCartOpen у props і викликає його через handleCartOpen.
+CartDrawer отримує isOpen та onClose від App. Так обидва компоненти
+узгоджено працюють зі станом відкриття кошика, який належить App.
+Для самих товарів кошика використовується Context — це окрема відповідальність.
+Можливе уточнення: «What is lifting state up?» — перенесення спільного стану
+до найближчого батьківського компонента, щоб потрібні діти мали одне джерело даних.
+Приклад у коді: src/App.tsx; src/components/Header/Header.tsx.
+
+37. WHEN DOES useMemo RECALCULATE, AND WHAT BELONGS IN ITS DEPENDENCY ARRAY?
+Коли useMemo перераховує значення й що має бути в масиві залежностей?
+
+Answer in English:
+useMemo calculates a value and can reuse it while its dependencies stay the same.
+In Home, the delivery-filtered list depends on products and the selected delivery group.
+When either changes, React recalculates the list.
+Every changing value used by that calculation must be represented in its dependencies.
+Memoization is an optimization, not a guarantee that the calculation runs only once.
+
+Повний переклад українською:
+useMemo обчислює значення й може повторно використовувати його,
+поки залежності залишаються тими самими.
+У Home список із фільтром доставки залежить від products і вибраної групи доставки.
+Коли щось із них змінюється, React перераховує список.
+Кожне змінне значення, використане в цьому обчисленні, має бути враховане в залежностях.
+Мемоізація — це оптимізація, а не гарантія, що обчислення виконається лише один раз.
+
+Що реалізовано і для чого:
+У deliveryFilteredProducts залежності — [activeDeliveryGroup, products].
+Оновлення кошика не змінює ці дві залежності, тому результат фільтрації може
+використовуватися повторно. React порівнює залежності через Object.is.
+Якщо забути products, можна отримати застарілий список після завантаження каталогу.
+Якщо щоразу створювати новий об'єкт-залежність, порівняння бачитиме нове посилання,
+і очікувана користь кешування зникне. Не потрібно додавати useMemo до кожного
+простого обчислення: додаткова складність теж має свою ціну.
+Приклад у коді: src/pages/Home.tsx, deliveryFilteredProducts і categoryCards.
+
+
+38. WHEN WOULD YOU CHOOSE useEffect INSTEAD OF useMemo?
+Коли варто обрати useEffect замість useMemo?
+
+Answer in English:
+useMemo is for a pure calculation whose result I need during rendering.
+useEffect is for synchronization with an external system after React commits an update.
+Filtering products is a calculation, so it can use useMemo.
+Fetching the catalogue or saving the cart to browser storage is a side effect.
+I do not use useMemo to send requests or update state.
+
+Повний переклад українською:
+useMemo призначений для чистого обчислення, результат якого потрібен під час рендера.
+useEffect призначений для синхронізації із зовнішньою системою після того,
+як React застосує оновлення.
+Фільтрація товарів — це обчислення, тому вона може використовувати useMemo.
+Завантаження каталогу або збереження кошика у сховищі браузера — це побічний ефект.
+Я не використовую useMemo для надсилання запитів або оновлення стану.
+
+Що реалізовано і для чого:
+У Home useEffect виконує fetch, а useMemo виводить потрібні списки з products.
+Не потрібно зберігати кожен обчислений список у додатковому state та ще одним
+ефектом синхронізувати його з products: це створює зайвий стан і ризик неузгодженості.
+Чисте обчислення не змінює зовнішні дані й не виконує мережевих дій.
+Наприклад, filter повертає новий масив; перед sort у проєкті створюється копія,
+щоб не змінювати вихідний масив товарів під час обчислення.
+Можливе уточнення: «Does useEffect always run after the browser paints?» —
+не варто обіцяти саме такий момент; для пояснення достатньо зв'язку з commit і залежностями.
+Приклад у коді: src/pages/Home.tsx; src/context/CartContext.tsx.
+
+
+39. WHAT DOES useCallback DO? DOES IT STOP A COMPONENT FROM RENDERING?
+Що робить useCallback? Чи зупиняє він рендер компонента?
+
+Answer in English:
+useCallback can keep the same function reference while its dependencies stay the same.
+In ProductCard, closeDetails is passed to the dialog focus hook.
+A stable callback helps avoid restarting that effect only because the function reference changed.
+useCallback does not call the function or stop component renders by itself.
+Its dependencies still need to be correct.
+
+Повний переклад українською:
+useCallback може зберігати те саме посилання на функцію, поки її залежності не змінюються.
+У ProductCard closeDetails передається до хука керування фокусом діалогу.
+Стабільний callback допомагає не перезапускати цей ефект лише через зміну посилання на функцію.
+useCallback не викликає функцію й сам по собі не зупиняє рендери компонента.
+Його залежності все одно мають бути правильними.
+
+Що реалізовано і для чого:
+const closeDetails = useCallback(() => setIsDetailOpen(false), []);
+Ефект у useModalFocus залежить від isOpen та onClose. Стабільне посилання onClose
+запобігає зайвому cleanup і повторному налаштуванню ефекту через зміну функції.
+Порожній масив доречний тут, бо callback використовує стабільний setter,
+а не змінне значення isDetailOpen. В інших функціях потрібні інші залежності.
+Якщо callback читає змінний state без правильної залежності, він може бачити
+застаріле значення. useCallback не є автоматичним способом зробити все швидшим.
+Приклад у коді: src/components/ProductCard/ProductCard.tsx; src/hooks/useModalFocus.ts.
+
+
+40. HOW DO map, filter, find AND reduce HELP IN YOUR SHOP?
+Як map, filter, find і reduce використовуються у твоєму магазині?
+
+Answer in English:
+map transforms each item, for example into a product card or an updated cart item.
+filter selects matching products or selected cart items.
+find returns the first matching item, such as an existing product in the cart.
+reduce combines values, for example to calculate a total.
+These methods help me describe data changes without directly changing the original array.
+
+Повний переклад українською:
+map перетворює кожен елемент, наприклад на картку товару або оновлений елемент кошика.
+filter вибирає відповідні товари або позначені елементи кошика.
+find повертає перший відповідний елемент, наприклад наявний товар у кошику.
+reduce об'єднує значення, наприклад для обчислення загальної суми.
+Ці методи допомагають описувати зміни даних без прямої зміни початкового масиву.
+
+Що реалізовано і для чого:
+visibleProducts.map(...) створює елементи ProductCard з key={product.id}.
+cartItems.filter(item => item.selected) залишає лише позначені товари.
+prevItems.find(...) визначає, чи товар уже є в кошику.
+reduce((sum, item) => sum + item.product.price * item.quantity, 0) обчислює суму.
+Початковий 0 задає акумулятор і дозволяє коректно обробити порожній кошик.
+find може повернути undefined, якщо збігу немає; filter у такій ситуації поверне [].
+map і filter створюють нові масиви, але не роблять автоматично глибоких копій об'єктів:
+для зміни вкладеного елемента кошика застосовуємо {...item, quantity: ...}.
+Приклад у коді: src/pages/Home.tsx; src/context/CartContext.tsx; src/pages/Checkout/Checkout.tsx.
+
+
+41. HOW DOES CONDITIONAL RENDERING WORK IN YOUR PROJECT?
+Як працює умовне відображення у твоєму проєкті?
+
+Answer in English:
+Conditional rendering chooses what React should display for the current state.
+The catalogue shows loading, an error, an empty message or product results.
+The load-more button appears only when the list has more than twenty-four products.
+Its label and disabled state change when all products are shown.
+These conditions connect the interface to the actual data and user actions.
+
+Повний переклад українською:
+Умовне відображення визначає, що React має показати для поточного стану.
+Каталог показує завантаження, помилку, повідомлення про порожній список або результати.
+Кнопка наступних товарів з'являється лише тоді, коли список містить понад двадцять чотири товари.
+Її підпис і неактивний стан змінюються, коли показано всі товари.
+Ці умови пов'язують інтерфейс із реальними даними та діями користувача.
+
+Що реалізовано і для чого:
+У Home використовуються тернарні умови та &&, наприклад:
+{products.length > PRODUCTS_PER_BATCH && (...)}.
+hasMore ? 'Показати ще' : 'Усі товари показано' обирає текст кнопки.
+У Checkout formErrors.name && (...) показує пояснення конкретної помилки.
+Для числової довжини краще явне порівняння length > 0, щоб вираз 0 && (...)
+не вивів на сторінку число 0. true, false, null та undefined не показуються як текст.
+Умовно прихована кнопка не захищає API: права й дані перевіряє сервер.
+Приклад у коді: src/pages/Home.tsx; src/pages/Checkout/Checkout.tsx.
+
+
+42. WHAT IS A CUSTOM HOOK, AND WHAT RULES DO HOOKS FOLLOW?
+Що таке власний hook і яких правил потрібно дотримуватися для hooks?
+
+Answer in English:
+A custom hook is a function that reuses React logic and starts with use.
+useCart reads the shared cart context, while useModalFocus manages dialog focus behaviour.
+Hooks such as useState and useEffect must be called at the top level
+of a React component or a custom hook, not inside conditions or loops.
+Sharing a hook does not automatically share its local state.
+
+Повний переклад українською:
+Власний hook — це функція для повторного використання React-логіки, назва якої починається з use.
+useCart читає спільний контекст кошика, а useModalFocus керує поведінкою фокуса діалогу.
+Такі hooks, як useState та useEffect, потрібно викликати на верхньому рівні
+React-компонента або власного hook, а не всередині умов чи циклів.
+Повторне використання hook не означає автоматичного спільного локального стану.
+
+Що реалізовано і для чого:
+useCart об'єднує useContext із перевіркою, що компонент знаходиться всередині CartProvider.
+Якщо провайдера немає, він дає зрозумілу помилку. Саме Provider робить кошик спільним.
+useModalFocus повторно використовує логіку фокуса для різних діалогів,
+але кожний виклик має власний ref. Хук можна викликати завжди, а перевірку
+if (!isOpen) робити всередині його ефекту, не порушуючи порядок викликів hooks.
+React покладається на послідовність цих викликів між рендерами.
+map може створювати багато <ProductCard />, кожен зі своїми hooks;
+це відрізняється від прямого виклику useState всередині циклу батьківського компонента.
+Приклад у коді: src/context/cartContextValue.ts; src/hooks/useModalFocus.ts;
+src/components/ProductCard/ProductCard.tsx.
