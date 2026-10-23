@@ -270,33 +270,34 @@ I wanted customers to feel confident at every step.
 
 SLIDE 6 — QA, ACCESSIBILITY & ETHICS
 Приватний орієнтир: 1 хвилина.
-Дія: коротко поясни користь перевірок. Не читай назви команд або інструментів.
+Дія: коротко поясни користь перевірок і покажи зелені індикатори.
+Уточни, що це результат перевірки десктопної версії. Не читай назви команд.
 
 ENGLISH SPEECH:
-To make this experience more dependable, I tested the cart,
+To help customers shop with confidence, I tested the cart,
 order details and error messages.
-I also worked on clear form labels and keyboard navigation.
+I also improved text contrast and reduced page movement while the shop loads.
 
-Customer order details are kept separate from the public catalogue.
-I used AI assistance during development and reviewed the changes myself.
+In this desktop check, Google PageSpeed Insights gave Meloria
+99 for performance and 100 in the other three categories.
+These results are encouraging, and I will continue testing accessibility manually.
 
-There is still work to do on accessibility,
-and I will continue improving the shop.
-For me, building trust means checking the details and being honest about what is ready.
+Customer order details stay separate from the public catalogue.
+I used AI assistance and reviewed the changes myself.
 
 These checks give me a foundation for Meloria's next steps.
 
 ПОВНИЙ ПЕРЕКЛАД УКРАЇНСЬКОЮ:
-Щоб зробити цей досвід надійнішим, я перевіряла кошик,
+Щоб покупці могли впевнено робити покупки, я перевіряла кошик,
 деталі замовлень і повідомлення про помилки.
-Я також працювала над зрозумілими підписами полів і навігацією з клавіатури.
+Я також покращила контраст тексту та зменшила зсуви вмісту під час завантаження магазину.
+
+У цій перевірці десктопної версії Google PageSpeed Insights оцінив Meloria
+на 99 балів за продуктивність і на 100 балів у трьох інших категоріях.
+Ці результати надихають, і я продовжу перевіряти доступність вручну.
 
 Дані замовлень покупців зберігаються окремо від публічного каталогу.
-Я використовувала допомогу AI під час розробки й самостійно переглядала зміни.
-
-Над доступністю ще потрібно працювати,
-і я продовжу вдосконалювати магазин.
-Для мене створювати довіру означає перевіряти деталі й чесно говорити про те, що готове.
+Я використовувала допомогу AI й самостійно переглядала зміни.
 
 Ці перевірки дають основу для наступних кроків Meloria.
 
