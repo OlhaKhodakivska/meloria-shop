@@ -6,6 +6,7 @@ import { Hero } from '../components/Hero/Hero';
 import { PromoBanner } from '../components/PromoBanner/PromoBanner';
 import type { Product } from '../types/product';
 import { normalizeSearchText, searchProducts } from '../lib/searchProducts';
+import { getFeaturedProducts } from '../lib/featuredProducts';
 import { Gift, Truck, ShieldCheck, Heart } from 'lucide-react';
 import styles from './Home.module.css';
 
@@ -39,23 +40,6 @@ const deliveryGroups: Array<{
 const getProductIdNumber = (productId: string) => {
   const parsedId = Number(productId);
   return Number.isFinite(parsedId) ? parsedId : 0;
-};
-
-const getMostExpensiveProduct = (products: Product[]) =>
-  [...products].sort((firstProduct, secondProduct) => secondProduct.price - firstProduct.price)[0];
-
-const getFeaturedProducts = (products: Product[]) => {
-  if (products.length === 0) {
-    return [];
-  }
-
-  const mostExpensiveProduct = getMostExpensiveProduct(products);
-  const randomProducts = [...products]
-    .filter((product) => product.id !== mostExpensiveProduct.id)
-    .sort(() => Math.random() - 0.5);
-
-  // ProductResults needs the full list to reveal further batches.
-  return [mostExpensiveProduct, ...randomProducts];
 };
 
 const ProductResults: React.FC<{ products: Product[] }> = ({ products }) => {
@@ -172,12 +156,12 @@ export const Home: React.FC = () => {
 
   const newProducts = useMemo(
     () =>
-      [...deliveryFilteredProducts]
+      catalogView !== 'new' ? [] : [...deliveryFilteredProducts]
         .sort((firstProduct, secondProduct) =>
           getProductIdNumber(secondProduct.id) - getProductIdNumber(firstProduct.id)
         )
         .slice(0, NEW_PRODUCTS_LIMIT),
-    [deliveryFilteredProducts]
+    [catalogView, deliveryFilteredProducts]
   );
   const featuredProducts = useMemo(
     () => getFeaturedProducts(deliveryFilteredProducts),

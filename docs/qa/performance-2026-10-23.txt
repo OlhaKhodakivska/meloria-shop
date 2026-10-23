@@ -1,0 +1,51 @@
+Meloria Shop — incremental performance improvements, 2026-10-23
+
+Baseline
+- Working tree was clean on main, tracking origin/main.
+- npm test: 78 passed, 0 failed.
+- npm run lint: passed.
+- npm run build: passed, including both TypeScript checks and 8 public SEO routes.
+- User-provided Lighthouse screenshot: Performance 49, Accessibility 96,
+  Best Practices 100, SEO 100; LCP 8.5 s, TBT 1470 ms, CLS 0.
+  This is a supplied baseline, not a Lighthouse run performed in this change.
+  No full trace/report was available to establish the exact LCP element or
+  attribute all main-thread blocking to particular scripts.
+
+Changes and purpose
+1. Re-encoded hero.webp with WebP quality 88 at the original 1896 x 520 size:
+   695276 -> 78212 bytes (88.8% smaller).
+   This uses lossy compression. A side-by-side image comparison showed no
+   obvious visual degradation. The original hero.png remains unchanged.
+2. Preloaded that image with high fetch priority in the initial homepage HTML.
+   Vite resolves the asset URL; the SEO script removes the hint from generated
+   non-home public pages. Existing CSS cropping, positioning and layout remain.
+3. Replaced featured-product sorts with a maximum-price scan and Fisher–Yates
+   shuffle. Both are linear in catalogue size. The first most expensive product
+   remains first; the full remaining list supports later batches of 24.
+4. Only sort new products when the New catalogue view is requested.
+
+Validation after changes
+- npm test: 82 passed, 0 failed (4 new catalogue regression tests).
+- npm run lint: passed after the final source changes.
+- npm run build: passed after the final source changes, including TypeScript.
+- Build artifact inspection: homepage preload resolves to an emitted image;
+  its filename matches the CSS reference; generated non-home public HTML
+  does not contain the hint.
+- git diff --check: passed.
+- No deployment, live orders, database writes or environment changes performed.
+
+Limits and next measurement
+- No new Lighthouse score or browser timing has been measured. The reductions
+  above describe asset size and algorithmic work, not a measured score gain.
+- Full browser regression checks of the changed build remain unverified.
+- Non-prerendered SPA fallback routes can receive the homepage HTML and its
+  preload hint; client-side navigation to Home can still discover the image
+  through CSS. This change does not implement server-side route-aware rendering.
+- The frontend still loads all 9838 products from a 15360020-byte JSON file
+  (uncompressed size). Transferred size depends on HTTP compression. Parsing
+  and catalogue processing, third-party scripts and product images may still
+  contribute to loading time; the screenshot alone cannot quantify their share.
+- After the owner commits, pushes and Vercel reports Ready, repeat mobile
+  Lighthouse on the same URL under comparable conditions. Save the full report.
+  Verify the hero at mobile and desktop sizes, search, filters, New products
+  and the Show more button before deciding on further optimization.

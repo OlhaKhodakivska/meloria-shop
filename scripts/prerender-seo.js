@@ -199,7 +199,9 @@ const cleanUrlFilePath = (path) => new URL(`.${path}.html`, distDir);
 
 const writeRouteHtml = async (html, page) => {
   const filePath = routeFilePath(page.path);
-  const renderedHtml = replaceMeta(html, page);
+  // The hero is only displayed on Home; other public pages do not need its preload.
+  const routeHtml = page.path === '/' ? html : html.replace(/<link\b[^>]*\bid="home-hero-preload"[^>]*>/, '');
+  const renderedHtml = replaceMeta(routeHtml, page);
   await mkdir(dirname(filePath.pathname), { recursive: true });
   await writeFile(filePath, renderedHtml);
 
