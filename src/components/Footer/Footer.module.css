@@ -39,7 +39,7 @@
 
 .brandDescription {
   font-size: 14px;
-  color: #5d6d7e;
+  color: #536173;
   line-height: 1.5;
   max-width: 260px;
 }
@@ -85,7 +85,7 @@
 
 .column a {
   font-size: 14px;
-  color: #5d6d7e;
+  color: #536173;
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -110,7 +110,7 @@
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  color: #7f8c8d;
+  color: #536173;
 }
 
 .legalInfo {
@@ -121,7 +121,6 @@
 
 .fopSubtext {
   font-size: 12px;
-  opacity: 0.8;
 }
 
 .madeIn {

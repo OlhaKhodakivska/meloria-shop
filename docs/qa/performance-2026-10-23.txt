@@ -49,3 +49,58 @@ Limits and next measurement
   Lighthouse on the same URL under comparable conditions. Save the full report.
   Verify the hero at mobile and desktop sizes, search, filters, New products
   and the Show more button before deciding on further optimization.
+
+Follow-up: independent PageSpeed Insights report
+Source: https://pagespeed.web.dev/analysis/https-www-meloria-pp-ua/6llexcpz7y
+Report captured 2026-10-23 at 12:24 GMT+2; read through the report UI.
+                       Desktop       Mobile
+Performance            85            68
+Accessibility          96            96
+Best Practices         100           100
+SEO                    100           100
+FCP                    0.3 s         1.5 s
+LCP                    0.9 s         3.2 s
+TBT                    0 ms          0 ms
+CLS                    0.280         0.789
+
+These are separate device profiles, not directly comparable to the earlier
+local Chrome runs. No field-user data was available in the report.
+
+Verified findings
+- Layout shift diagnostics identify the footer as the affected element:
+  0.279 desktop, 0.789 mobile. The remaining desktop contribution is 0.001
+  from a category tab. An affected element is not necessarily the root cause.
+- Low contrast: benefit descriptions, footer descriptions/navigation/legal
+  text, plus the mobile hero subtitle.
+- Image delivery opportunities remain: estimated savings of 1849 KiB desktop
+  and 851 KiB mobile. These are audit estimates, not measured savings from a fix.
+- Unused JavaScript estimate: about 209–210 KiB. This report records zero TBT,
+  so the local blocking-time result should not determine priorities by itself.
+
+Follow-up implementation
+- App.tsx: replace the empty Suspense fallback with a Ukrainian loading status
+  reserving one viewport of vertical space. Code inspection indicates that
+  the empty route while a lazy component loads can initially expose the
+  footer and then push it down when Home appears. The change addresses that
+  hypothesis; it does not prove all layout shifts have been eliminated.
+  The reservation exists only while a route component is pending.
+- Home.module.css: darken benefit descriptions to #536173.
+- Footer.module.css: darken description, navigation and lower-section text
+  to #536173; remove reduced opacity from the small legal text.
+- Hero.module.css: darken the mobile subtitle to #946510, retaining a gold tone.
+
+Follow-up checks
+- Baseline was clean main; 82 tests, lint and build passed before editing.
+- After editing: 82 tests passed; lint and production build including both
+  TypeScript checks passed; git diff --check passed.
+- Calculated WCAG text contrast for the specified CSS backgrounds:
+  benefit descriptions 5.90:1, footer text 5.11:1, mobile subtitle 5.09:1.
+  These calculations are not a new browser accessibility audit.
+- Changed-build browser validation and a new PageSpeed run remain pending.
+  Existing browser URL-policy restrictions on local testing were not bypassed.
+- No commits, pushes, deployments, live orders, database or environment changes.
+
+Next: owner publishes the change, checks Home and another route while loading,
+then obtains a fresh Mobile and Desktop report. If CLS remains, inspect the new
+affected-element details before further changes. Investigate product-image
+delivery separately after confirming this fix.

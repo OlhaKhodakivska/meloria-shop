@@ -37,7 +37,11 @@ function App() {
 
           {/* Контентна зона, яка розтягується і штовхає футер донизу */}
           <main id="main-content" style={{ flexGrow: 1 }}>
-            <Suspense fallback={null}>
+            <Suspense fallback={
+              <div role="status" style={{ minHeight: '100vh', padding: '100px 20px' }}>
+                Завантаження сторінки…
+              </div>
+            }>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/checkout" element={<Checkout />} />
